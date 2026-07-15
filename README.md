@@ -2,24 +2,18 @@
 
 Aplicación de escritorio de coaching personalizado para League of Legends.
 
-## Responsabilidades
+## Funcionalidades actuales
 
-- Mostrar el panel del jugador y sus objetivos.
-- Ejecutar un HUD mínimo y configurable.
-- Recopilar datos locales disponibles durante una partida.
-- Enviar sesiones agrupadas a API-PLAIQ.
-- Mostrar análisis y progreso calculados por el backend.
-
-## Stack
-
-- Electron
-- React
-- TypeScript
-- Vite
+- Panel de objetivos de entrenamiento.
+- Búsqueda de Riot ID mediante API-PLAIQ.
+- Perfiles guardados por instalación.
+- Historial de búsquedas.
+- Comunicación HTTP tipada con el backend.
+- Base segura de Electron con aislamiento de contexto.
 
 ## Inicio local
 
-Primero levanta API-PLAIQ en el puerto 3000. Después:
+Primero configura y levanta API-PLAIQ. Después:
 
 ```bash
 npm install
@@ -27,20 +21,15 @@ cp .env.example .env
 npm run dev
 ```
 
-## Compilación
+La búsqueda inicial utiliza `Jøy Đ Bøy#NPM` como ejemplo editable y `LA2` como región.
 
-```bash
-npm run typecheck
-npm run build
-```
+## Persistencia
 
-## Arquitectura
+El cliente crea un UUID aleatorio en el almacenamiento local. API-PLAIQ utiliza este identificador para separar perfiles e historial hasta que incorporemos autenticación por correo. El PUUID y las claves permanecen únicamente en el backend.
 
-El proceso principal de Electron será responsable de las integraciones locales. React nunca tendrá acceso directo a claves, credenciales del cliente ni APIs privadas. La API remota se ocupa de Riot Web API, persistencia, estadísticas e IA.
+## Seguridad
 
-## Estado
-
-Primera base técnica con comunicación HTTP real y datos demostrativos desde API-PLAIQ.
+Este repositorio no contiene claves de Riot ni OpenAI. React tampoco tiene acceso directo a las integraciones locales o secretos del proceso principal.
 
 ---
 
