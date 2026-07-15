@@ -21,3 +21,34 @@ export interface CoachingSummary {
   goals: CoachingGoal[];
   generatedAt: string;
 }
+
+export interface RiotProfile {
+  id: string;
+  riotId: string;
+  gameName: string;
+  tagLine: string;
+  platform: string;
+  profileIconId: number | null;
+  summonerLevel: number | null;
+  searchCount: number;
+  lastSearchedAt: string;
+  createdAt: string;
+}
+
+export interface RiotSearchHistory {
+  id: string;
+  riotId: string;
+  gameName: string;
+  tagLine: string;
+  platform: string;
+  status: "found" | "not_found" | "error";
+  errorMessage: string | null;
+  searchedAt: string;
+}
+
+export interface LookupRiotProfileInput {
+  clientId: string;
+  gameName: string;
+  tagLine: string;
+  platform: string;
+}
