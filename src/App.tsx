@@ -2,16 +2,49 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   getCoachingSummary,
+  getProfileMatches,
   getRiotProfiles,
   getRiotSearchHistory,
   lookupRiotProfile,
+  syncProfileMatches,
 } from "./lib/api";
 import { getClientId } from "./lib/client-id";
 import type {
+  AppView,
   CoachingSummary,
+  MatchSummary,
   RiotProfile,
   RiotSearchHistory,
 } from "./types/coaching";
+
+const NAV_ITEMS: Array<{ id: AppView; label: string }> = [
+  { id: "resumen", label: "Resumen" },
+  { id: "perfiles", label: "Perfiles" },
+  { id: "objetivos", label: "Objetivos" },
+  { id: "partidas", label: "Partidas" },
+];
+
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${String(secs).padStart(2, "0")}`;
+}
+
+function formatRole(position: string | null): string {
+  if (!position || position === "INVALID" || position === "NONE") {
+    return "—";
+  }
+
+  const labels: Record<string, string> = {
+    TOP: "Top",
+    JUNGLE: "Jungla",
+    MIDDLE: "Mid",
+    BOTTOM: "ADC",
+    UTILITY: "Support",
+  };
+
+  return labels[position] ?? position;
+}
 
 function GoalCard({
   title,
@@ -26,7 +59,7 @@ function GoalCard({
   );
 
   return (
-    <article className="goal-card">
+    <article className={`goal-card ${completed ? "is-complete" : ""}`}>
       <div className="goal-heading">
         <div>
           <span className="eyebrow">
@@ -51,19 +84,66 @@ function GoalCard({
   );
 }
 
+function MatchRow({ match }: { match: MatchSummary }) {
+  return (
+    <article className={`match-row ${match.win ? "win" : "loss"}`}>
+      <div className="match-result">
+        <strong>{match.win ? "V" : "D"}</strong>
+        <small>{formatDuration(match.gameDurationSeconds)}</small>
+      </div>
+      <div className="match-core">
+        <strong>{match.championName}</strong>
+        <small>
+          {match.queueLabel} · {formatRole(match.teamPosition)}
+          {match.patchVersion ? ` · ${match.patchVersion}` : ""}
+        </small>
+      </div>
+      <div className="match-kda">
+        <strong>
+          {match.kills}/{match.deaths}/{match.assists}
+        </strong>
+        <small>
+          {match.creepScore} CS · {match.visionScore} visión
+        </small>
+      </div>
+      <time dateTime={match.gameCreation}>
+        {new Date(match.gameCreation).toLocaleString("es-CL", {
+          dateStyle: "short",
+          timeStyle: "short",
+        })}
+      </time>
+    </article>
+  );
+}
+
 export function App() {
   const clientId = useMemo(() => getClientId(), []);
+  const [view, setView] = useState<AppView>("resumen");
   const [summary, setSummary] = useState<CoachingSummary | null>(null);
   const [profiles, setProfiles] = useState<RiotProfile[]>([]);
   const [history, setHistory] = useState<RiotSearchHistory[]>([]);
+  const [matches, setMatches] = useState<MatchSummary[]>([]);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
+    null,
+  );
   const [gameName, setGameName] = useState("Jøy Đ Bøy");
   const [tagLine, setTagLine] = useState("NPM");
   const [platform, setPlatform] = useState("LA2");
   const [apiError, setApiError] = useState<string | null>(null);
   const [lookupMessage, setLookupMessage] = useState<string | null>(null);
+  const [matchMessage, setMatchMessage] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
-  async function refreshRiotData(): Promise<void> {
+  const activeProfile = useMemo(
+    () =>
+      profiles.find((profile) => profile.id === selectedProfileId) ??
+      profiles[0] ??
+      null,
+    [profiles, selectedProfileId],
+  );
+
+  async function refreshRiotData(): Promise<RiotProfile[]> {
     const [savedProfiles, searches] = await Promise.all([
       getRiotProfiles(clientId),
       getRiotSearchHistory(clientId),
@@ -71,6 +151,16 @@ export function App() {
 
     setProfiles(savedProfiles);
     setHistory(searches);
+
+    if (
+      savedProfiles.length > 0 &&
+      (!selectedProfileId ||
+        !savedProfiles.some((profile) => profile.id === selectedProfileId))
+    ) {
+      setSelectedProfileId(savedProfiles[0].id);
+    }
+
+    return savedProfiles;
   }
 
   useEffect(() => {
@@ -90,6 +180,9 @@ export function App() {
 
       if (profilesResult.status === "fulfilled") {
         setProfiles(profilesResult.value);
+        if (profilesResult.value[0]) {
+          setSelectedProfileId(profilesResult.value[0].id);
+        }
       }
 
       if (historyResult.status === "fulfilled") {
@@ -99,6 +192,33 @@ export function App() {
 
     return () => controller.abort();
   }, [clientId]);
+
+  useEffect(() => {
+    if (!activeProfile || view !== "partidas") {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    getProfileMatches(clientId, activeProfile.id, 10)
+      .then((list) => {
+        if (!controller.signal.aborted) {
+          setMatches(list);
+          setMatchMessage(null);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          setMatchMessage(
+            error instanceof Error
+              ? error.message
+              : "No fue posible cargar las partidas.",
+          );
+        }
+      });
+
+    return () => controller.abort();
+  }, [activeProfile, clientId, view]);
 
   async function handleLookup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -114,6 +234,7 @@ export function App() {
       });
 
       setLookupMessage(`${profile.riotId} fue encontrado y guardado.`);
+      setSelectedProfileId(profile.id);
       setApiError(null);
       await refreshRiotData();
     } catch (error) {
@@ -127,6 +248,33 @@ export function App() {
     }
   }
 
+  async function handleSyncMatches() {
+    if (!activeProfile) {
+      setMatchMessage("Busca y guarda un perfil antes de sincronizar partidas.");
+      return;
+    }
+
+    setIsSyncing(true);
+    setMatchMessage(null);
+
+    try {
+      const result = await syncProfileMatches(clientId, activeProfile.id, 10);
+      setMatches(result.matches);
+      setMatchMessage(
+        `Importadas ${result.imported} · omitidas ${result.skipped}.`,
+      );
+      setApiError(null);
+    } catch (error) {
+      setMatchMessage(
+        error instanceof Error
+          ? error.message
+          : "No fue posible sincronizar las partidas.",
+      );
+    } finally {
+      setIsSyncing(false);
+    }
+  }
+
   const completedGoals = useMemo(
     () => summary?.goals.filter((goal) => goal.completed).length ?? 0,
     [summary],
@@ -134,20 +282,28 @@ export function App() {
 
   return (
     <main className="app-shell">
+      <div className="atmosphere" aria-hidden="true" />
+
       <aside className="sidebar">
         <div className="brand">
           <span className="brand-mark">P</span>
           <div>
             <strong>PLAIQ</strong>
-            <small>Personal coaching</small>
+            <small>Centro táctico</small>
           </div>
         </div>
 
         <nav>
-          <button className="nav-item active">Resumen</button>
-          <button className="nav-item">Perfiles</button>
-          <button className="nav-item">Objetivos</button>
-          <button className="nav-item">Partidas</button>
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.id}
+              className={view === item.id ? "nav-item active" : "nav-item"}
+              onClick={() => setView(item.id)}
+              type="button"
+            >
+              {item.label}
+            </button>
+          ))}
         </nav>
 
         <div className="connection">
@@ -157,169 +313,312 @@ export function App() {
       </aside>
 
       <section className="content">
-        <header className="topbar">
-          <div>
-            <span className="eyebrow">Tu sesión de entrenamiento</span>
-            <h1>Juega con propósito.</h1>
-          </div>
-          <span className="role-badge">
-            {summary?.player.primaryRole ?? "PLAIQ"}
-          </span>
-        </header>
-
         {apiError && (
           <div className="notice">
             {apiError} Inicia PostgreSQL y el backend en el puerto 3000.
           </div>
         )}
 
-        <section className="lookup-card">
-          <div className="lookup-copy">
-            <span className="eyebrow">Perfiles Riot</span>
-            <h2>Busca y guarda un jugador</h2>
-            <p>
-              El historial queda asociado a esta instalación hasta que
-              habilitemos cuentas por correo.
-            </p>
-          </div>
-
-          <form className="lookup-form" onSubmit={handleLookup}>
-            <label>
-              Game Name
-              <input
-                value={gameName}
-                onChange={(event) => setGameName(event.target.value)}
-                maxLength={64}
-                required
-              />
-            </label>
-            <label className="tag-input">
-              Tag
-              <input
-                value={tagLine}
-                onChange={(event) => setTagLine(event.target.value)}
-                maxLength={16}
-                required
-              />
-            </label>
-            <label className="platform-input">
-              Región
-              <select
-                value={platform}
-                onChange={(event) => setPlatform(event.target.value)}
-              >
-                <option value="LA2">LAS</option>
-                <option value="LA1">LAN</option>
-                <option value="BR1">BR</option>
-                <option value="NA1">NA</option>
-              </select>
-            </label>
-            <button className="primary-button" disabled={isSearching}>
-              {isSearching ? "Buscando…" : "Buscar perfil"}
-            </button>
-          </form>
-
-          {lookupMessage && <p className="lookup-message">{lookupMessage}</p>}
-        </section>
-
-        <section className="profile-layout">
-          <div>
-            <div className="section-heading compact">
-              <div>
-                <span className="eyebrow">Guardados</span>
-                <h2>Perfiles recientes</h2>
-              </div>
-              <span>{profiles.length} perfiles</span>
-            </div>
-
-            <div className="profile-list">
-              {profiles.length === 0 ? (
-                <div className="empty-state">Todavía no hay perfiles guardados.</div>
-              ) : (
-                profiles.slice(0, 5).map((profile) => (
-                  <article className="profile-row" key={profile.id}>
-                    <span className="profile-avatar">
-                      {profile.gameName.slice(0, 1).toUpperCase()}
-                    </span>
-                    <div>
-                      <strong>{profile.riotId}</strong>
-                      <small>
-                        {profile.platform} · Nivel {profile.summonerLevel ?? "—"}
-                      </small>
-                    </div>
-                    <span className="search-count">
-                      {profile.searchCount} {profile.searchCount === 1 ? "consulta" : "consultas"}
-                    </span>
-                  </article>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div>
-            <div className="section-heading compact">
-              <div>
-                <span className="eyebrow">Actividad</span>
-                <h2>Historial</h2>
-              </div>
-            </div>
-
-            <div className="history-list">
-              {history.length === 0 ? (
-                <div className="empty-state">No existen búsquedas todavía.</div>
-              ) : (
-                history.slice(0, 6).map((item) => (
-                  <article className="history-row" key={item.id}>
-                    <div>
-                      <strong>{item.riotId}</strong>
-                      <small>
-                        {new Date(item.searchedAt).toLocaleString("es-CL")}
-                      </small>
-                    </div>
-                    <span className={`history-status ${item.status}`}>
-                      {item.status === "found" ? "Encontrado" : "Sin resultado"}
-                    </span>
-                  </article>
-                ))
-              )}
-            </div>
-          </div>
-        </section>
-
-        {summary ? (
+        {view === "resumen" && (
           <>
-            <section className="hero-card">
+            <header className="hero-panel">
               <div>
-                <span className="eyebrow">Enfoque actual</span>
-                <h2>{summary.focus}</h2>
-                <p>{summary.coachMessage}</p>
+                <p className="brand-hero">PLAIQ</p>
+                <h1>Juega con propósito.</h1>
+                <p className="hero-copy">
+                  Coaching personalizado entre partidas: objetivos medibles,
+                  progreso real y un plan para tu rol.
+                </p>
               </div>
-              <div className="player-card">
-                <span>{summary.player.riotId}</span>
-                <small>{summary.player.region}</small>
+              <div className="hero-meta">
+                <span className="role-badge">
+                  {summary?.player.primaryRole ?? "ADC"}
+                </span>
+                <small>
+                  {activeProfile?.riotId ??
+                    summary?.player.riotId ??
+                    "Sin perfil vinculado"}
+                </small>
               </div>
-            </section>
+            </header>
 
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">Objetivos de hoy</span>
-                <h2>Entrenamiento activo</h2>
-              </div>
-              <span>
-                {completedGoals}/{summary.goals.length} completados
-              </span>
-            </div>
+            {summary ? (
+              <section className="focus-strip">
+                <div>
+                  <span className="eyebrow">Enfoque actual</span>
+                  <h2>{summary.focus}</h2>
+                  <p>{summary.coachMessage}</p>
+                </div>
+                <button
+                  className="ghost-button"
+                  type="button"
+                  onClick={() => setView("objetivos")}
+                >
+                  Ver objetivos
+                </button>
+              </section>
+            ) : (
+              <section className="loading-card">
+                {apiError
+                  ? "El coaching se cargará al conectar la API."
+                  : "Preparando tu plan de coaching…"}
+              </section>
+            )}
 
-            <section className="goal-grid">
-              {summary.goals.map((goal) => (
-                <GoalCard key={goal.id} {...goal} />
-              ))}
+            <section className="quick-grid">
+              <button
+                className="quick-card"
+                type="button"
+                onClick={() => setView("partidas")}
+              >
+                <span className="eyebrow">Siguiente paso</span>
+                <strong>Sincroniza tus partidas</strong>
+                <small>Match-v5 alimenta el diagnóstico postpartida.</small>
+              </button>
+              <button
+                className="quick-card"
+                type="button"
+                onClick={() => setView("perfiles")}
+              >
+                <span className="eyebrow">Identidad</span>
+                <strong>Vincula tu Riot ID</strong>
+                <small>
+                  {activeProfile
+                    ? activeProfile.riotId
+                    : "Ejemplo editable: Jøy Đ Bøy#NPM"}
+                </small>
+              </button>
             </section>
           </>
-        ) : (
-          <section className="loading-card">
-            {apiError ? "El coaching se cargará al conectar la API." : "Preparando tu plan de coaching…"}
-          </section>
+        )}
+
+        {view === "perfiles" && (
+          <>
+            <header className="topbar">
+              <div>
+                <span className="eyebrow">Perfiles Riot</span>
+                <h1>Identidad del jugador</h1>
+              </div>
+            </header>
+
+            <section className="lookup-panel">
+              <div className="lookup-copy">
+                <h2>Busca y guarda un jugador</h2>
+                <p>
+                  El historial queda asociado a esta instalación hasta que
+                  habilitemos cuentas por correo. El PUUID permanece solo en la
+                  API.
+                </p>
+              </div>
+
+              <form className="lookup-form" onSubmit={handleLookup}>
+                <label>
+                  Game Name
+                  <input
+                    value={gameName}
+                    onChange={(event) => setGameName(event.target.value)}
+                    maxLength={64}
+                    required
+                  />
+                </label>
+                <label className="tag-input">
+                  Tag
+                  <input
+                    value={tagLine}
+                    onChange={(event) => setTagLine(event.target.value)}
+                    maxLength={16}
+                    required
+                  />
+                </label>
+                <label className="platform-input">
+                  Región
+                  <select
+                    value={platform}
+                    onChange={(event) => setPlatform(event.target.value)}
+                  >
+                    <option value="LA2">LAS</option>
+                    <option value="LA1">LAN</option>
+                    <option value="BR1">BR</option>
+                    <option value="NA1">NA</option>
+                  </select>
+                </label>
+                <button className="primary-button" disabled={isSearching}>
+                  {isSearching ? "Buscando…" : "Buscar perfil"}
+                </button>
+              </form>
+
+              {lookupMessage && (
+                <p className="lookup-message">{lookupMessage}</p>
+              )}
+            </section>
+
+            <section className="profile-layout">
+              <div>
+                <div className="section-heading compact">
+                  <div>
+                    <span className="eyebrow">Guardados</span>
+                    <h2>Perfiles recientes</h2>
+                  </div>
+                  <span>{profiles.length} perfiles</span>
+                </div>
+
+                <div className="profile-list">
+                  {profiles.length === 0 ? (
+                    <div className="empty-state">
+                      Todavía no hay perfiles guardados.
+                    </div>
+                  ) : (
+                    profiles.slice(0, 8).map((profile) => (
+                      <button
+                        className={
+                          activeProfile?.id === profile.id
+                            ? "profile-row active"
+                            : "profile-row"
+                        }
+                        key={profile.id}
+                        type="button"
+                        onClick={() => setSelectedProfileId(profile.id)}
+                      >
+                        <span className="profile-avatar">
+                          {profile.gameName.slice(0, 1).toUpperCase()}
+                        </span>
+                        <div>
+                          <strong>{profile.riotId}</strong>
+                          <small>
+                            {profile.platform} · Nivel{" "}
+                            {profile.summonerLevel ?? "—"}
+                          </small>
+                        </div>
+                        <span className="search-count">
+                          {profile.searchCount}{" "}
+                          {profile.searchCount === 1 ? "consulta" : "consultas"}
+                        </span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <div className="section-heading compact">
+                  <div>
+                    <span className="eyebrow">Actividad</span>
+                    <h2>Historial</h2>
+                  </div>
+                </div>
+
+                <div className="history-list">
+                  {history.length === 0 ? (
+                    <div className="empty-state">
+                      No existen búsquedas todavía.
+                    </div>
+                  ) : (
+                    history.slice(0, 8).map((item) => (
+                      <article className="history-row" key={item.id}>
+                        <div>
+                          <strong>{item.riotId}</strong>
+                          <small>
+                            {new Date(item.searchedAt).toLocaleString("es-CL")}
+                          </small>
+                        </div>
+                        <span className={`history-status ${item.status}`}>
+                          {item.status === "found"
+                            ? "Encontrado"
+                            : "Sin resultado"}
+                        </span>
+                      </article>
+                    ))
+                  )}
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+
+        {view === "objetivos" && (
+          <>
+            <header className="topbar">
+              <div>
+                <span className="eyebrow">Objetivos de hoy</span>
+                <h1>Entrenamiento activo</h1>
+              </div>
+              <span>
+                {completedGoals}/{summary?.goals.length ?? 0} completados
+              </span>
+            </header>
+
+            {summary ? (
+              <section className="goal-grid">
+                {summary.goals.map((goal) => (
+                  <GoalCard key={goal.id} {...goal} />
+                ))}
+              </section>
+            ) : (
+              <section className="loading-card">
+                Conecta la API para ver tus metas de entrenamiento.
+              </section>
+            )}
+          </>
+        )}
+
+        {view === "partidas" && (
+          <>
+            <header className="topbar">
+              <div>
+                <span className="eyebrow">Historial</span>
+                <h1>Partidas sincronizadas</h1>
+              </div>
+              <button
+                className="primary-button"
+                type="button"
+                disabled={isSyncing || !activeProfile}
+                onClick={() => {
+                  void handleSyncMatches();
+                }}
+              >
+                {isSyncing ? "Sincronizando…" : "Sincronizar últimas 10"}
+              </button>
+            </header>
+
+            <section className="match-toolbar">
+              <div>
+                <span className="eyebrow">Perfil activo</span>
+                <strong>{activeProfile?.riotId ?? "Ninguno"}</strong>
+              </div>
+              {profiles.length > 1 && (
+                <label>
+                  Cambiar perfil
+                  <select
+                    value={activeProfile?.id ?? ""}
+                    onChange={(event) =>
+                      setSelectedProfileId(event.target.value)
+                    }
+                  >
+                    {profiles.map((profile) => (
+                      <option key={profile.id} value={profile.id}>
+                        {profile.riotId}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </section>
+
+            {matchMessage && <p className="lookup-message">{matchMessage}</p>}
+
+            <div className="match-list">
+              {matches.length === 0 ? (
+                <div className="empty-state">
+                  Aún no hay partidas. Sincroniza un perfil guardado para
+                  importar Match-v5.
+                </div>
+              ) : (
+                matches.map((match) => (
+                  <MatchRow key={match.id} match={match} />
+                ))
+              )}
+            </div>
+          </>
         )}
       </section>
     </main>

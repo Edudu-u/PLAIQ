@@ -5,9 +5,12 @@ Aplicación de escritorio de coaching personalizado para League of Legends.
 ## Funcionalidades actuales
 
 - Panel de objetivos de entrenamiento.
+- Navegación Resumen / Perfiles / Objetivos / Partidas.
+- Identidad visual de centro táctico.
 - Búsqueda de Riot ID mediante API-PLAIQ.
 - Perfiles guardados por instalación.
 - Historial de búsquedas.
+- Sincronización de partidas recientes (Match-v5) desde un perfil guardado.
 - Comunicación HTTP tipada con el backend.
 - Base segura de Electron con aislamiento de contexto.
 
@@ -26,6 +29,10 @@ La búsqueda inicial utiliza `Jøy Đ Bøy#NPM` como ejemplo editable y `LA2` co
 ## Persistencia
 
 El cliente crea un UUID aleatorio en el almacenamiento local. API-PLAIQ utiliza este identificador para separar perfiles e historial hasta que incorporemos autenticación por correo. El PUUID y las claves permanecen únicamente en el backend.
+
+## Requisitos
+
+La visión completa del producto está en [`docs/REQUISITOS.md`](docs/REQUISITOS.md).
 
 ## Seguridad
 

@@ -1,8 +1,10 @@
 import type {
   CoachingSummary,
   LookupRiotProfileInput,
+  MatchSummary,
   RiotProfile,
   RiotSearchHistory,
+  SyncMatchesResult,
 } from "../types/coaching";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
@@ -64,5 +66,32 @@ export function getRiotSearchHistory(
 ): Promise<RiotSearchHistory[]> {
   return request<RiotSearchHistory[]>(
     `/v1/riot/search-history?clientId=${encodeURIComponent(clientId)}&limit=20`,
+  );
+}
+
+export function syncProfileMatches(
+  clientId: string,
+  profileId: string,
+  count = 10,
+): Promise<SyncMatchesResult> {
+  return request<SyncMatchesResult>(
+    `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches/sync`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ clientId, count }),
+    },
+  );
+}
+
+export function getProfileMatches(
+  clientId: string,
+  profileId: string,
+  limit = 10,
+): Promise<MatchSummary[]> {
+  return request<MatchSummary[]>(
+    `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches?clientId=${encodeURIComponent(clientId)}&limit=${limit}`,
   );
 }

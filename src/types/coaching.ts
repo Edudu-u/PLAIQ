@@ -1,4 +1,5 @@
 export type GoalMetric = "cs_at_10" | "deaths_before_15" | "vision_score";
+export type AppView = "resumen" | "perfiles" | "objetivos" | "partidas";
 
 export interface CoachingGoal {
   id: string;
@@ -51,4 +52,34 @@ export interface LookupRiotProfileInput {
   gameName: string;
   tagLine: string;
   platform: string;
+}
+
+export interface MatchSummary {
+  id: string;
+  riotMatchId: string;
+  queueId: number;
+  queueLabel: string;
+  gameMode: string | null;
+  gameCreation: string;
+  gameDurationSeconds: number;
+  patchVersion: string | null;
+  championId: number;
+  championName: string;
+  teamPosition: string | null;
+  win: boolean;
+  kills: number;
+  deaths: number;
+  assists: number;
+  creepScore: number;
+  visionScore: number;
+  goldEarned: number;
+  totalDamageToChampions: number;
+}
+
+export interface SyncMatchesResult {
+  profileId: string;
+  requested: number;
+  imported: number;
+  skipped: number;
+  matches: MatchSummary[];
 }
