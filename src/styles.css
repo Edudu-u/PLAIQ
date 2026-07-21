@@ -460,11 +460,17 @@ h3 {
 }
 
 .profile-list,
-.history-list,
-.match-list {
+.history-list {
   min-height: 126px;
   border-radius: 16px;
   overflow: hidden;
+}
+
+.match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 126px;
 }
 
 .profile-row,
@@ -799,7 +805,9 @@ h3 {
 .history-match-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  overflow: visible;
+  padding-bottom: 4px;
 }
 
 .mastery-column {
@@ -828,30 +836,69 @@ h3 {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: rgba(7, 20, 28, 0.55);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .history-match-card.win {
-  box-shadow: inset 3px 0 0 var(--win);
+  border-left: 3px solid var(--win);
 }
 
 .history-match-card.loss {
-  box-shadow: inset 3px 0 0 var(--danger);
+  border-left: 3px solid var(--danger);
 }
 
 .history-match-summary {
   display: grid;
-  grid-template-columns: 70px minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  grid-template-columns: 48px 56px minmax(0, 1.4fr) minmax(0, 1fr) auto;
   gap: 12px;
   width: 100%;
   align-items: center;
-  min-height: 72px;
-  padding: 14px 16px;
+  min-height: 84px;
+  height: auto;
+  padding: 16px 18px;
   border: 0;
   background: transparent;
   color: inherit;
   text-align: left;
   cursor: pointer;
+  overflow: visible;
+}
+
+.history-match-summary .match-champ-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  object-fit: cover;
+  background: var(--ink-elevated);
+}
+
+.history-match-summary .match-result,
+.history-match-summary .match-core,
+.history-match-summary .match-kda {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.history-match-summary .match-result strong,
+.history-match-summary .match-core strong,
+.history-match-summary .match-kda strong {
+  line-height: 1.25;
+}
+
+.history-match-summary .match-result small,
+.history-match-summary .match-core small,
+.history-match-summary .match-kda small {
+  margin: 0;
+  line-height: 1.35;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .expand-chip {
@@ -1051,12 +1098,17 @@ h3 {
   }
 
   .history-match-summary {
-    grid-template-columns: 56px 1fr;
+    grid-template-columns: 40px 48px 1fr;
+  }
+
+  .history-match-summary .match-champ-icon {
+    width: 40px;
+    height: 40px;
   }
 
   .history-match-summary .match-kda,
   .history-match-summary .expand-chip {
-    grid-column: 2;
+    grid-column: 3;
   }
 
   .ranked-grid {

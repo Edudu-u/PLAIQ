@@ -37,6 +37,10 @@ function formatDuration(seconds: number): string {
   return `${mins}:${String(secs).padStart(2, "0")}`;
 }
 
+function championSquareUrl(championName: string): string {
+  return `https://ddragon.leagueoflegends.com/cdn/16.14.1/img/champion/${championName}.png`;
+}
+
 function formatRole(position: string | null): string {
   if (!position || position === "INVALID" || position === "NONE") {
     return "—";
@@ -256,6 +260,11 @@ function ExpandableMatchCard({
   return (
     <article className={`history-match-card ${match.win ? "win" : "loss"}`}>
       <button className="history-match-summary" type="button" onClick={() => void toggle()}>
+        <img
+          className="match-champ-icon"
+          src={championSquareUrl(match.championName)}
+          alt={match.championName}
+        />
         <div className="match-result">
           <strong>{match.win ? "V" : "D"}</strong>
           <small>{formatDuration(match.gameDurationSeconds)}</small>
