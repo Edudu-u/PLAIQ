@@ -73,6 +73,7 @@ export interface ChampionMasteryEntry {
   chestGranted: boolean;
   tokensEarned: number;
   championIconUrl: string;
+  masteryCrestUrl: string;
 }
 
 export interface PlayerProfileDetail {

@@ -42,6 +42,15 @@ function championSquareUrl(championName: string): string {
   return `https://ddragon.leagueoflegends.com/cdn/16.14.1/img/champion/${championName}.png`;
 }
 
+/** Official LoL mastery crests (client assets via CommunityDragon). */
+function masteryCrestUrl(championLevel: number): string {
+  const level = Number.isFinite(championLevel)
+    ? Math.max(0, Math.trunc(championLevel))
+    : 0;
+  const crestLevel = level >= 10 ? 10 : level >= 4 ? level : 0;
+  return `https://raw.communitydragon.org/latest/game/assets/ux/mastery/legendarychampionmastery/masterycrest_level${crestLevel}.png`;
+}
+
 function formatRole(position: string | null): string {
   if (!position || position === "INVALID" || position === "NONE") {
     return "—";
@@ -175,15 +184,34 @@ function RankedCard({ entry }: { entry: RankedQueueEntry }) {
 }
 
 function MasteryChip({ mastery }: { mastery: ChampionMasteryEntry }) {
+  const crestUrl =
+    mastery.masteryCrestUrl || masteryCrestUrl(mastery.championLevel);
+
   return (
     <article className="mastery-chip">
-      <img src={mastery.championIconUrl} alt={mastery.championName} />
-      <div>
+      <div className="mastery-champ-wrap">
+        <img
+          className="mastery-champ"
+          src={mastery.championIconUrl}
+          alt={mastery.championName}
+        />
+      </div>
+      <div className="mastery-chip-copy">
         <strong>{mastery.championName}</strong>
         <small>
           Nivel {mastery.championLevel} ·{" "}
           {mastery.championPoints.toLocaleString("es-CL")} pts
         </small>
+      </div>
+      <div className="mastery-crest-wrap">
+        <img
+          className="mastery-crest"
+          src={crestUrl}
+          alt={`Maestría nivel ${mastery.championLevel}`}
+        />
+        {mastery.championLevel > 10 ? (
+          <span className="mastery-crest-level">{mastery.championLevel}</span>
+        ) : null}
       </div>
     </article>
   );
