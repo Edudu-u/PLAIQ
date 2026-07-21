@@ -1,42 +1,83 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 
-const HERO_SPLASH =
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Mordekaiser_0.jpg";
-
-const FIGHT_FRAMES = [
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
-];
+const TEAMFIGHT_COMPILATION = [
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
+    tag: "Baron pit · engage",
+  },
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
+    tag: "Mid collapse · knock-up",
+  },
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
+    tag: "Front-to-back · ace",
+  },
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg",
+    tag: "Top side · ult chain",
+  },
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
+    tag: "Bot river · hook engage",
+  },
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+    tag: "Side flip · pick into 5",
+  },
+] as const;
 
 const ROLE_ACADEMIES = [
   {
     role: "Top",
-    blurb: "Wave control, trades y timing de TP con objetivos claros.",
-    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg",
+    blurb: "Wave control, trades y timing de TP.",
+    label: "Gameplay Top",
+    frames: [
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg",
+    ],
   },
   {
     role: "Jungle",
-    blurb: "Pathing, tempo y decisiones de objetivo sin ruido táctico.",
-    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Viego_0.jpg",
+    blurb: "Pathing, tempo y objetivos.",
+    label: "Gameplay Jungle",
+    frames: [
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Viego_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/JarvanIV_0.jpg",
+    ],
   },
   {
     role: "Mid",
-    blurb: "Prioridad de línea, roaming y win conditions medibles.",
-    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+    blurb: "Prioridad, roam y wincons.",
+    label: "Gameplay Mid",
+    frames: [
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Syndra_0.jpg",
+    ],
   },
   {
     role: "ADC",
-    blurb: "CS, posicionamiento y consistencia en mid/late game.",
-    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
+    blurb: "CS, spacing y late game.",
+    label: "Gameplay ADC",
+    frames: [
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kaisa_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ezreal_0.jpg",
+    ],
   },
   {
     role: "Support",
-    blurb: "Visión, roam windows y sinergia con tu carry.",
-    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
+    blurb: "Visión, roam y sinergia.",
+    label: "Gameplay Support",
+    frames: [
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nautilus_0.jpg",
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lulu_0.jpg",
+    ],
   },
 ] as const;
 
@@ -45,10 +86,13 @@ type LandingHomeProps = {
   onExplorePro: () => void;
 };
 
-function FightShowcase({ caption }: { caption: string }) {
+function useFrameCycle(length: number, intervalMs: number) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
+    if (length <= 1) {
+      return;
+    }
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -56,18 +100,97 @@ function FightShowcase({ caption }: { caption: string }) {
       return;
     }
     const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % FIGHT_FRAMES.length);
-    }, 4200);
+      setIndex((current) => (current + 1) % length);
+    }, intervalMs);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [intervalMs, length]);
+
+  return index;
+}
+
+function TeamfightCompilation() {
+  const index = useFrameCycle(TEAMFIGHT_COMPILATION.length, 3200);
+  const current = TEAMFIGHT_COMPILATION[index];
 
   return (
-    <div className="media-reel media-reel-fight" aria-hidden="true">
-      {FIGHT_FRAMES.map((src, frameIndex) => (
+    <div className="tf-compilation" aria-hidden="true">
+      {TEAMFIGHT_COMPILATION.map((frame, frameIndex) => (
         <div
+          key={frame.src}
+          className={`tf-frame${frameIndex === index ? " is-active" : ""}`}
+          style={{ backgroundImage: `url(${frame.src})` }}
+        />
+      ))}
+      <div className="tf-scrim" />
+      <div className="tf-hud">
+        <div className="tf-hud-top">
+          <span>Teamfight compilation</span>
+          <strong>0{index + 1} / 0{TEAMFIGHT_COMPILATION.length}</strong>
+          <span>Worlds style</span>
+        </div>
+        <div className="tf-hud-bars">
+          <span className="fight-bar ally" />
+          <span className="fight-bar enemy" />
+        </div>
+        <div className="tf-tag">{current.tag}</div>
+      </div>
+      <div className="tf-thumbs">
+        {TEAMFIGHT_COMPILATION.map((frame, frameIndex) => (
+          <span
+            key={frame.src}
+            className={`tf-thumb${frameIndex === index ? " is-active" : ""}`}
+            style={{ backgroundImage: `url(${frame.src})` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LaneGameplay({
+  role,
+  label,
+  blurb,
+  frames,
+  onSelect,
+}: {
+  role: string;
+  label: string;
+  blurb: string;
+  frames: readonly string[];
+  onSelect: () => void;
+}) {
+  const index = useFrameCycle(frames.length, 3800 + role.length * 120);
+
+  return (
+    <button className="lane-gameplay" type="button" onClick={onSelect}>
+      {frames.map((src, frameIndex) => (
+        <span
           key={src}
-          className={`media-reel-frame${frameIndex === index ? " is-active" : ""}`}
+          className={`lane-frame${frameIndex === index ? " is-active" : ""}`}
           style={{ backgroundImage: `url(${src})` }}
+        />
+      ))}
+      <span className="lane-scrim" />
+      <span className="lane-hud">
+        <span className="lane-chip">{label}</span>
+        <strong>{role}</strong>
+        <small>{blurb}</small>
+      </span>
+    </button>
+  );
+}
+
+function FightShowcase({ caption }: { caption: string }) {
+  const index = useFrameCycle(TEAMFIGHT_COMPILATION.length, 4000);
+
+  return (
+    <div className="media-reel media-reel-xl" aria-hidden="true">
+      {TEAMFIGHT_COMPILATION.map((frame, frameIndex) => (
+        <div
+          key={frame.src}
+          className={`media-reel-frame${frameIndex === index ? " is-active" : ""}`}
+          style={{ backgroundImage: `url(${frame.src})` }}
         />
       ))}
       <div className="media-reel-scrim" />
@@ -82,7 +205,7 @@ function FightShowcase({ caption }: { caption: string }) {
           <span className="fight-bar enemy" />
         </div>
         <div className="fight-feed">
-          <span>Equipo azul inicia</span>
+          <span>{TEAMFIGHT_COMPILATION[index].tag}</span>
           <span>Engage limpio · foco carry</span>
         </div>
       </div>
@@ -120,7 +243,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
           }
         }
       },
-      { threshold: 0.16, rootMargin: "0px 0px -6% 0px" },
+      { threshold: 0.14, rootMargin: "0px 0px -6% 0px" },
     );
 
     nodes.forEach((node) => observer.observe(node));
@@ -148,15 +271,11 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
   return (
     <div className="landing" ref={landingRef}>
       <header
-        className="landing-hero-pro"
+        className="landing-hero-pro landing-hero-compilation"
         ref={heroRef}
         onMouseMove={handlePointerMove}
       >
-        <div
-          className="landing-hero-art"
-          style={{ backgroundImage: `url(${HERO_SPLASH})` }}
-          aria-hidden="true"
-        />
+        <TeamfightCompilation />
         <div className="landing-hero-scrim" aria-hidden="true" />
 
         <div className="landing-hero-content">
@@ -207,29 +326,23 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
 
       <section className="landing-roles" data-reveal>
         <div className="landing-roles-head">
-          <span className="eyebrow">Sistema por rol</span>
-          <h2>Elige tu academia táctica</h2>
+          <span className="eyebrow">Gameplays por línea</span>
+          <h2>Top, Jungle, Mid, ADC y Support</h2>
           <p>
-            Cada rol tiene un camino distinto. Empieza por el tuyo y conecta
-            coaching, historial y metas en el mismo centro.
+            Paneles más grandes con rotación de jugadas por rol. Entra a tu
+            academia y conecta coaching con tu camino.
           </p>
         </div>
-        <div className="role-academy-grid">
+        <div className="lane-gameplay-grid">
           {ROLE_ACADEMIES.map((item) => (
-            <button
+            <LaneGameplay
               key={item.role}
-              className="role-academy"
-              type="button"
-              onClick={onExplorePro}
-              style={{ backgroundImage: `url(${item.splash})` }}
-            >
-              <span className="role-academy-scrim" />
-              <span className="role-academy-body">
-                <strong>{item.role}</strong>
-                <small>{item.blurb}</small>
-                <span className="role-academy-cta">Entrar a {item.role}</span>
-              </span>
-            </button>
+              role={item.role}
+              label={item.label}
+              blurb={item.blurb}
+              frames={item.frames}
+              onSelect={onExplorePro}
+            />
           ))}
         </div>
       </section>
