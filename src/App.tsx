@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   getCoachingSummary,
+  getProfileDetail,
   getProfileMatches,
   getRiotProfiles,
   getRiotSearchHistory,
@@ -11,8 +12,11 @@ import {
 import { getClientId } from "./lib/client-id";
 import type {
   AppView,
+  ChampionMasteryEntry,
   CoachingSummary,
   MatchSummary,
+  PlayerProfileDetail,
+  RankedQueueEntry,
   RiotProfile,
   RiotSearchHistory,
 } from "./types/coaching";
@@ -44,6 +48,23 @@ function formatRole(position: string | null): string {
   };
 
   return labels[position] ?? position;
+}
+
+function formatTier(entry: RankedQueueEntry): string {
+  if (entry.unranked) {
+    return "Sin clasificar";
+  }
+
+  if (entry.ratedTier) {
+    return entry.ratedTier.replaceAll("_", " ");
+  }
+
+  if (!entry.tier) {
+    return "Sin clasificar";
+  }
+
+  const tier = entry.tier.charAt(0) + entry.tier.slice(1).toLowerCase();
+  return entry.rank ? `${tier} ${entry.rank}` : tier;
 }
 
 function GoalCard({
@@ -84,6 +105,44 @@ function GoalCard({
   );
 }
 
+function RankedCard({ entry }: { entry: RankedQueueEntry }) {
+  return (
+    <article className={`ranked-card ${entry.unranked ? "unranked" : ""}`}>
+      <span className="eyebrow">{entry.queueLabel}</span>
+      <strong className="ranked-tier">{formatTier(entry)}</strong>
+      {!entry.unranked && (
+        <>
+          <p className="ranked-lp">
+            {entry.ratedRating != null
+              ? `${entry.ratedRating} rating`
+              : `${entry.leaguePoints} LP`}
+          </p>
+          <p className="ranked-wl">
+            {entry.wins}V · {entry.losses}D
+            {entry.winRate != null ? ` · ${entry.winRate}%` : ""}
+          </p>
+        </>
+      )}
+      {entry.unranked && <p className="ranked-wl">Sin partidas ranked</p>}
+    </article>
+  );
+}
+
+function MasteryChip({ mastery }: { mastery: ChampionMasteryEntry }) {
+  return (
+    <article className="mastery-chip">
+      <img src={mastery.championIconUrl} alt={mastery.championName} />
+      <div>
+        <strong>{mastery.championName}</strong>
+        <small>
+          Nivel {mastery.championLevel} ·{" "}
+          {mastery.championPoints.toLocaleString("es-CL")} pts
+        </small>
+      </div>
+    </article>
+  );
+}
+
 function MatchRow({ match }: { match: MatchSummary }) {
   return (
     <article className={`match-row ${match.win ? "win" : "loss"}`}>
@@ -116,6 +175,73 @@ function MatchRow({ match }: { match: MatchSummary }) {
   );
 }
 
+function ProfileDetailPanel({
+  detail,
+  isRefreshing,
+  onRefresh,
+}: {
+  detail: PlayerProfileDetail;
+  isRefreshing: boolean;
+  onRefresh: () => void;
+}) {
+  return (
+    <section className="profile-detail">
+      <header className="profile-hero">
+        <img
+          className="profile-icon"
+          src={detail.profileIconUrl}
+          alt={`Icono de ${detail.riotId}`}
+        />
+        <div className="profile-hero-copy">
+          <span className="eyebrow">{detail.platform}</span>
+          <h2>{detail.riotId}</h2>
+          <p>
+            Nivel {detail.summonerLevel}
+            <span className="dot-sep">·</span>
+            {detail.searchCount} consultas
+          </p>
+        </div>
+        <button
+          className="ghost-button"
+          type="button"
+          disabled={isRefreshing}
+          onClick={onRefresh}
+        >
+          {isRefreshing ? "Actualizando…" : "Actualizar desde Riot"}
+        </button>
+      </header>
+
+      <div className="section-heading compact">
+        <div>
+          <span className="eyebrow">Clasificatorias</span>
+          <h2>Ligas del jugador</h2>
+        </div>
+      </div>
+      <div className="ranked-grid">
+        {detail.rankedList.map((entry) => (
+          <RankedCard key={entry.key} entry={entry} />
+        ))}
+      </div>
+
+      <div className="section-heading compact mastery-heading">
+        <div>
+          <span className="eyebrow">Base para coaching</span>
+          <h2>Maestrías principales</h2>
+        </div>
+      </div>
+      <div className="mastery-grid">
+        {detail.topMasteries.length === 0 ? (
+          <div className="empty-state">Sin maestrías disponibles.</div>
+        ) : (
+          detail.topMasteries.slice(0, 10).map((mastery) => (
+            <MasteryChip key={mastery.championId} mastery={mastery} />
+          ))
+        )}
+      </div>
+    </section>
+  );
+}
+
 export function App() {
   const clientId = useMemo(() => getClientId(), []);
   const [view, setView] = useState<AppView>("resumen");
@@ -123,6 +249,8 @@ export function App() {
   const [profiles, setProfiles] = useState<RiotProfile[]>([]);
   const [history, setHistory] = useState<RiotSearchHistory[]>([]);
   const [matches, setMatches] = useState<MatchSummary[]>([]);
+  const [profileDetail, setProfileDetail] =
+    useState<PlayerProfileDetail | null>(null);
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
     null,
   );
@@ -134,6 +262,7 @@ export function App() {
   const [matchMessage, setMatchMessage] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isRefreshingDetail, setIsRefreshingDetail] = useState(false);
 
   const activeProfile = useMemo(
     () =>
@@ -161,6 +290,27 @@ export function App() {
     }
 
     return savedProfiles;
+  }
+
+  async function loadProfileDetail(
+    profileId: string,
+    refresh = true,
+  ): Promise<void> {
+    setIsRefreshingDetail(true);
+    try {
+      const detail = await getProfileDetail(clientId, profileId, refresh);
+      setProfileDetail(detail);
+      setSelectedProfileId(detail.id);
+      setLookupMessage(null);
+    } catch (error) {
+      setLookupMessage(
+        error instanceof Error
+          ? error.message
+          : "No fue posible cargar el detalle del perfil.",
+      );
+    } finally {
+      setIsRefreshingDetail(false);
+    }
   }
 
   useEffect(() => {
@@ -192,6 +342,30 @@ export function App() {
 
     return () => controller.abort();
   }, [clientId]);
+
+  useEffect(() => {
+    if (!activeProfile || (view !== "perfiles" && view !== "resumen")) {
+      return;
+    }
+
+    if (profileDetail?.id === activeProfile.id) {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    getProfileDetail(clientId, activeProfile.id, false)
+      .then((detail) => {
+        if (!controller.signal.aborted) {
+          setProfileDetail(detail);
+        }
+      })
+      .catch(() => {
+        // Cached detail may be empty until the first live lookup/refresh.
+      });
+
+    return () => controller.abort();
+  }, [activeProfile, clientId, profileDetail?.id, view]);
 
   useEffect(() => {
     if (!activeProfile || view !== "partidas") {
@@ -226,15 +400,17 @@ export function App() {
     setLookupMessage(null);
 
     try {
-      const profile = await lookupRiotProfile({
+      const detail = await lookupRiotProfile({
         clientId,
         gameName: gameName.trim(),
         tagLine: tagLine.trim().replace(/^#/, ""),
         platform,
       });
 
-      setLookupMessage(`${profile.riotId} fue encontrado y guardado.`);
-      setSelectedProfileId(profile.id);
+      setProfileDetail(detail);
+      setLookupMessage(`${detail.riotId} sincronizado con Riot.`);
+      setSelectedProfileId(detail.id);
+      setView("perfiles");
       setApiError(null);
       await refreshRiotData();
     } catch (error) {
@@ -335,12 +511,34 @@ export function App() {
                   {summary?.player.primaryRole ?? "ADC"}
                 </span>
                 <small>
-                  {activeProfile?.riotId ??
+                  {profileDetail?.riotId ??
+                    activeProfile?.riotId ??
                     summary?.player.riotId ??
                     "Sin perfil vinculado"}
                 </small>
               </div>
             </header>
+
+            {profileDetail && (
+              <section className="summary-profile-preview">
+                <img src={profileDetail.profileIconUrl} alt="" />
+                <div>
+                  <span className="eyebrow">Perfil activo</span>
+                  <strong>{profileDetail.riotId}</strong>
+                  <small>
+                    Nivel {profileDetail.summonerLevel} ·{" "}
+                    {formatTier(profileDetail.ranked.soloDuo)} Solo/Dúo
+                  </small>
+                </div>
+                <button
+                  className="ghost-button"
+                  type="button"
+                  onClick={() => setView("perfiles")}
+                >
+                  Ver perfil completo
+                </button>
+              </section>
+            )}
 
             {summary ? (
               <section className="focus-strip">
@@ -369,24 +567,22 @@ export function App() {
               <button
                 className="quick-card"
                 type="button"
+                onClick={() => setView("perfiles")}
+              >
+                <span className="eyebrow">Identidad</span>
+                <strong>Busca un Riot ID</strong>
+                <small>
+                  Icono, nivel, Solo/Dúo, Flex, TFT y maestrías.
+                </small>
+              </button>
+              <button
+                className="quick-card"
+                type="button"
                 onClick={() => setView("partidas")}
               >
                 <span className="eyebrow">Siguiente paso</span>
                 <strong>Sincroniza tus partidas</strong>
                 <small>Match-v5 alimenta el diagnóstico postpartida.</small>
-              </button>
-              <button
-                className="quick-card"
-                type="button"
-                onClick={() => setView("perfiles")}
-              >
-                <span className="eyebrow">Identidad</span>
-                <strong>Vincula tu Riot ID</strong>
-                <small>
-                  {activeProfile
-                    ? activeProfile.riotId
-                    : "Ejemplo editable: Jøy Đ Bøy#NPM"}
-                </small>
               </button>
             </section>
           </>
@@ -403,11 +599,10 @@ export function App() {
 
             <section className="lookup-panel">
               <div className="lookup-copy">
-                <h2>Busca y guarda un jugador</h2>
+                <h2>Busca un Riot ID</h2>
                 <p>
-                  El historial queda asociado a esta instalación hasta que
-                  habilitemos cuentas por correo. El PUUID permanece solo en la
-                  API.
+                  Consultamos Account, Summoner, League, TFT League y Champion
+                  Mastery. El PUUID permanece solo en la API.
                 </p>
               </div>
 
@@ -443,7 +638,7 @@ export function App() {
                   </select>
                 </label>
                 <button className="primary-button" disabled={isSearching}>
-                  {isSearching ? "Buscando…" : "Buscar perfil"}
+                  {isSearching ? "Consultando Riot…" : "Buscar perfil"}
                 </button>
               </form>
 
@@ -451,6 +646,16 @@ export function App() {
                 <p className="lookup-message">{lookupMessage}</p>
               )}
             </section>
+
+            {profileDetail && (
+              <ProfileDetailPanel
+                detail={profileDetail}
+                isRefreshing={isRefreshingDetail}
+                onRefresh={() => {
+                  void loadProfileDetail(profileDetail.id, true);
+                }}
+              />
+            )}
 
             <section className="profile-layout">
               <div>
@@ -477,11 +682,22 @@ export function App() {
                         }
                         key={profile.id}
                         type="button"
-                        onClick={() => setSelectedProfileId(profile.id)}
+                        onClick={() => {
+                          setSelectedProfileId(profile.id);
+                          void loadProfileDetail(profile.id, true);
+                        }}
                       >
-                        <span className="profile-avatar">
-                          {profile.gameName.slice(0, 1).toUpperCase()}
-                        </span>
+                        {profile.profileIconUrl ? (
+                          <img
+                            className="profile-avatar-img"
+                            src={profile.profileIconUrl}
+                            alt=""
+                          />
+                        ) : (
+                          <span className="profile-avatar">
+                            {profile.gameName.slice(0, 1).toUpperCase()}
+                          </span>
+                        )}
                         <div>
                           <strong>{profile.riotId}</strong>
                           <small>
@@ -583,7 +799,9 @@ export function App() {
             <section className="match-toolbar">
               <div>
                 <span className="eyebrow">Perfil activo</span>
-                <strong>{activeProfile?.riotId ?? "Ninguno"}</strong>
+                <strong>
+                  {profileDetail?.riotId ?? activeProfile?.riotId ?? "Ninguno"}
+                </strong>
               </div>
               {profiles.length > 1 && (
                 <label>

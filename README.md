@@ -8,6 +8,7 @@ Aplicación de escritorio de coaching personalizado para League of Legends.
 - Navegación Resumen / Perfiles / Objetivos / Partidas.
 - Identidad visual de centro táctico.
 - Búsqueda de Riot ID mediante API-PLAIQ.
+- Detalle de perfil tipo OP.GG: icono, nivel, ligas ranked y maestrías.
 - Perfiles guardados por instalación.
 - Historial de búsquedas.
 - Sincronización de partidas recientes (Match-v5) desde un perfil guardado.

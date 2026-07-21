@@ -30,10 +30,66 @@ export interface RiotProfile {
   tagLine: string;
   platform: string;
   profileIconId: number | null;
+  profileIconUrl?: string | null;
   summonerLevel: number | null;
   searchCount: number;
   lastSearchedAt: string;
   createdAt: string;
+}
+
+export type RankedQueueKey =
+  | "soloDuo"
+  | "flex"
+  | "tft"
+  | "tftDoubleUp"
+  | "tftHyperRoll";
+
+export interface RankedQueueEntry {
+  key: RankedQueueKey;
+  queueType: string;
+  queueLabel: string;
+  tier: string | null;
+  rank: string | null;
+  leaguePoints: number;
+  wins: number;
+  losses: number;
+  winRate: number | null;
+  hotStreak: boolean;
+  veteran: boolean;
+  freshBlood: boolean;
+  inactive: boolean;
+  ratedTier: string | null;
+  ratedRating: number | null;
+  unranked: boolean;
+}
+
+export interface ChampionMasteryEntry {
+  championId: number;
+  championName: string;
+  championLevel: number;
+  championPoints: number;
+  lastPlayTime: string | null;
+  chestGranted: boolean;
+  tokensEarned: number;
+  championIconUrl: string;
+}
+
+export interface PlayerProfileDetail {
+  id: string;
+  riotId: string;
+  gameName: string;
+  tagLine: string;
+  platform: string;
+  profileIconId: number;
+  profileIconUrl: string;
+  summonerLevel: number;
+  searchCount: number;
+  lastSearchedAt: string;
+  ranked: Record<RankedQueueKey, RankedQueueEntry>;
+  rankedList: RankedQueueEntry[];
+  topMasteries: ChampionMasteryEntry[];
+  dataDragonVersion: string;
+  refreshedAt: string;
 }
 
 export interface RiotSearchHistory {

@@ -2,6 +2,7 @@ import type {
   CoachingSummary,
   LookupRiotProfileInput,
   MatchSummary,
+  PlayerProfileDetail,
   RiotProfile,
   RiotSearchHistory,
   SyncMatchesResult,
@@ -45,8 +46,8 @@ export function getCoachingSummary(
 
 export function lookupRiotProfile(
   input: LookupRiotProfileInput,
-): Promise<RiotProfile> {
-  return request<RiotProfile>("/v1/riot/profiles/lookup", {
+): Promise<PlayerProfileDetail> {
+  return request<PlayerProfileDetail>("/v1/riot/profiles/lookup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -58,6 +59,21 @@ export function lookupRiotProfile(
 export function getRiotProfiles(clientId: string): Promise<RiotProfile[]> {
   return request<RiotProfile[]>(
     `/v1/riot/profiles?clientId=${encodeURIComponent(clientId)}`,
+  );
+}
+
+export function getProfileDetail(
+  clientId: string,
+  profileId: string,
+  refresh = true,
+): Promise<PlayerProfileDetail> {
+  const params = new URLSearchParams({
+    clientId,
+    refresh: refresh ? "true" : "false",
+  });
+
+  return request<PlayerProfileDetail>(
+    `/v1/riot/profiles/${encodeURIComponent(profileId)}/detail?${params}`,
   );
 }
 
