@@ -74,12 +74,12 @@ select {
 }
 
 .sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  align-self: stretch;
+  min-height: 100%;
+  height: auto;
   padding: 24px 14px;
   border-right: 1px solid var(--line);
-  background: rgba(5, 14, 20, 0.88);
+  background: rgba(5, 14, 20, 0.92);
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
@@ -132,10 +132,14 @@ select {
 
 nav {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
   padding: 11px 12px;
   text-align: left;
   color: var(--muted);
@@ -144,7 +148,19 @@ nav {
   background: transparent;
   cursor: pointer;
   transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nav-item svg {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .nav-item:hover {
@@ -158,10 +174,38 @@ nav {
   border-color: rgba(45, 212, 191, 0.28);
 }
 
+.nav-item.active svg {
+  color: var(--teal);
+}
+
 .connection {
   margin-top: auto;
   color: var(--muted);
   font-size: 13px;
+  padding-top: 24px;
+}
+
+.module-placeholder {
+  margin-top: 8px;
+  padding: 28px 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  backdrop-filter: blur(8px);
+  max-width: 720px;
+}
+
+.module-placeholder h1 {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 40px);
+}
+
+.module-placeholder p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 54ch;
 }
 
 .status-dot {

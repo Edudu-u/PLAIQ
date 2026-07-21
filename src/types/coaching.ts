@@ -1,5 +1,10 @@
 export type GoalMetric = "cs_at_10" | "deaths_before_15" | "vision_score";
-export type AppView = "resumen" | "perfiles" | "objetivos" | "partidas";
+export type AppView =
+  | "inicio"
+  | "perfiles"
+  | "coaching"
+  | "tierlist"
+  | "notas-parche";
 
 export interface CoachingGoal {
   id: string;

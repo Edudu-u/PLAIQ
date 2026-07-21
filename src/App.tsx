@@ -25,12 +25,69 @@ import type {
   RiotSearchHistory,
 } from "./types/coaching";
 
-const NAV_ITEMS: Array<{ id: AppView; label: string }> = [
-  { id: "resumen", label: "Resumen" },
-  { id: "perfiles", label: "Perfiles" },
-  { id: "objetivos", label: "Objetivos" },
-  { id: "partidas", label: "Partidas" },
+const NAV_ITEMS: Array<{
+  id: AppView;
+  label: string;
+  icon: "home" | "user" | "coaching" | "tierlist" | "patch";
+}> = [
+  { id: "inicio", label: "Inicio", icon: "home" },
+  { id: "perfiles", label: "Perfiles", icon: "user" },
+  { id: "coaching", label: "Coaching", icon: "coaching" },
+  { id: "tierlist", label: "Tierlist", icon: "tierlist" },
+  { id: "notas-parche", label: "Notas del Parche", icon: "patch" },
 ];
+
+function NavIcon({
+  name,
+}: {
+  name: (typeof NAV_ITEMS)[number]["icon"];
+}) {
+  if (name === "home") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" />
+      </svg>
+    );
+  }
+
+  if (name === "user") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="8" r="3.5" />
+        <path d="M5 19.5c1.8-3.2 4-4.8 7-4.8s5.2 1.6 7 4.8" />
+      </svg>
+    );
+  }
+
+  if (name === "coaching") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="7.5" />
+        <circle cx="12" cy="12" r="3" />
+        <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" />
+      </svg>
+    );
+  }
+
+  if (name === "tierlist") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 7h14" />
+        <path d="M5 12h10" />
+        <path d="M5 17h6" />
+        <path d="M17 15.5 19.5 12 22 15.5" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 3.5h8l3 3V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
+      <path d="M15 3.5V7h3.5" />
+      <path d="M9 12h6M9 16h6" />
+    </svg>
+  );
+}
 
 function formatDuration(seconds: number): string {
   const mins = Math.floor(seconds / 60);
@@ -467,7 +524,7 @@ function ProfileDetailPanel({
 
 export function App() {
   const clientId = useMemo(() => getClientId(), []);
-  const [view, setView] = useState<AppView>("resumen");
+  const [view, setView] = useState<AppView>("inicio");
   const [summary, setSummary] = useState<CoachingSummary | null>(null);
   const [profiles, setProfiles] = useState<RiotProfile[]>([]);
   const [history, setHistory] = useState<RiotSearchHistory[]>([]);
@@ -482,9 +539,7 @@ export function App() {
   const [platform, setPlatform] = useState("LA2");
   const [apiError, setApiError] = useState<string | null>(null);
   const [lookupMessage, setLookupMessage] = useState<string | null>(null);
-  const [matchMessage, setMatchMessage] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
   const [isRefreshingDetail, setIsRefreshingDetail] = useState(false);
 
   const activeProfile = useMemo(
@@ -592,7 +647,7 @@ export function App() {
   }, [clientId]);
 
   useEffect(() => {
-    if (!activeProfile || (view !== "perfiles" && view !== "resumen")) {
+    if (!activeProfile || (view !== "perfiles" && view !== "inicio")) {
       return;
     }
 
@@ -614,33 +669,6 @@ export function App() {
 
     return () => controller.abort();
   }, [activeProfile, clientId, profileDetail?.id, view]);
-
-  useEffect(() => {
-    if (!activeProfile || view !== "partidas") {
-      return;
-    }
-
-    const controller = new AbortController();
-
-    getProfileMatches(clientId, activeProfile.id, MATCH_HISTORY_LIMIT)
-      .then((list) => {
-        if (!controller.signal.aborted) {
-          setMatches(list);
-          setMatchMessage(null);
-        }
-      })
-      .catch((error: unknown) => {
-        if (!controller.signal.aborted) {
-          setMatchMessage(
-            error instanceof Error
-              ? error.message
-              : "No fue posible cargar las partidas.",
-          );
-        }
-      });
-
-    return () => controller.abort();
-  }, [activeProfile, clientId, view]);
 
   async function handleLookup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -682,37 +710,6 @@ export function App() {
     }
   }
 
-  async function handleSyncMatches() {
-    if (!activeProfile) {
-      setMatchMessage("Busca y guarda un perfil antes de sincronizar partidas.");
-      return;
-    }
-
-    setIsSyncing(true);
-    setMatchMessage(null);
-
-    try {
-      const result = await syncProfileMatches(
-        clientId,
-        activeProfile.id,
-        MATCH_HISTORY_LIMIT,
-      );
-      setMatches(result.matches);
-      setMatchMessage(
-        `Importadas ${result.imported} · omitidas ${result.skipped}.`,
-      );
-      setApiError(null);
-    } catch (error) {
-      setMatchMessage(
-        error instanceof Error
-          ? error.message
-          : "No fue posible sincronizar las partidas.",
-      );
-    } finally {
-      setIsSyncing(false);
-    }
-  }
-
   const completedGoals = useMemo(
     () => summary?.goals.filter((goal) => goal.completed).length ?? 0,
     [summary],
@@ -739,7 +736,8 @@ export function App() {
               onClick={() => setView(item.id)}
               type="button"
             >
-              {item.label}
+              <NavIcon name={item.icon} />
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>
@@ -757,7 +755,7 @@ export function App() {
           </div>
         )}
 
-        {view === "resumen" && (
+        {view === "inicio" && (
           <>
             <header className="hero-panel">
               <div>
@@ -812,9 +810,9 @@ export function App() {
                 <button
                   className="ghost-button"
                   type="button"
-                  onClick={() => setView("objetivos")}
+                  onClick={() => setView("coaching")}
                 >
-                  Ver objetivos
+                  Ver coaching
                 </button>
               </section>
             ) : (
@@ -840,11 +838,11 @@ export function App() {
               <button
                 className="quick-card"
                 type="button"
-                onClick={() => setView("partidas")}
+                onClick={() => setView("coaching")}
               >
-                <span className="eyebrow">Siguiente paso</span>
-                <strong>Sincroniza tus partidas</strong>
-                <small>Match-v5 alimenta el diagnóstico postpartida.</small>
+                <span className="eyebrow">Plan</span>
+                <strong>Abre tu coaching</strong>
+                <small>Objetivos medibles y foco entre partidas.</small>
               </button>
             </section>
           </>
@@ -1015,11 +1013,11 @@ export function App() {
           </>
         )}
 
-        {view === "objetivos" && (
+        {view === "coaching" && (
           <>
             <header className="topbar">
               <div>
-                <span className="eyebrow">Objetivos de hoy</span>
+                <span className="eyebrow">Coaching</span>
                 <h1>Entrenamiento activo</h1>
               </div>
               <span>
@@ -1041,73 +1039,26 @@ export function App() {
           </>
         )}
 
-        {view === "partidas" && (
-          <>
-            <header className="topbar">
-              <div>
-                <span className="eyebrow">Historial</span>
-                <h1>Partidas sincronizadas</h1>
-              </div>
-              <button
-                className="primary-button"
-                type="button"
-                disabled={isSyncing || !activeProfile}
-                onClick={() => {
-                  void handleSyncMatches();
-                }}
-              >
-                {isSyncing
-                  ? "Sincronizando…"
-                  : `Sincronizar últimas ${MATCH_HISTORY_LIMIT}`}
-              </button>
-            </header>
+        {view === "tierlist" && (
+          <section className="module-placeholder">
+            <span className="eyebrow">Meta</span>
+            <h1>Tierlist</h1>
+            <p>
+              Ranking de campeones por rol y parche para orientar picks y bans.
+              Este módulo se conectará a datos vivos más adelante.
+            </p>
+          </section>
+        )}
 
-            <section className="match-toolbar">
-              <div>
-                <span className="eyebrow">Perfil activo</span>
-                <strong>
-                  {profileDetail?.riotId ?? activeProfile?.riotId ?? "Ninguno"}
-                </strong>
-              </div>
-              {profiles.length > 1 && (
-                <label>
-                  Cambiar perfil
-                  <select
-                    value={activeProfile?.id ?? ""}
-                    onChange={(event) =>
-                      setSelectedProfileId(event.target.value)
-                    }
-                  >
-                    {profiles.map((profile) => (
-                      <option key={profile.id} value={profile.id}>
-                        {profile.riotId}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-            </section>
-
-            {matchMessage && <p className="lookup-message">{matchMessage}</p>}
-
-            <div className="match-list">
-              {matches.length === 0 ? (
-                <div className="empty-state">
-                  Aún no hay partidas. Sincroniza un perfil guardado para
-                  importar Match-v5.
-                </div>
-              ) : (
-                matches.map((match) => (
-                  <ExpandableMatchCard
-                    key={match.id}
-                    match={match}
-                    profileId={activeProfile?.id ?? match.id}
-                    clientId={clientId}
-                  />
-                ))
-              )}
-            </div>
-          </>
+        {view === "notas-parche" && (
+          <section className="module-placeholder">
+            <span className="eyebrow">Actualizaciones</span>
+            <h1>Notas del Parche</h1>
+            <p>
+              Resumen táctico de cambios relevantes para tu rol, campeones y
+              objetivos de coaching. Próximamente.
+            </p>
+          </section>
         )}
       </section>
     </main>
