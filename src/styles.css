@@ -300,23 +300,113 @@ h3 {
 .landing {
   display: flex;
   flex-direction: column;
-  gap: 56px;
-  padding-bottom: 24px;
+  gap: 64px;
+  padding-bottom: 32px;
 }
 
-.landing-hero {
+.landing-stage {
+  --spot-x: 72%;
+  --spot-y: 38%;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: min(88vh, 760px);
+  margin: -32px clamp(-20px, -3.2vw, -48px) 0;
+  padding: 56px clamp(20px, 3.2vw, 48px) 48px;
+  border-bottom: 1px solid rgba(125, 211, 196, 0.12);
+}
+
+.landing-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #071018;
+}
+
+.landing-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  filter: saturate(0.7) contrast(1.05) brightness(0.45);
+  transform: scale(1.08);
+  transition: opacity 900ms ease;
+}
+
+.landing-video.is-ready {
+  opacity: 0.35;
+}
+
+.landing-splash {
+  position: absolute;
+  inset: -4%;
+  background-position: center 22%;
+  background-size: cover;
+  opacity: 0;
+  transform: scale(1.08);
+  filter: saturate(0.85) brightness(0.55);
+  transition: opacity 1.4s ease;
+  animation: none;
+}
+
+.landing-splash.is-active {
+  opacity: 0.55;
+  animation: splashDrift 18s ease-in-out infinite alternate;
+}
+
+.landing-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(7, 16, 24, 0.92) 0%, rgba(7, 16, 24, 0.72) 42%, rgba(7, 16, 24, 0.45) 100%),
+    linear-gradient(180deg, rgba(7, 16, 24, 0.35) 0%, rgba(7, 16, 24, 0.78) 78%, #071018 100%),
+    radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(45, 212, 191, 0.18), transparent 34%);
+}
+
+.landing-spot {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    420px circle at var(--spot-x) var(--spot-y),
+    rgba(240, 180, 41, 0.12),
+    transparent 55%
+  );
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  transition: background 120ms linear;
+}
+
+.landing-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.05) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.04) 0 1px, transparent 1.5px);
+  background-size: 3px 3px, 4px 4px;
+  animation: grainShift 8s steps(6) infinite;
+}
+
+.landing-stage-inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.85fr);
   gap: 28px;
   align-items: center;
-  min-height: min(72vh, 640px);
-  padding: 28px 0 12px;
+  min-height: min(68vh, 560px);
 }
 
 .landing-hero-copy h1 {
   max-width: 11ch;
   margin-bottom: 0;
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
 }
 
 .landing-cta {
@@ -334,6 +424,8 @@ h3 {
   place-items: center;
   min-height: 280px;
   isolation: isolate;
+  transform: perspective(900px) rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
+  transition: transform 160ms ease-out;
 }
 
 .landing-radar {
@@ -372,6 +464,7 @@ h3 {
   background: linear-gradient(160deg, rgba(10, 28, 34, 0.92), rgba(7, 16, 24, 0.75));
   box-shadow: 0 0 40px rgba(45, 212, 191, 0.12);
   animation: markPulse 3.6s ease-in-out infinite;
+  backdrop-filter: blur(8px);
 }
 
 .landing-radar-core span {
@@ -390,7 +483,36 @@ h3 {
 
 .landing-section {
   max-width: 780px;
-  animation: fadeRise 560ms ease both;
+}
+
+.landing-section[data-reveal],
+.plan-panel[data-reveal],
+.landing-offer-list li {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 650ms ease,
+    transform 650ms ease;
+}
+
+.landing-section[data-reveal].is-visible,
+.landing-section.is-visible .landing-offer-list li,
+.plan-panel.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.landing-section.is-visible .landing-offer-list li:nth-child(2) {
+  transition-delay: 70ms;
+}
+.landing-section.is-visible .landing-offer-list li:nth-child(3) {
+  transition-delay: 140ms;
+}
+.landing-section.is-visible .landing-offer-list li:nth-child(4) {
+  transition-delay: 210ms;
+}
+.landing-section.is-visible .landing-offer-list li:nth-child(5) {
+  transition-delay: 280ms;
 }
 
 .landing-section h2 {
@@ -451,6 +573,16 @@ h3 {
   border: 1px solid var(--line);
   border-radius: 18px;
   background: rgba(7, 20, 28, 0.55);
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.plan-panel:hover {
+  transform: translateY(-4px);
+  border-color: rgba(45, 212, 191, 0.32);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
 }
 
 .plan-panel-pro {
@@ -459,6 +591,13 @@ h3 {
     linear-gradient(160deg, rgba(45, 212, 191, 0.1), transparent 42%),
     rgba(7, 20, 28, 0.72);
   box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.08);
+}
+
+.plan-panel-pro:hover {
+  border-color: rgba(45, 212, 191, 0.55);
+  box-shadow:
+    inset 0 0 0 1px rgba(45, 212, 191, 0.12),
+    0 18px 44px rgba(0, 0, 0, 0.32);
 }
 
 .plan-panel h3 {
@@ -525,6 +664,48 @@ h3 {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes splashDrift {
+  from {
+    transform: scale(1.08) translate3d(-1.5%, 0, 0);
+  }
+  to {
+    transform: scale(1.16) translate3d(1.5%, -1.2%, 0);
+  }
+}
+
+@keyframes grainShift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-2%, 1%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-video,
+  .landing-splash,
+  .landing-radar,
+  .landing-radar-core,
+  .landing-grain,
+  .landing-hero-visual {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .landing-splash.is-active {
+    opacity: 0.5;
+  }
+
+  .landing-section[data-reveal],
+  .landing-offer-list li {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -1432,7 +1613,7 @@ h3 {
   .mastery-grid,
   .profile-split,
   .match-teams,
-  .landing-hero,
+  .landing-stage-inner,
   .plan-compare,
   .landing-offer-list li {
     grid-template-columns: 1fr;
@@ -1487,13 +1668,19 @@ h3 {
   .hero-panel,
   .topbar,
   .focus-strip,
-  .match-toolbar,
-  .landing-hero {
+  .match-toolbar {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .landing-hero {
+  .landing-stage {
+    margin-left: -20px;
+    margin-right: -20px;
+    min-height: 0;
+    padding-top: 36px;
+  }
+
+  .landing-stage-inner {
     min-height: 0;
   }
 
