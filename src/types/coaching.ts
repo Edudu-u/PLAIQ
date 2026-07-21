@@ -131,6 +131,47 @@ export interface MatchSummary {
   visionScore: number;
   goldEarned: number;
   totalDamageToChampions: number;
+  mvpRiotId?: string | null;
+  mvpChampionName?: string | null;
+}
+
+export interface MatchPlayerSummary {
+  puuid: string;
+  riotId: string;
+  teamId: number;
+  championId: number;
+  championName: string;
+  championIconUrl: string;
+  teamPosition: string | null;
+  win: boolean;
+  kills: number;
+  deaths: number;
+  assists: number;
+  creepScore: number;
+  visionScore: number;
+  goldEarned: number;
+  totalDamageToChampions: number;
+  isMvp: boolean;
+  isTrackedPlayer: boolean;
+  rankLabel: string | null;
+}
+
+export interface MatchDetail {
+  id: string;
+  riotMatchId: string;
+  queueId: number;
+  queueLabel: string;
+  gameMode: string | null;
+  gameCreation: string;
+  gameDurationSeconds: number;
+  patchVersion: string | null;
+  win: boolean;
+  championName: string;
+  mvpRiotId: string | null;
+  mvpChampionName: string | null;
+  allyTeam: MatchPlayerSummary[];
+  enemyTeam: MatchPlayerSummary[];
+  players: MatchPlayerSummary[];
 }
 
 export interface SyncMatchesResult {

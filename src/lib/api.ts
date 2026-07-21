@@ -1,6 +1,7 @@
 import type {
   CoachingSummary,
   LookupRiotProfileInput,
+  MatchDetail,
   MatchSummary,
   PlayerProfileDetail,
   RiotProfile,
@@ -109,5 +110,15 @@ export function getProfileMatches(
 ): Promise<MatchSummary[]> {
   return request<MatchSummary[]>(
     `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches?clientId=${encodeURIComponent(clientId)}&limit=${limit}`,
+  );
+}
+
+export function getMatchDetail(
+  clientId: string,
+  profileId: string,
+  matchId: string,
+): Promise<MatchDetail> {
+  return request<MatchDetail>(
+    `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches/${encodeURIComponent(matchId)}?clientId=${encodeURIComponent(clientId)}`,
   );
 }

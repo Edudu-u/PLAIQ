@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   getCoachingSummary,
+  getMatchDetail,
   getProfileDetail,
   getProfileMatches,
   getRiotProfiles,
@@ -14,6 +15,8 @@ import type {
   AppView,
   ChampionMasteryEntry,
   CoachingSummary,
+  MatchDetail,
+  MatchPlayerSummary,
   MatchSummary,
   PlayerProfileDetail,
   RankedQueueEntry,
@@ -181,44 +184,158 @@ function MasteryChip({ mastery }: { mastery: ChampionMasteryEntry }) {
   );
 }
 
-function MatchRow({ match }: { match: MatchSummary }) {
+function PlayerLine({ player }: { player: MatchPlayerSummary }) {
   return (
-    <article className={`match-row ${match.win ? "win" : "loss"}`}>
-      <div className="match-result">
-        <strong>{match.win ? "V" : "D"}</strong>
-        <small>{formatDuration(match.gameDurationSeconds)}</small>
-      </div>
-      <div className="match-core">
-        <strong>{match.championName}</strong>
-        <small>
-          {match.queueLabel} · {formatRole(match.teamPosition)}
-          {match.patchVersion ? ` · ${match.patchVersion}` : ""}
-        </small>
-      </div>
-      <div className="match-kda">
+    <div
+      className={`match-player-line ${player.isTrackedPlayer ? "tracked" : ""} ${player.isMvp ? "mvp" : ""}`}
+    >
+      <img src={player.championIconUrl} alt={player.championName} />
+      <div className="match-player-id">
         <strong>
-          {match.kills}/{match.deaths}/{match.assists}
+          {player.riotId}
+          {player.isMvp ? " · MVP" : ""}
         </strong>
         <small>
-          {match.creepScore} CS · {match.visionScore} visión
+          {player.championName}
+          {player.teamPosition ? ` · ${formatRole(player.teamPosition)}` : ""}
+          {" · "}
+          {player.rankLabel ?? "Liga N/D"}
         </small>
       </div>
-      <time dateTime={match.gameCreation}>
-        {new Date(match.gameCreation).toLocaleString("es-CL", {
-          dateStyle: "short",
-          timeStyle: "short",
-        })}
-      </time>
+      <div className="match-player-stats">
+        <strong>
+          {player.kills}/{player.deaths}/{player.assists}
+        </strong>
+        <small>
+          {player.creepScore} CS · {player.totalDamageToChampions.toLocaleString("es-CL")} dmg
+        </small>
+      </div>
+    </div>
+  );
+}
+
+function ExpandableMatchCard({
+  match,
+  profileId,
+  clientId,
+}: {
+  match: MatchSummary;
+  profileId: string;
+  clientId: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [detail, setDetail] = useState<MatchDetail | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function toggle() {
+    const next = !open;
+    setOpen(next);
+
+    if (!next || detail) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const payload = await getMatchDetail(clientId, profileId, match.id);
+      setDetail(payload);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No fue posible cargar el detalle.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <article className={`history-match-card ${match.win ? "win" : "loss"}`}>
+      <button className="history-match-summary" type="button" onClick={() => void toggle()}>
+        <div className="match-result">
+          <strong>{match.win ? "V" : "D"}</strong>
+          <small>{formatDuration(match.gameDurationSeconds)}</small>
+        </div>
+        <div className="match-core">
+          <strong>{match.championName}</strong>
+          <small>
+            {match.queueLabel} · {formatRole(match.teamPosition)}
+            {match.mvpChampionName
+              ? ` · MVP ${match.mvpChampionName}`
+              : ""}
+          </small>
+        </div>
+        <div className="match-kda">
+          <strong>
+            {match.kills}/{match.deaths}/{match.assists}
+          </strong>
+          <small>
+            {match.creepScore} CS · {match.visionScore} visión
+          </small>
+        </div>
+        <span className="expand-chip">{open ? "Ocultar" : "Detalle"}</span>
+      </button>
+
+      {open && (
+        <div className="history-match-detail">
+          {loading && <p className="lookup-message">Cargando detalle…</p>}
+          {error && <p className="lookup-message">{error}</p>}
+          {detail && (
+            <>
+              <div className="match-detail-meta">
+                <span>
+                  Duración {formatDuration(detail.gameDurationSeconds)}
+                </span>
+                <span>
+                  MVP{" "}
+                  {detail.mvpRiotId
+                    ? `${detail.mvpRiotId} (${detail.mvpChampionName})`
+                    : "N/D"}
+                </span>
+                <span>
+                  {new Date(detail.gameCreation).toLocaleString("es-CL")}
+                </span>
+              </div>
+              <div className="match-teams">
+                <div>
+                  <span className="eyebrow">Tu equipo</span>
+                  {detail.allyTeam.map((player) => (
+                    <PlayerLine key={player.puuid} player={player} />
+                  ))}
+                </div>
+                <div>
+                  <span className="eyebrow">Equipo rival</span>
+                  {detail.enemyTeam.map((player) => (
+                    <PlayerLine key={player.puuid} player={player} />
+                  ))}
+                </div>
+              </div>
+              <p className="match-detail-note">
+                Resumen rápido. Más adelante podrás abrir el análisis completo de
+                la partida.
+              </p>
+            </>
+          )}
+        </div>
+      )}
     </article>
   );
 }
 
 function ProfileDetailPanel({
   detail,
+  matches,
+  clientId,
   isRefreshing,
   onRefresh,
 }: {
   detail: PlayerProfileDetail;
+  matches: MatchSummary[];
+  clientId: string;
   isRefreshing: boolean;
   onRefresh: () => void;
 }) {
@@ -245,7 +362,7 @@ function ProfileDetailPanel({
           disabled={isRefreshing}
           onClick={onRefresh}
         >
-          {isRefreshing ? "Actualizando…" : "Actualizar desde Riot"}
+          {isRefreshing ? "Actualizando…" : "Actualizar"}
         </button>
       </header>
 
@@ -261,20 +378,50 @@ function ProfileDetailPanel({
         ))}
       </div>
 
-      <div className="section-heading compact mastery-heading">
-        <div>
-          <span className="eyebrow">Base para coaching</span>
-          <h2>Maestrías principales</h2>
-        </div>
-      </div>
-      <div className="mastery-grid">
-        {detail.topMasteries.length === 0 ? (
-          <div className="empty-state">Sin maestrías disponibles.</div>
-        ) : (
-          detail.topMasteries.slice(0, 10).map((mastery) => (
-            <MasteryChip key={mastery.championId} mastery={mastery} />
-          ))
-        )}
+      <div className="profile-split">
+        <section className="profile-split-main">
+          <div className="section-heading compact">
+            <div>
+              <span className="eyebrow">Historial</span>
+              <h2>Partidas recientes</h2>
+            </div>
+            <span>{matches.length} partidas</span>
+          </div>
+          <div className="history-match-list">
+            {matches.length === 0 ? (
+              <div className="empty-state">
+                Aún no hay partidas sincronizadas. Pulsa Actualizar.
+              </div>
+            ) : (
+              matches.map((match) => (
+                <ExpandableMatchCard
+                  key={match.id}
+                  match={match}
+                  profileId={detail.id}
+                  clientId={clientId}
+                />
+              ))
+            )}
+          </div>
+        </section>
+
+        <aside className="profile-split-side">
+          <div className="section-heading compact">
+            <div>
+              <span className="eyebrow">Base para coaching</span>
+              <h2>Maestrías</h2>
+            </div>
+          </div>
+          <div className="mastery-column">
+            {detail.topMasteries.length === 0 ? (
+              <div className="empty-state">Sin maestrías disponibles.</div>
+            ) : (
+              detail.topMasteries.map((mastery) => (
+                <MasteryChip key={mastery.championId} mastery={mastery} />
+              ))
+            )}
+          </div>
+        </aside>
       </div>
     </section>
   );
@@ -340,6 +487,19 @@ export function App() {
       setProfileDetail(detail);
       setSelectedProfileId(detail.id);
       setLookupMessage(null);
+
+      if (refresh) {
+        try {
+          const synced = await syncProfileMatches(clientId, detail.id, 10);
+          setMatches(synced.matches);
+        } catch {
+          const listed = await getProfileMatches(clientId, detail.id, 10);
+          setMatches(listed);
+        }
+      } else {
+        const listed = await getProfileMatches(clientId, detail.id, 10);
+        setMatches(listed);
+      }
     } catch (error) {
       setLookupMessage(
         error instanceof Error
@@ -451,6 +611,12 @@ export function App() {
       setView("perfiles");
       setApiError(null);
       await refreshRiotData();
+      try {
+        const synced = await syncProfileMatches(clientId, detail.id, 10);
+        setMatches(synced.matches);
+      } catch {
+        setMatches([]);
+      }
     } catch (error) {
       setLookupMessage(
         error instanceof Error
@@ -688,6 +854,8 @@ export function App() {
             {profileDetail && (
               <ProfileDetailPanel
                 detail={profileDetail}
+                matches={matches}
+                clientId={clientId}
                 isRefreshing={isRefreshingDetail}
                 onRefresh={() => {
                   void loadProfileDetail(profileDetail.id, true);
@@ -870,7 +1038,12 @@ export function App() {
                 </div>
               ) : (
                 matches.map((match) => (
-                  <MatchRow key={match.id} match={match} />
+                  <ExpandableMatchCard
+                    key={match.id}
+                    match={match}
+                    profileId={activeProfile?.id ?? match.id}
+                    clientId={clientId}
+                  />
                 ))
               )}
             </div>

@@ -783,6 +783,33 @@ h3 {
   gap: 10px;
 }
 
+.profile-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(260px, 0.85fr);
+  gap: 18px;
+  margin-top: 28px;
+  align-items: start;
+}
+
+.profile-split-main,
+.profile-split-side {
+  min-width: 0;
+}
+
+.history-match-list,
+.mastery-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 560px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.mastery-column {
+  max-height: 560px;
+}
+
 .mastery-chip {
   display: flex;
   align-items: center;
@@ -793,11 +820,111 @@ h3 {
   background: rgba(7, 20, 28, 0.55);
 }
 
-.mastery-chip img {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+.history-match-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(7, 20, 28, 0.55);
+  overflow: hidden;
+}
+
+.history-match-card.win {
+  box-shadow: inset 3px 0 0 var(--win);
+}
+
+.history-match-card.loss {
+  box-shadow: inset 3px 0 0 var(--danger);
+}
+
+.history-match-summary {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  width: 100%;
+  align-items: center;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.expand-chip {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--teal);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.history-match-detail {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--line);
+}
+
+.match-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.match-teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.match-player-line {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(125, 211, 196, 0.08);
+}
+
+.match-player-line:last-child {
+  border-bottom: 0;
+}
+
+.match-player-line img {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   object-fit: cover;
+}
+
+.match-player-line.tracked {
+  background: rgba(45, 212, 191, 0.06);
+  border-radius: 8px;
+  padding-inline: 6px;
+}
+
+.match-player-line.mvp strong {
+  color: var(--amber);
+}
+
+.match-player-id strong,
+.match-player-stats strong {
+  display: block;
+  font-size: 13px;
+}
+
+.match-player-id small,
+.match-player-stats small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.match-detail-note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .mastery-chip strong {
@@ -809,6 +936,13 @@ h3 {
 .mastery-chip small {
   color: var(--muted);
   font-size: 11px;
+}
+
+.mastery-chip img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
 .summary-profile-preview {
@@ -905,8 +1039,19 @@ h3 {
   .profile-layout,
   .quick-grid,
   .goal-grid,
-  .mastery-grid {
+  .mastery-grid,
+  .profile-split,
+  .match-teams {
     grid-template-columns: 1fr;
+  }
+
+  .history-match-summary {
+    grid-template-columns: 56px 1fr;
+  }
+
+  .history-match-summary .match-kda,
+  .history-match-summary .expand-chip {
+    grid-column: 2;
   }
 
   .ranked-grid {
