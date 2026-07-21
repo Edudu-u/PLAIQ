@@ -61,6 +61,7 @@ export interface RankedQueueEntry {
   ratedTier: string | null;
   ratedRating: number | null;
   unranked: boolean;
+  emblemUrl: string;
 }
 
 export interface ChampionMasteryEntry {

@@ -105,13 +105,51 @@ function GoalCard({
   );
 }
 
+function rankEmblemUrl(entry: RankedQueueEntry): string {
+  if (entry.emblemUrl) {
+    return entry.emblemUrl;
+  }
+
+  const tier = (entry.tier ?? "unranked").toLowerCase();
+  const known = new Set([
+    "iron",
+    "bronze",
+    "silver",
+    "gold",
+    "platinum",
+    "emerald",
+    "diamond",
+    "master",
+    "grandmaster",
+    "challenger",
+  ]);
+
+  if (!known.has(tier)) {
+    return "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/unranked.png";
+  }
+
+  return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblem/emblem-${tier}.png`;
+}
+
 function RankedCard({ entry }: { entry: RankedQueueEntry }) {
+  const emblem = rankEmblemUrl(entry);
+  const tierLabel = formatTier(entry);
+
   return (
     <article className={`ranked-card ${entry.unranked ? "unranked" : ""}`}>
       <span className="eyebrow">{entry.queueLabel}</span>
-      <strong className="ranked-tier">{formatTier(entry)}</strong>
+      <img
+        className="ranked-emblem"
+        src={emblem}
+        alt={tierLabel}
+        title={tierLabel}
+      />
       {!entry.unranked && (
         <>
+          <p className="ranked-division">
+            {entry.rank && !entry.ratedTier ? entry.rank : null}
+            {entry.ratedTier ? formatTier(entry) : null}
+          </p>
           <p className="ranked-lp">
             {entry.ratedRating != null
               ? `${entry.ratedRating} rating`
