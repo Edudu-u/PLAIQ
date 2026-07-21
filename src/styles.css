@@ -300,113 +300,63 @@ h3 {
 .landing {
   display: flex;
   flex-direction: column;
-  gap: 64px;
-  padding-bottom: 32px;
+  gap: 72px;
+  padding-bottom: 40px;
 }
 
-.landing-stage {
-  --spot-x: 72%;
-  --spot-y: 38%;
-  --tilt-x: 0deg;
-  --tilt-y: 0deg;
+.landing-hero-pro {
+  --spot-x: 70%;
+  --spot-y: 40%;
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: min(88vh, 760px);
+  min-height: min(78vh, 700px);
   margin: -32px clamp(-20px, -3.2vw, -48px) 0;
-  padding: 56px clamp(20px, 3.2vw, 48px) 48px;
-  border-bottom: 1px solid rgba(125, 211, 196, 0.12);
+  padding: 72px clamp(20px, 3.2vw, 48px) 56px;
+  display: grid;
+  align-items: end;
 }
 
-.landing-media {
+.landing-hero-art {
   position: absolute;
   inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  background: #071018;
-}
-
-.landing-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  filter: saturate(0.7) contrast(1.05) brightness(0.45);
-  transform: scale(1.08);
-  transition: opacity 900ms ease;
-}
-
-.landing-video.is-ready {
-  opacity: 0.35;
-}
-
-.landing-splash {
-  position: absolute;
-  inset: -4%;
-  background-position: center 22%;
+  background-position: 68% center;
   background-size: cover;
-  opacity: 0;
-  transform: scale(1.08);
-  filter: saturate(0.85) brightness(0.55);
-  transition: opacity 1.4s ease;
-  animation: none;
+  transform: scale(1.06);
+  filter: saturate(0.9) brightness(0.55);
+  animation: splashDrift 22s ease-in-out infinite alternate;
 }
 
-.landing-splash.is-active {
-  opacity: 0.55;
-  animation: splashDrift 18s ease-in-out infinite alternate;
-}
-
-.landing-scrim {
+.landing-hero-scrim {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(7, 16, 24, 0.92) 0%, rgba(7, 16, 24, 0.72) 42%, rgba(7, 16, 24, 0.45) 100%),
-    linear-gradient(180deg, rgba(7, 16, 24, 0.35) 0%, rgba(7, 16, 24, 0.78) 78%, #071018 100%),
-    radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(45, 212, 191, 0.18), transparent 34%);
+    linear-gradient(100deg, rgba(7, 16, 24, 0.94) 0%, rgba(7, 16, 24, 0.72) 46%, rgba(7, 16, 24, 0.28) 100%),
+    linear-gradient(180deg, rgba(7, 16, 24, 0.2), rgba(7, 16, 24, 0.88)),
+    radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(45, 212, 191, 0.2), transparent 36%);
 }
 
-.landing-spot {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    420px circle at var(--spot-x) var(--spot-y),
-    rgba(240, 180, 41, 0.12),
-    transparent 55%
-  );
-  mix-blend-mode: soft-light;
-  pointer-events: none;
-  transition: background 120ms linear;
-}
-
-.landing-grain {
-  position: absolute;
-  inset: 0;
-  opacity: 0.18;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.05) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.04) 0 1px, transparent 1.5px);
-  background-size: 3px 3px, 4px 4px;
-  animation: grainShift 8s steps(6) infinite;
-}
-
-.landing-stage-inner {
+.landing-hero-content {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.85fr);
-  gap: 28px;
-  align-items: center;
-  min-height: min(68vh, 560px);
+  max-width: 720px;
 }
 
-.landing-hero-copy h1 {
-  max-width: 11ch;
-  margin-bottom: 0;
-  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+.landing-hero-content h1 {
+  max-width: 14ch;
+  margin: 0;
+  font-size: clamp(34px, 5.4vw, 64px);
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.landing-hero-content > p {
+  max-width: 38rem;
+  margin: 18px 0 0;
+  color: #c5d7d3;
+  font-size: 1.08rem;
+  line-height: 1.65;
 }
 
 .landing-cta {
@@ -414,105 +364,215 @@ h3 {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 28px;
-  animation: fadeRise 700ms ease both;
-  animation-delay: 120ms;
 }
 
-.landing-hero-visual {
-  position: relative;
+.landing-band,
+.landing-band-reverse {
   display: grid;
-  place-items: center;
-  min-height: 280px;
-  isolation: isolate;
-  transform: perspective(900px) rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
-  transition: transform 160ms ease-out;
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+  gap: 28px;
+  align-items: center;
 }
 
-.landing-radar {
-  position: absolute;
-  width: min(100%, 340px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at center, rgba(45, 212, 191, 0.18), transparent 42%),
-    repeating-radial-gradient(
-      circle at center,
-      rgba(125, 211, 196, 0.16) 0 1px,
-      transparent 1px 28px
-    );
-  border: 1px solid rgba(45, 212, 191, 0.22);
-  animation: radarSpin 28s linear infinite;
+.landing-band-reverse {
+  grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.05fr);
 }
 
-.landing-radar::after {
+.landing-band-copy h2 {
+  font-size: clamp(26px, 3.2vw, 38px);
+  margin-bottom: 12px;
+  max-width: 16ch;
+}
+
+.landing-band-copy > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 48ch;
+}
+
+.landing-check-list {
+  list-style: none;
+  margin: 22px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.landing-check-list li {
+  position: relative;
+  padding-left: 22px;
+  color: #d5e6e2;
+  line-height: 1.45;
+}
+
+.landing-check-list li::before {
   content: "";
   position: absolute;
-  inset: 18%;
+  left: 0;
+  top: 0.45em;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  border: 1px solid rgba(240, 180, 41, 0.22);
+  background: var(--teal);
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.5);
 }
 
-.landing-radar-core {
+.landing-feature-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.landing-feature-row article {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.landing-feature-row strong {
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--font-display);
+}
+
+.landing-feature-row span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.media-reel {
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  border-radius: 18px;
+  border: 1px solid rgba(45, 212, 191, 0.22);
+  background: #071018;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.media-reel video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 700ms ease;
+  filter: saturate(1.05) contrast(1.05);
+}
+
+.media-reel video.is-ready {
+  opacity: 1;
+}
+
+.media-reel-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 40%, rgba(7, 16, 24, 0.78)),
+    linear-gradient(90deg, rgba(7, 16, 24, 0.2), transparent 35%);
+  pointer-events: none;
+}
+
+.media-reel-caption {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 1;
+  padding: 6px 10px;
+  border: 1px solid rgba(125, 211, 196, 0.28);
+  border-radius: 999px;
+  background: rgba(7, 16, 24, 0.72);
+  color: var(--teal);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.landing-roles-head {
+  max-width: 640px;
+  margin-bottom: 22px;
+}
+
+.landing-roles-head h2 {
+  font-size: clamp(26px, 3.2vw, 38px);
+}
+
+.landing-roles-head p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.role-academy-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.role-academy {
+  position: relative;
+  display: flex;
+  align-items: end;
+  min-height: 280px;
+  padding: 0;
+  border: 1px solid rgba(125, 211, 196, 0.16);
+  border-radius: 16px;
+  overflow: hidden;
+  background-position: center 20%;
+  background-size: cover;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.role-academy:hover {
+  transform: translateY(-5px);
+  border-color: rgba(45, 212, 191, 0.45);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.role-academy-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(7, 16, 24, 0.1) 20%, rgba(7, 16, 24, 0.92) 78%);
+}
+
+.role-academy-body {
   position: relative;
   z-index: 1;
   display: grid;
-  place-items: center;
-  width: 120px;
-  height: 120px;
-  border-radius: 28px;
-  border: 1px solid rgba(45, 212, 191, 0.35);
-  background: linear-gradient(160deg, rgba(10, 28, 34, 0.92), rgba(7, 16, 24, 0.75));
-  box-shadow: 0 0 40px rgba(45, 212, 191, 0.12);
-  animation: markPulse 3.6s ease-in-out infinite;
-  backdrop-filter: blur(8px);
+  gap: 8px;
+  padding: 16px;
 }
 
-.landing-radar-core span {
-  color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 0.22em;
+.role-academy-body strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+
+.role-academy-body small {
+  color: #b7ccc7;
+  line-height: 1.4;
+  font-size: 12px;
+}
+
+.role-academy-cta {
+  margin-top: 4px;
+  color: var(--teal);
+  font-size: 12px;
   font-weight: 700;
 }
 
-.landing-radar-core strong {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  letter-spacing: -0.04em;
-  color: var(--teal);
-}
-
 .landing-section {
-  max-width: 780px;
-}
-
-.landing-section[data-reveal],
-.plan-panel[data-reveal],
-.landing-offer-list li {
-  opacity: 0;
-  transform: translateY(22px);
-  transition:
-    opacity 650ms ease,
-    transform 650ms ease;
-}
-
-.landing-section[data-reveal].is-visible,
-.landing-section.is-visible .landing-offer-list li,
-.plan-panel.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.landing-section.is-visible .landing-offer-list li:nth-child(2) {
-  transition-delay: 70ms;
-}
-.landing-section.is-visible .landing-offer-list li:nth-child(3) {
-  transition-delay: 140ms;
-}
-.landing-section.is-visible .landing-offer-list li:nth-child(4) {
-  transition-delay: 210ms;
-}
-.landing-section.is-visible .landing-offer-list li:nth-child(5) {
-  transition-delay: 280ms;
+  max-width: 860px;
 }
 
 .landing-section h2 {
@@ -529,32 +589,59 @@ h3 {
   max-width: 58ch;
 }
 
-.landing-offer-list {
-  list-style: none;
-  margin: 28px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 0;
-  border-top: 1px solid var(--line);
+.landing-finale {
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  margin: 0 clamp(-20px, -3.2vw, -48px);
+  padding: 48px clamp(20px, 3.2vw, 48px);
+  border-radius: 18px;
+  border: 1px solid rgba(45, 212, 191, 0.2);
 }
 
-.landing-offer-list li {
-  display: grid;
-  grid-template-columns: minmax(140px, 0.4fr) minmax(0, 1fr);
-  gap: 18px;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--line);
+.landing-finale-art {
+  position: absolute;
+  inset: 0;
+  background-position: 70% center;
+  background-size: cover;
+  filter: brightness(0.45) saturate(0.85);
 }
 
-.landing-offer-list strong {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  color: var(--text);
+.landing-finale-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(7, 16, 24, 0.92), rgba(7, 16, 24, 0.35));
 }
 
-.landing-offer-list span {
-  color: var(--muted);
+.landing-finale-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+}
+
+.landing-finale-copy h2 {
+  font-size: clamp(26px, 3.4vw, 40px);
+  margin-bottom: 12px;
+}
+
+.landing-finale-copy p {
+  margin: 0 0 22px;
+  color: #c9dbd7;
   line-height: 1.55;
+}
+
+.landing [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
+}
+
+.landing [data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .plan-compare {
@@ -687,23 +774,15 @@ h3 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .landing-video,
-  .landing-splash,
-  .landing-radar,
-  .landing-radar-core,
-  .landing-grain,
-  .landing-hero-visual {
+  .landing-hero-art,
+  .media-reel video,
+  .role-academy {
     animation: none !important;
     transition: none !important;
     transform: none !important;
   }
 
-  .landing-splash.is-active {
-    opacity: 0.5;
-  }
-
-  .landing-section[data-reveal],
-  .landing-offer-list li {
+  .landing [data-reveal] {
     opacity: 1;
     transform: none;
   }
@@ -1613,10 +1692,16 @@ h3 {
   .mastery-grid,
   .profile-split,
   .match-teams,
-  .landing-stage-inner,
+  .landing-band,
+  .landing-band-reverse,
   .plan-compare,
-  .landing-offer-list li {
+  .landing-feature-row,
+  .role-academy-grid {
     grid-template-columns: 1fr;
+  }
+
+  .role-academy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .history-match-summary {
@@ -1673,20 +1758,23 @@ h3 {
     flex-direction: column;
   }
 
-  .landing-stage {
+  .landing-hero-pro,
+  .landing-finale {
     margin-left: -20px;
     margin-right: -20px;
     min-height: 0;
-    padding-top: 36px;
   }
 
-  .landing-stage-inner {
-    min-height: 0;
+  .landing-hero-pro {
+    padding-top: 40px;
   }
 
-  .landing-hero-visual {
-    width: 100%;
-    min-height: 220px;
+  .media-reel {
+    min-height: 240px;
+  }
+
+  .role-academy-grid {
+    grid-template-columns: 1fr;
   }
 
   .hero-meta {

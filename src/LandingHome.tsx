@@ -1,45 +1,87 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 
-const SPLASH_BACKDROPS = [
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
-  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lux_0.jpg",
-];
+const HERO_SPLASH =
+  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Mordekaiser_0.jpg";
 
-const AMBIENT_VIDEO =
+const FIGHT_REEL =
+  "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4";
+
+const AMBIENT_REEL =
   "https://videos.pexels.com/video-files/5752729/5752729-uhd_2560_1440_30fps.mp4";
+
+const ROLE_ACADEMIES = [
+  {
+    role: "Top",
+    blurb: "Wave control, trades y timing de TP con objetivos claros.",
+    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg",
+  },
+  {
+    role: "Jungle",
+    blurb: "Pathing, tempo y decisiones de objetivo sin ruido táctico.",
+    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Viego_0.jpg",
+  },
+  {
+    role: "Mid",
+    blurb: "Prioridad de línea, roaming y win conditions medibles.",
+    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+  },
+  {
+    role: "ADC",
+    blurb: "CS, posicionamiento y consistencia en mid/late game.",
+    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
+  },
+  {
+    role: "Support",
+    blurb: "Visión, roam windows y sinergia con tu carry.",
+    splash: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
+  },
+] as const;
 
 type LandingHomeProps = {
   onStartFree: () => void;
   onExplorePro: () => void;
 };
 
+function AutoplayReel({
+  src,
+  poster,
+  caption,
+}: {
+  src: string;
+  poster: string;
+  caption: string;
+}) {
+  const [ready, setReady] = useState(false);
+
+  return (
+    <div className="media-reel">
+      <video
+        className={ready ? "is-ready" : undefined}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={poster}
+        controls={false}
+        disablePictureInPicture
+        onCanPlay={() => setReady(true)}
+      >
+        <source src={src} type="video/mp4" />
+      </video>
+      <div className="media-reel-scrim" />
+      <span className="media-reel-caption">{caption}</span>
+    </div>
+  );
+}
+
 export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
-  const stageRef = useRef<HTMLElement | null>(null);
-  const [splashIndex, setSplashIndex] = useState(0);
-  const [videoReady, setVideoReady] = useState(false);
+  const landingRef = useRef<HTMLDivElement | null>(null);
+  const heroRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduceMotion) {
-      return;
-    }
-
-    const timer = window.setInterval(() => {
-      setSplashIndex((current) => (current + 1) % SPLASH_BACKDROPS.length);
-    }, 7000);
-
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const root = stageRef.current?.closest(".landing");
+    const root = landingRef.current;
     if (!root) {
       return;
     }
@@ -63,7 +105,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
           }
         }
       },
-      { threshold: 0.18, rootMargin: "0px 0px -8% 0px" },
+      { threshold: 0.16, rootMargin: "0px 0px -6% 0px" },
     );
 
     nodes.forEach((node) => observer.observe(node));
@@ -71,18 +113,15 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
   }, []);
 
   function handlePointerMove(event: MouseEvent<HTMLElement>) {
-    const stage = stageRef.current;
-    if (!stage) {
+    const hero = heroRef.current;
+    if (!hero) {
       return;
     }
-
-    const rect = stage.getBoundingClientRect();
+    const rect = hero.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
-    stage.style.setProperty("--spot-x", `${x}%`);
-    stage.style.setProperty("--spot-y", `${y}%`);
-    stage.style.setProperty("--tilt-x", `${(x - 50) / 28}deg`);
-    stage.style.setProperty("--tilt-y", `${(50 - y) / 36}deg`);
+    hero.style.setProperty("--spot-x", `${x}%`);
+    hero.style.setProperty("--spot-y", `${y}%`);
   }
 
   function scrollToPlans() {
@@ -92,133 +131,135 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
   }
 
   return (
-    <div className="landing">
+    <div className="landing" ref={landingRef}>
       <header
-        className="landing-stage"
-        ref={stageRef}
+        className="landing-hero-pro"
+        ref={heroRef}
         onMouseMove={handlePointerMove}
       >
-        <div className="landing-media" aria-hidden="true">
-          <video
-            className={`landing-video${videoReady ? " is-ready" : ""}`}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            onCanPlay={() => setVideoReady(true)}
-          >
-            <source src={AMBIENT_VIDEO} type="video/mp4" />
-          </video>
+        <div
+          className="landing-hero-art"
+          style={{ backgroundImage: `url(${HERO_SPLASH})` }}
+          aria-hidden="true"
+        />
+        <div className="landing-hero-scrim" aria-hidden="true" />
 
-          {SPLASH_BACKDROPS.map((src, index) => (
-            <div
-              key={src}
-              className={`landing-splash${index === splashIndex ? " is-active" : ""}`}
-              style={{ backgroundImage: `url(${src})` }}
-            />
-          ))}
-
-          <div className="landing-scrim" />
-          <div className="landing-spot" />
-          <div className="landing-grain" />
-        </div>
-
-        <div className="landing-stage-inner">
-          <div className="landing-hero-copy">
-            <p className="brand-hero">PLAIQ</p>
-            <h1>Tu entrenador personal para League.</h1>
-            <p className="hero-copy">
-              Coaching entre partidas con objetivos medibles y progreso real —
-              no un copiloto que te diga cómo pelear.
-            </p>
-            <div className="landing-cta">
-              <button
-                className="primary-button"
-                type="button"
-                onClick={onStartFree}
-              >
-                Empezar gratis
-              </button>
-              <button
-                className="ghost-button"
-                type="button"
-                onClick={scrollToPlans}
-              >
-                Ver planes
-              </button>
-            </div>
-          </div>
-
-          <div className="landing-hero-visual" aria-hidden="true">
-            <div className="landing-radar" />
-            <div className="landing-radar-core">
-              <span>PLAY</span>
-              <strong>IQ</strong>
-            </div>
+        <div className="landing-hero-content">
+          <span className="eyebrow">Centro táctico PLAIQ</span>
+          <h1>MEJORAR EN RANKED NUNCA FUE TAN CLARO.</h1>
+          <p>
+            Coaching personalizado entre partidas, objetivos medibles y un plan
+            para tu rol. Sin copiloto en combate: progreso real fuera de la
+            Rift.
+          </p>
+          <div className="landing-cta">
+            <button
+              className="primary-button"
+              type="button"
+              onClick={onStartFree}
+            >
+              Empezar gratis
+            </button>
+            <button
+              className="ghost-button"
+              type="button"
+              onClick={scrollToPlans}
+            >
+              Ver planes
+            </button>
           </div>
         </div>
       </header>
 
-      <section className="landing-section" data-reveal>
-        <span className="eyebrow">Qué es PLAIQ</span>
-        <h2>Play IQ: inteligencia para mejorar de verdad</h2>
-        <p>
-          PLAIQ acompaña todo el ciclo — draft, partida e informe — con foco en
-          hábitos y métricas. Las estadísticas se calculan en código; la IA
-          interpreta y propone el plan. Tu Riot API Key y OpenAI viven solo en
-          el backend: el escritorio nunca las ve.
-        </p>
+      <section className="landing-band" data-reveal>
+        <div className="landing-band-copy">
+          <span className="eyebrow">Por qué un coach</span>
+          <h2>La diferencia está entre partidas, no en el chat.</h2>
+          <p>
+            Un coach personalizado traduce tu historial en hábitos concretos:
+            qué practicar hoy, qué corregir mañana y cómo medir si estás
+            subiendo de verdad. PLAIQ combina métricas objetivas con IA para
+            proponerte el siguiente paso — sin gritarte pelees en vivo.
+          </p>
+          <ul className="landing-check-list">
+            <li>Diagnóstico con datos de Match-v5 y tu perfil Riot</li>
+            <li>Objetivos diarios/semanales que sí se pueden completar</li>
+            <li>Foco en tu rol, tu pool y el parche actual</li>
+          </ul>
+        </div>
+        <AutoplayReel
+          src={FIGHT_REEL}
+          poster="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg"
+          caption="Atmósfera de pelea de equipo · autoplay"
+        />
       </section>
 
-      <section className="landing-section" data-reveal>
-        <span className="eyebrow">Sistema</span>
-        <h2>Todo lo que ofrece el centro táctico</h2>
-        <ul className="landing-offer-list">
-          <li>
-            <strong>Perfiles Riot</strong>
-            <span>
-              Vincula tu Riot ID, rangos Solo/Flex/TFT, maestrías e historial
-              Match-v5 sin exponer tu PUUID.
-            </span>
-          </li>
-          <li>
-            <strong>Coaching con objetivos</strong>
-            <span>
-              Metas medibles (CS, visión, muertes tempranas) y un coach que
-              habla claro entre partidas.
-            </span>
-          </li>
-          <li>
-            <strong>Draft inteligente</strong>
-            <span>
-              Alternativas puntuadas con tu rendimiento, maestría y sinergia —
-              sin órdenes ni tracking enemigo oculto.
-            </span>
-          </li>
-          <li>
-            <strong>Tierlist y parche</strong>
-            <span>
-              Lectura del meta y notas del parche filtradas a tu rol y pool para
-              decidir qué practicar.
-            </span>
-          </li>
-          <li>
-            <strong>Captura en partida</strong>
-            <span>
-              Recopilación silenciosa desde Live Client; HUD opcional solo con
-              metas que ya definiste.
-            </span>
-          </li>
-        </ul>
+      <section className="landing-roles" data-reveal>
+        <div className="landing-roles-head">
+          <span className="eyebrow">Sistema por rol</span>
+          <h2>Elige tu academia táctica</h2>
+          <p>
+            Cada rol tiene un camino distinto. Empieza por el tuyo y conecta
+            coaching, historial y metas en el mismo centro.
+          </p>
+        </div>
+        <div className="role-academy-grid">
+          {ROLE_ACADEMIES.map((item) => (
+            <button
+              key={item.role}
+              className="role-academy"
+              type="button"
+              onClick={onExplorePro}
+              style={{ backgroundImage: `url(${item.splash})` }}
+            >
+              <span className="role-academy-scrim" />
+              <span className="role-academy-body">
+                <strong>{item.role}</strong>
+                <small>{item.blurb}</small>
+                <span className="role-academy-cta">Entrar a {item.role}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="landing-band landing-band-reverse" data-reveal>
+        <AutoplayReel
+          src={AMBIENT_REEL}
+          poster="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Volibear_0.jpg"
+          caption="Ritmo de partida · sin controles"
+        />
+        <div className="landing-band-copy">
+          <span className="eyebrow">Qué ofrecemos</span>
+          <h2>Todo el ciclo: draft, partida e informe.</h2>
+          <p>
+            Perfiles Riot, historial, maestrías, coaching con metas, lectura de
+            parche y tierlist. El escritorio captura en silencio; el análisis
+            ocurre cuando terminas de jugar.
+          </p>
+          <div className="landing-feature-row">
+            <article>
+              <strong>Coach inteligente</strong>
+              <span>Plan claro según tu rol y tus números.</span>
+            </article>
+            <article>
+              <strong>Contenido práctico</strong>
+              <span>Parche y tierlist filtrados a lo que usas.</span>
+            </article>
+            <article>
+              <strong>Progreso visible</strong>
+              <span>Actividades y tendencias que puedes revisar.</span>
+            </article>
+          </div>
+        </div>
       </section>
 
       <section className="landing-section" id="planes-plaiq" data-reveal>
         <span className="eyebrow">Planes</span>
         <h2>Gratuito y PRO</h2>
         <p className="landing-section-lead">
-          Hay capa gratuita siempre. PRO desbloquea el ritmo diario de un
-          entrenador de verdad.
+          Siempre hay capa gratuita. PRO acelera el ritmo de un entrenador
+          diario.
         </p>
         <div className="plan-compare">
           <article className="plan-panel">
@@ -230,7 +271,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
               <li>Historial de partidas básico</li>
               <li>Coach general con cupo limitado</li>
               <li>Actividades semanales limitadas</li>
-              <li>Acceso a Notas del Parche resumidas</li>
+              <li>Notas del Parche resumidas</li>
             </ul>
             <button
               className="ghost-button"
@@ -249,12 +290,11 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
               <small>cuando abramos pagos</small>
             </p>
             <ul>
-              <li>Sync automático y tendencias de progreso</li>
+              <li>Sync automático y tendencias</li>
               <li>Coach especializado por rol</li>
               <li>Plan diario personalizado</li>
               <li>Análisis postpartida con IA</li>
-              <li>Tierlist y parche orientados a tu pool</li>
-              <li>Prioridad en nuevas herramientas de coaching</li>
+              <li>Tierlist y parche para tu pool</li>
             </ul>
             <button
               className="primary-button"
@@ -264,6 +304,31 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
               Explorar coaching PRO
             </button>
           </article>
+        </div>
+      </section>
+
+      <section className="landing-finale" data-reveal>
+        <div
+          className="landing-finale-art"
+          style={{
+            backgroundImage:
+              "url(https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg)",
+          }}
+          aria-hidden="true"
+        />
+        <div className="landing-finale-copy">
+          <h2>Empieza tu climb con un plan, no con suerte.</h2>
+          <p>
+            Vincula tu Riot ID, mira tu historial y deja que PLAIQ te marque el
+            siguiente objetivo.
+          </p>
+          <button
+            className="primary-button"
+            type="button"
+            onClick={onStartFree}
+          >
+            Empezar ahora
+          </button>
         </div>
       </section>
     </div>
