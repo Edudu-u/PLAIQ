@@ -1,59 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import type { MouseEvent } from "react";
 
 const RANK_EMBLEM = (tier: string) =>
-  `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblem/emblem-${tier}.png`;
+  `/landing/emblems/${tier}.png`;
 
-const RANK_CLIMB = [
-  {
-    from: "gold",
-    to: "platinum",
-    label: "Promo Gold → Plat",
-    season: "Split 2025",
-    splash:
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
-  },
-  {
-    from: "platinum",
-    to: "emerald",
-    label: "Promo Plat → Emerald",
-    season: "Split 2025",
-    splash:
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
-  },
-  {
-    from: "emerald",
-    to: "diamond",
-    label: "Promo Emerald → Diamond",
-    season: "Split 2026",
-    splash:
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
-  },
-  {
-    from: "diamond",
-    to: "master",
-    label: "Diamond → Master",
-    season: "Split 2026",
-    splash:
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
-  },
-  {
-    from: "master",
-    to: "grandmaster",
-    label: "Master → Grandmaster",
-    season: "Split 2026",
-    splash:
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
-  },
-  {
-    from: "grandmaster",
-    to: "challenger",
-    label: "Grandmaster → Challenger",
-    season: "Ranked 2026",
-    splash:
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg",
-  },
-] as const;
+function loadingArt(championId: string): string {
+  return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
+}
+
+function squareArt(championId: string): string {
+  return `https://ddragon.leagueoflegends.com/cdn/16.14.1/img/champion/${championId}.png`;
+}
 
 const COACH_SESSIONS = [
   {
@@ -92,47 +48,6 @@ const COACH_SESSIONS = [
     tag: "Team talk",
   },
 ] as const;
-
-const OFFER_FRAMES = [
-  {
-    kind: "select" as const,
-    tag: "Champion select",
-    title: "Draft listo",
-    champs: ["Ahri", "LeeSin", "Jinx", "Thresh", "Ornn", "Viego", "Ezreal", "Lulu", "Syndra", "Camille"],
-  },
-  {
-    kind: "challenger" as const,
-    tag: "Loading Challenger",
-    title: "Cola Challenger",
-    splash:
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yasuo_0.jpg",
-  },
-  {
-    kind: "challenger" as const,
-    tag: "Loading Challenger",
-    title: "Lobby alto elo",
-    splash:
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ahri_0.jpg",
-  },
-  {
-    kind: "charts" as const,
-    tag: "Métricas de mejora",
-    title: "LP · WR · CS/min",
-  },
-  {
-    kind: "charts" as const,
-    tag: "Tendencia semanal",
-    title: "Objetivos cumplidos",
-  },
-] as const;
-
-function loadingArt(championId: string): string {
-  return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
-}
-
-function squareArt(championId: string): string {
-  return `https://ddragon.leagueoflegends.com/cdn/16.14.1/img/champion/${championId}.png`;
-}
 
 const ROLE_ACADEMIES = [
   {
@@ -222,6 +137,19 @@ const ROLE_ACADEMIES = [
   },
 ] as const;
 
+const OFFER_CHAMPS = [
+  "Ahri",
+  "LeeSin",
+  "Jinx",
+  "Thresh",
+  "Ornn",
+  "Viego",
+  "Ezreal",
+  "Lulu",
+  "Syndra",
+  "Camille",
+] as const;
+
 type LandingHomeProps = {
   onStartFree: () => void;
   onExplorePro: () => void;
@@ -247,49 +175,6 @@ function useFrameCycle(length: number, intervalMs: number) {
   }, [intervalMs, length]);
 
   return index;
-}
-
-function RankClimbHero() {
-  const index = useFrameCycle(RANK_CLIMB.length, 3600);
-  const current = RANK_CLIMB[index];
-
-  return (
-    <div className="tf-compilation rank-climb" aria-hidden="true">
-      {RANK_CLIMB.map((frame, frameIndex) => (
-        <div
-          key={frame.label}
-          className={`rank-climb-frame${frameIndex === index ? " is-active" : ""}`}
-          style={{ backgroundImage: `url(${frame.splash})` }}
-        />
-      ))}
-      <div className="tf-scrim" />
-      <div className="rank-climb-stage">
-        <img
-          className="rank-climb-emblem from"
-          src={RANK_EMBLEM(current.from)}
-          alt=""
-        />
-        <span className="rank-climb-arrow" />
-        <img
-          className="rank-climb-emblem to"
-          src={RANK_EMBLEM(current.to)}
-          alt=""
-        />
-      </div>
-      <div className="tf-hud">
-        <div className="tf-hud-top">
-          <span>Ascenso ranked</span>
-          <strong>{current.season}</strong>
-          <span>Logos actuales</span>
-        </div>
-        <div className="tf-hud-bars">
-          <span className="fight-bar ally" />
-          <span className="fight-bar enemy" />
-        </div>
-        <div className="tf-tag">{current.label}</div>
-      </div>
-    </div>
-  );
 }
 
 function LaneGameplay({
@@ -363,89 +248,57 @@ function CoachShowcase({ caption }: { caption: string }) {
   );
 }
 
-function OfferShowcase() {
-  const index = useFrameCycle(OFFER_FRAMES.length, 3800);
-  const current = OFFER_FRAMES[index];
-
+function OfferPanel() {
   return (
-    <div className="media-reel media-reel-xl offer-reel" aria-hidden="true">
-      {OFFER_FRAMES.map((frame, frameIndex) => {
-        const active = frameIndex === index;
-        if (frame.kind === "select") {
-          return (
-            <div
-              key={`select-${frameIndex}`}
-              className={`offer-frame offer-select${active ? " is-active" : ""}`}
-            >
-              <div className="offer-select-grid">
-                {frame.champs.map((id) => (
-                  <img key={id} src={squareArt(id)} alt="" />
-                ))}
-              </div>
-              <div className="offer-select-meta">
-                <strong>{frame.title}</strong>
-                <span>Bans listos · roles asignados</span>
-              </div>
-            </div>
-          );
-        }
-        if (frame.kind === "challenger") {
-          return (
-            <div
-              key={frame.splash}
-              className={`offer-frame offer-challenger${active ? " is-active" : ""}`}
-            >
-              <img className="offer-challenger-art" src={frame.splash} alt="" />
-              <img
-                className="offer-challenger-badge"
-                src={RANK_EMBLEM("challenger")}
-                alt=""
-              />
-              <strong>{frame.title}</strong>
-            </div>
-          );
-        }
-        return (
-          <div
-            key={`charts-${frameIndex}`}
-            className={`offer-frame offer-charts${active ? " is-active" : ""}`}
-          >
-            <strong>{frame.title}</strong>
-            <svg className="offer-chart-svg" viewBox="0 0 320 140" role="img">
-              <polyline
-                className="offer-chart-line"
-                points="8,118 48,102 88,108 128,74 168,82 208,48 248,56 308,22"
-              />
-              <polyline
-                className="offer-chart-line alt"
-                points="8,124 48,120 88,112 128,98 168,90 208,78 248,70 308,52"
-              />
-            </svg>
-            <div className="offer-chart-stats">
-              <span>
-                <b>+214 LP</b>
-                semana
-              </span>
-              <span>
-                <b>58% WR</b>
-                20 partidas
-              </span>
-              <span>
-                <b>7.4 CS</b>
-                /min
-              </span>
-            </div>
-          </div>
-        );
-      })}
-      <span className="media-reel-caption">{current.tag}</span>
+    <div className="offer-panel" aria-hidden="true">
+      <div className="offer-panel-select">
+        <div className="offer-select-grid">
+          {OFFER_CHAMPS.map((id) => (
+            <img key={id} src={squareArt(id)} alt="" />
+          ))}
+        </div>
+        <div className="offer-panel-meta">
+          <strong>Champion select</strong>
+          <span>Draft → partida → informe</span>
+        </div>
+      </div>
+      <div className="offer-panel-side">
+        <img
+          className="offer-panel-badge"
+          src={RANK_EMBLEM("challenger")}
+          alt=""
+        />
+        <svg className="offer-chart-svg" viewBox="0 0 220 90" role="img">
+          <polyline
+            className="offer-chart-line"
+            points="6,78 36,70 66,72 96,50 126,54 156,30 186,34 214,14"
+          />
+          <polyline
+            className="offer-chart-line alt"
+            points="6,82 36,80 66,74 96,66 126,60 156,52 186,46 214,36"
+          />
+        </svg>
+        <div className="offer-chart-stats compact">
+          <span>
+            <b>+LP</b>
+            tendencia
+          </span>
+          <span>
+            <b>WR</b>
+            estable
+          </span>
+          <span>
+            <b>CS</b>
+            /min
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
 
 export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
   const landingRef = useRef<HTMLDivElement | null>(null);
-  const heroRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const root = landingRef.current;
@@ -479,18 +332,6 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
     return () => observer.disconnect();
   }, []);
 
-  function handlePointerMove(event: MouseEvent<HTMLElement>) {
-    const hero = heroRef.current;
-    if (!hero) {
-      return;
-    }
-    const rect = hero.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-    hero.style.setProperty("--spot-x", `${x}%`);
-    hero.style.setProperty("--spot-y", `${y}%`);
-  }
-
   function scrollToPlans() {
     document
       .getElementById("planes-plaiq")
@@ -499,14 +340,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
 
   return (
     <div className="landing" ref={landingRef}>
-      <header
-        className="landing-hero-pro landing-hero-compilation"
-        ref={heroRef}
-        onMouseMove={handlePointerMove}
-      >
-        <RankClimbHero />
-        <div className="landing-hero-scrim" aria-hidden="true" />
-
+      <header className="landing-hero-split">
         <div className="landing-hero-content">
           <span className="eyebrow">Centro táctico PLAIQ</span>
           <h1>MEJORAR EN RANKED NUNCA FUE TAN CLARO.</h1>
@@ -532,6 +366,13 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
             </button>
           </div>
         </div>
+        <figure className="landing-hero-ladder">
+          <img
+            src="/landing/rank-ladder-2026.png"
+            alt="Ascenso de liga desde Hierro hasta Retador"
+          />
+          <figcaption>Ranked 2025 · 2026 · logos actuales</figcaption>
+        </figure>
       </header>
 
       <section className="landing-band landing-band-coach" data-reveal>
@@ -576,39 +417,55 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
         </div>
       </section>
 
-      <section className="landing-band landing-band-reverse" data-reveal>
-        <OfferShowcase />
-        <div className="landing-band-copy">
+      <section className="landing-band landing-band-offer" data-reveal>
+        <OfferPanel />
+        <div className="landing-band-copy landing-band-copy-offer">
           <span className="eyebrow">Qué ofrecemos</span>
           <h2>Todo el ciclo: draft, partida e informe.</h2>
           <p>
-            Perfiles Riot, historial, maestrías, coaching con metas, lectura de
-            parche y tierlist. El escritorio captura en silencio; el análisis
-            ocurre cuando terminas de jugar.
+            PLAIQ cubre el loop completo de mejora. Antes de la cola ves contexto
+            de draft y pool; durante la sesión el escritorio captura en silencio;
+            al terminar conviertes la partida en un informe accionable con
+            objetivos claros para la siguiente.
+          </p>
+          <p>
+            No es un feed de tips genéricos: conectamos tu Riot ID, historial
+            Match-v5, maestrías y tendencias para que el coach hable de tu juego,
+            no del de alguien más. Parche y tierlist se filtran a lo que realmente
+            usas.
           </p>
           <div className="landing-feature-row">
             <article>
               <strong>Coach inteligente</strong>
-              <span>Plan claro según tu rol y tus números.</span>
+              <span>
+                Plan por rol con prioridades semanales, feedback postpartida y
+                ajustes cuando tus números cambian.
+              </span>
             </article>
             <article>
               <strong>Contenido práctico</strong>
-              <span>Parche y tierlist filtrados a lo que usas.</span>
+              <span>
+                Notas del parche, tierlist y focos de práctica alineados a tu
+                pool — menos ruido, más decisiones útiles.
+              </span>
             </article>
             <article>
               <strong>Progreso visible</strong>
-              <span>Actividades y tendencias que puedes revisar.</span>
+              <span>
+                Actividades, rachas y tendencias de LP / WR / CS para saber si el
+                plan está funcionando de verdad.
+              </span>
             </article>
           </div>
         </div>
       </section>
 
-      <section className="landing-section" id="planes-plaiq" data-reveal>
+      <section className="landing-section landing-plans" id="planes-plaiq" data-reveal>
         <span className="eyebrow">Planes</span>
         <h2>Gratuito y PRO</h2>
         <p className="landing-section-lead">
           Siempre hay capa gratuita. PRO acelera el ritmo de un entrenador
-          diario.
+          diario con más profundidad, automatización y foco en tu climb.
         </p>
         <div className="plan-compare">
           <article className="plan-panel">
@@ -618,6 +475,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
             <ul>
               <li>Vincular Riot ID y resumen de perfil</li>
               <li>Historial de partidas básico</li>
+              <li>Maestrías y visión general de ranked</li>
               <li>Coach general con cupo limitado</li>
               <li>Actividades semanales limitadas</li>
               <li>Notas del Parche resumidas</li>
@@ -632,18 +490,28 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
           </article>
 
           <article className="plan-panel plan-panel-pro">
+            <span className="plan-badge">Más valor</span>
             <span className="eyebrow">Recomendado</span>
             <h3>PLAIQ PRO</h3>
             <p className="plan-price">
               Suscripción
               <small>cuando abramos pagos</small>
             </p>
+            <p className="plan-pro-lead">
+              El ritmo de un coach diario: más datos, más foco y un plan que se
+              actualiza con tu climb.
+            </p>
             <ul>
-              <li>Sync automático y tendencias</li>
-              <li>Coach especializado por rol</li>
-              <li>Plan diario personalizado</li>
-              <li>Análisis postpartida con IA</li>
-              <li>Tierlist y parche para tu pool</li>
+              <li>Sync automático del historial y tendencias de LP</li>
+              <li>Coach especializado por rol (Top → Support)</li>
+              <li>Plan diario personalizado con metas medibles</li>
+              <li>Análisis postpartida con IA y próximos focos</li>
+              <li>Tierlist y parche filtrados a tu pool</li>
+              <li>Actividades ilimitadas y seguimiento semanal</li>
+              <li>Prioridad en insights de winrate, CS y visión</li>
+              <li>Ruta de climb con checkpoints por división</li>
+              <li>Revisión de hábitos entre partidas (no en combate)</li>
+              <li>Acceso anticipado a módulos tácticos nuevos</li>
             </ul>
             <button
               className="primary-button"
