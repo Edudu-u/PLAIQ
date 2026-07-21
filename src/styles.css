@@ -40,7 +40,7 @@ select {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 240px 1fr;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .atmosphere {
@@ -796,24 +796,27 @@ h3 {
   min-width: 0;
 }
 
-.history-match-list,
+.history-match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .mastery-column {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 560px;
-  overflow: auto;
-  padding-right: 4px;
-}
-
-.mastery-column {
-  max-height: 560px;
+  max-height: min(70vh, 640px);
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-gutter: stable;
 }
 
 .mastery-chip {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 0 0 auto;
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -821,6 +824,7 @@ h3 {
 }
 
 .history-match-card {
+  flex: 0 0 auto;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: rgba(7, 20, 28, 0.55);
@@ -841,6 +845,7 @@ h3 {
   gap: 12px;
   width: 100%;
   align-items: center;
+  min-height: 72px;
   padding: 14px 16px;
   border: 0;
   background: transparent;
