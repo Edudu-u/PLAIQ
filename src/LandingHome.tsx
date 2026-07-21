@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 
 const TEAMFIGHT_MONTAGE_ID = "qVWby_FIFD0";
-const TEAMFIGHT_MONTAGE_EMBED = `https://www.youtube-nocookie.com/embed/${TEAMFIGHT_MONTAGE_ID}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=${TEAMFIGHT_MONTAGE_ID}&iv_load_policy=3`;
+const TEAMFIGHT_MONTAGE_EMBED = `https://www.youtube.com/embed/${TEAMFIGHT_MONTAGE_ID}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=${TEAMFIGHT_MONTAGE_ID}&iv_load_policy=3&enablejsapi=1`;
+const TEAMFIGHT_MONTAGE_POSTER = `https://i.ytimg.com/vi/${TEAMFIGHT_MONTAGE_ID}/maxresdefault.jpg`;
 
 const TEAMFIGHT_STILLS = [
   {
@@ -98,12 +99,17 @@ function useFrameCycle(length: number, intervalMs: number) {
 function TeamfightCompilation() {
   return (
     <div className="tf-compilation" aria-hidden="true">
+      <div
+        className="tf-poster"
+        style={{ backgroundImage: `url(${TEAMFIGHT_MONTAGE_POSTER})` }}
+      />
       <iframe
         className="tf-youtube"
         src={TEAMFIGHT_MONTAGE_EMBED}
         title="LoL best plays montage"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
       />
       <div className="tf-scrim" />
       <div className="tf-hud">

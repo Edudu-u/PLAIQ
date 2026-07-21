@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, session } = require("electron");
 const path = require("node:path");
 
 function createWindow() {
@@ -25,6 +25,24 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // YouTube embeds often fail in Electron (Error 153) without a normal Referer.
+  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+    const url = details.url;
+    if (
+      url.includes("youtube.com") ||
+      url.includes("youtu.be") ||
+      url.includes("googlevideo.com") ||
+      url.includes("ytimg.com") ||
+      url.includes("google.com/js") ||
+      url.includes("gstatic.com")
+    ) {
+      details.requestHeaders.Referer = "https://www.youtube.com/";
+      details.requestHeaders["Sec-Fetch-Site"] = "cross-site";
+      details.requestHeaders["Sec-Fetch-Mode"] = "navigate";
+    }
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
+  });
+
   createWindow();
 
   app.on("activate", () => {
