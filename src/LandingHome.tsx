@@ -1,34 +1,128 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 
-const TEAMFIGHT_MONTAGE_ID = "qVWby_FIFD0";
-const TEAMFIGHT_MONTAGE_EMBED = `https://www.youtube.com/embed/${TEAMFIGHT_MONTAGE_ID}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=${TEAMFIGHT_MONTAGE_ID}&iv_load_policy=3&enablejsapi=1`;
-const TEAMFIGHT_MONTAGE_POSTER = `https://i.ytimg.com/vi/${TEAMFIGHT_MONTAGE_ID}/maxresdefault.jpg`;
+const RANK_EMBLEM = (tier: string) =>
+  `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblem/emblem-${tier}.png`;
 
-const TEAMFIGHT_STILLS = [
+const RANK_CLIMB = [
   {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
-    tag: "Baron pit · engage",
+    from: "gold",
+    to: "platinum",
+    label: "Promo Gold → Plat",
+    season: "Split 2025",
+    splash:
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
   },
   {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
-    tag: "Mid collapse · knock-up",
+    from: "platinum",
+    to: "emerald",
+    label: "Promo Plat → Emerald",
+    season: "Split 2025",
+    splash:
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
   },
   {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
-    tag: "Front-to-back · ace",
+    from: "emerald",
+    to: "diamond",
+    label: "Promo Emerald → Diamond",
+    season: "Split 2026",
+    splash:
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
   },
   {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg",
-    tag: "Top side · ult chain",
+    from: "diamond",
+    to: "master",
+    label: "Diamond → Master",
+    season: "Split 2026",
+    splash:
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
   },
   {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
-    tag: "Bot river · hook engage",
+    from: "master",
+    to: "grandmaster",
+    label: "Master → Grandmaster",
+    season: "Split 2026",
+    splash:
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
   },
   {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
-    tag: "Side flip · pick into 5",
+    from: "grandmaster",
+    to: "challenger",
+    label: "Grandmaster → Challenger",
+    season: "Ranked 2026",
+    splash:
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg",
+  },
+] as const;
+
+const COACH_SESSIONS = [
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Syndra_0.jpg",
+    coach: "Coach mid",
+    player: "Pro mid · LCK academy",
+    note: "Prioridad de wave antes del primer roam",
+    tag: "VOD review · 1:1",
+  },
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Sejuani_0.jpg",
+    coach: "Coach jungle",
+    player: "Pro jungler · LEC",
+    note: "Pathing A → invade solo si hay info",
+    tag: "Scrim notes",
+  },
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg",
+    coach: "Coach top",
+    player: "Pro top · CBLOL",
+    note: "TP sync con fight de Herald",
+    tag: "Draft + plan",
+  },
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nautilus_0.jpg",
+    coach: "Coach bot",
+    player: "Pro ADC / Support",
+    note: "Spacing en lane vs engage",
+    tag: "Lane clinic",
+  },
+  {
+    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Azir_0.jpg",
+    coach: "Head coach",
+    player: "Roster completo",
+    note: "Wincon del draft y foco de pelea",
+    tag: "Team talk",
+  },
+] as const;
+
+const OFFER_FRAMES = [
+  {
+    kind: "select" as const,
+    tag: "Champion select",
+    title: "Draft listo",
+    champs: ["Ahri", "LeeSin", "Jinx", "Thresh", "Ornn", "Viego", "Ezreal", "Lulu", "Syndra", "Camille"],
+  },
+  {
+    kind: "challenger" as const,
+    tag: "Loading Challenger",
+    title: "Cola Challenger",
+    splash:
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yasuo_0.jpg",
+  },
+  {
+    kind: "challenger" as const,
+    tag: "Loading Challenger",
+    title: "Lobby alto elo",
+    splash:
+      "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ahri_0.jpg",
+  },
+  {
+    kind: "charts" as const,
+    tag: "Métricas de mejora",
+    title: "LP · WR · CS/min",
+  },
+  {
+    kind: "charts" as const,
+    tag: "Tendencia semanal",
+    title: "Objetivos cumplidos",
   },
 ] as const;
 
@@ -36,36 +130,95 @@ function loadingArt(championId: string): string {
   return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
 }
 
+function squareArt(championId: string): string {
+  return `https://ddragon.leagueoflegends.com/cdn/16.14.1/img/champion/${championId}.png`;
+}
+
 const ROLE_ACADEMIES = [
   {
     role: "Top",
     blurb: "Wave control, trades y timing de TP.",
     label: "Gameplay Top",
-    frames: [loadingArt("Ornn"), loadingArt("Camille"), loadingArt("Aatrox")],
+    frames: [
+      "Ornn",
+      "Camille",
+      "Aatrox",
+      "Renekton",
+      "Gwen",
+      "Sett",
+      "Jax",
+      "Darius",
+      "KSante",
+      "Gnar",
+    ].map(loadingArt),
   },
   {
     role: "Jungle",
     blurb: "Pathing, tempo y objetivos.",
     label: "Gameplay Jungle",
-    frames: [loadingArt("Viego"), loadingArt("LeeSin"), loadingArt("JarvanIV")],
+    frames: [
+      "Viego",
+      "LeeSin",
+      "JarvanIV",
+      "Sejuani",
+      "Elise",
+      "Nidalee",
+      "Vi",
+      "Belveth",
+      "Graves",
+      "Kindred",
+    ].map(loadingArt),
   },
   {
     role: "Mid",
     blurb: "Prioridad, roam y wincons.",
     label: "Gameplay Mid",
-    frames: [loadingArt("Ahri"), loadingArt("Yasuo"), loadingArt("Syndra")],
+    frames: [
+      "Ahri",
+      "Yasuo",
+      "Syndra",
+      "Orianna",
+      "Zed",
+      "Viktor",
+      "Azir",
+      "Akali",
+      "Sylas",
+      "Leblanc",
+    ].map(loadingArt),
   },
   {
     role: "ADC",
     blurb: "CS, spacing y late game.",
     label: "Gameplay ADC",
-    frames: [loadingArt("Jinx"), loadingArt("Kaisa"), loadingArt("Ezreal")],
+    frames: [
+      "Jinx",
+      "Kaisa",
+      "Ezreal",
+      "Lucian",
+      "Ashe",
+      "MissFortune",
+      "Zeri",
+      "Aphelios",
+      "Jhin",
+      "Caitlyn",
+    ].map(loadingArt),
   },
   {
     role: "Support",
     blurb: "Visión, roam y sinergia.",
     label: "Gameplay Support",
-    frames: [loadingArt("Thresh"), loadingArt("Nautilus"), loadingArt("Lulu")],
+    frames: [
+      "Thresh",
+      "Nautilus",
+      "Lulu",
+      "Rakan",
+      "Blitzcrank",
+      "Pyke",
+      "Nami",
+      "Renata",
+      "Milio",
+      "Bard",
+    ].map(loadingArt),
   },
 ] as const;
 
@@ -96,33 +249,44 @@ function useFrameCycle(length: number, intervalMs: number) {
   return index;
 }
 
-function TeamfightCompilation() {
+function RankClimbHero() {
+  const index = useFrameCycle(RANK_CLIMB.length, 3600);
+  const current = RANK_CLIMB[index];
+
   return (
-    <div className="tf-compilation" aria-hidden="true">
-      <div
-        className="tf-poster"
-        style={{ backgroundImage: `url(${TEAMFIGHT_MONTAGE_POSTER})` }}
-      />
-      <iframe
-        className="tf-youtube"
-        src={TEAMFIGHT_MONTAGE_EMBED}
-        title="LoL best plays montage"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerPolicy="strict-origin-when-cross-origin"
-        allowFullScreen
-      />
+    <div className="tf-compilation rank-climb" aria-hidden="true">
+      {RANK_CLIMB.map((frame, frameIndex) => (
+        <div
+          key={frame.label}
+          className={`rank-climb-frame${frameIndex === index ? " is-active" : ""}`}
+          style={{ backgroundImage: `url(${frame.splash})` }}
+        />
+      ))}
       <div className="tf-scrim" />
+      <div className="rank-climb-stage">
+        <img
+          className="rank-climb-emblem from"
+          src={RANK_EMBLEM(current.from)}
+          alt=""
+        />
+        <span className="rank-climb-arrow" />
+        <img
+          className="rank-climb-emblem to"
+          src={RANK_EMBLEM(current.to)}
+          alt=""
+        />
+      </div>
       <div className="tf-hud">
         <div className="tf-hud-top">
-          <span>Teamfight montage</span>
-          <strong>Best plays</strong>
-          <span>Autoplay</span>
+          <span>Ascenso ranked</span>
+          <strong>{current.season}</strong>
+          <span>Logos actuales</span>
         </div>
         <div className="tf-hud-bars">
           <span className="fight-bar ally" />
           <span className="fight-bar enemy" />
         </div>
-        <div className="tf-tag">Compilation · estilo Worlds</div>
+        <div className="tf-tag">{current.label}</div>
       </div>
     </div>
   );
@@ -141,7 +305,7 @@ function LaneGameplay({
   frames: readonly string[];
   onSelect: () => void;
 }) {
-  const index = useFrameCycle(frames.length, 3800 + role.length * 120);
+  const index = useFrameCycle(frames.length, 3200 + role.length * 90);
 
   return (
     <button className="lane-gameplay" type="button" onClick={onSelect}>
@@ -165,12 +329,13 @@ function LaneGameplay({
   );
 }
 
-function FightShowcase({ caption }: { caption: string }) {
-  const index = useFrameCycle(TEAMFIGHT_STILLS.length, 4000);
+function CoachShowcase({ caption }: { caption: string }) {
+  const index = useFrameCycle(COACH_SESSIONS.length, 4200);
+  const current = COACH_SESSIONS[index];
 
   return (
-    <div className="media-reel media-reel-xl" aria-hidden="true">
-      {TEAMFIGHT_STILLS.map((frame, frameIndex) => (
+    <div className="media-reel media-reel-xl coach-reel" aria-hidden="true">
+      {COACH_SESSIONS.map((frame, frameIndex) => (
         <div
           key={frame.src}
           className={`media-reel-frame${frameIndex === index ? " is-active" : ""}`}
@@ -178,22 +343,102 @@ function FightShowcase({ caption }: { caption: string }) {
         />
       ))}
       <div className="media-reel-scrim" />
-      <div className="fight-hud">
-        <div className="fight-hud-top">
-          <span>5v5</span>
-          <strong>28:41</strong>
-          <span>Ace setup</span>
+      <div className="coach-hud">
+        <div className="coach-call">
+          <span className="coach-pill live">En vivo</span>
+          <strong>{current.coach}</strong>
+          <span>→ {current.player}</span>
         </div>
-        <div className="fight-hud-bars">
-          <span className="fight-bar ally" />
-          <span className="fight-bar enemy" />
-        </div>
-        <div className="fight-feed">
-          <span>{TEAMFIGHT_STILLS[index].tag}</span>
-          <span>Engage limpio · foco carry</span>
+        <div className="coach-note">{current.note}</div>
+        <div className="coach-chips">
+          <span>VOD</span>
+          <span>Objetivos</span>
+          <span>Repetición</span>
         </div>
       </div>
-      <span className="media-reel-caption">{caption}</span>
+      <span className="media-reel-caption">
+        {caption} · {current.tag}
+      </span>
+    </div>
+  );
+}
+
+function OfferShowcase() {
+  const index = useFrameCycle(OFFER_FRAMES.length, 3800);
+  const current = OFFER_FRAMES[index];
+
+  return (
+    <div className="media-reel media-reel-xl offer-reel" aria-hidden="true">
+      {OFFER_FRAMES.map((frame, frameIndex) => {
+        const active = frameIndex === index;
+        if (frame.kind === "select") {
+          return (
+            <div
+              key={`select-${frameIndex}`}
+              className={`offer-frame offer-select${active ? " is-active" : ""}`}
+            >
+              <div className="offer-select-grid">
+                {frame.champs.map((id) => (
+                  <img key={id} src={squareArt(id)} alt="" />
+                ))}
+              </div>
+              <div className="offer-select-meta">
+                <strong>{frame.title}</strong>
+                <span>Bans listos · roles asignados</span>
+              </div>
+            </div>
+          );
+        }
+        if (frame.kind === "challenger") {
+          return (
+            <div
+              key={frame.splash}
+              className={`offer-frame offer-challenger${active ? " is-active" : ""}`}
+            >
+              <img className="offer-challenger-art" src={frame.splash} alt="" />
+              <img
+                className="offer-challenger-badge"
+                src={RANK_EMBLEM("challenger")}
+                alt=""
+              />
+              <strong>{frame.title}</strong>
+            </div>
+          );
+        }
+        return (
+          <div
+            key={`charts-${frameIndex}`}
+            className={`offer-frame offer-charts${active ? " is-active" : ""}`}
+          >
+            <strong>{frame.title}</strong>
+            <svg className="offer-chart-svg" viewBox="0 0 320 140" role="img">
+              <polyline
+                className="offer-chart-line"
+                points="8,118 48,102 88,108 128,74 168,82 208,48 248,56 308,22"
+              />
+              <polyline
+                className="offer-chart-line alt"
+                points="8,124 48,120 88,112 128,98 168,90 208,78 248,70 308,52"
+              />
+            </svg>
+            <div className="offer-chart-stats">
+              <span>
+                <b>+214 LP</b>
+                semana
+              </span>
+              <span>
+                <b>58% WR</b>
+                20 partidas
+              </span>
+              <span>
+                <b>7.4 CS</b>
+                /min
+              </span>
+            </div>
+          </div>
+        );
+      })}
+      <span className="media-reel-caption">{current.tag}</span>
     </div>
   );
 }
@@ -259,7 +504,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
         ref={heroRef}
         onMouseMove={handlePointerMove}
       >
-        <TeamfightCompilation />
+        <RankClimbHero />
         <div className="landing-hero-scrim" aria-hidden="true" />
 
         <div className="landing-hero-content">
@@ -289,8 +534,8 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
         </div>
       </header>
 
-      <section className="landing-band" data-reveal>
-        <div className="landing-band-copy">
+      <section className="landing-band landing-band-coach" data-reveal>
+        <div className="landing-band-copy landing-band-copy-wide">
           <span className="eyebrow">Por qué un coach</span>
           <h2>La diferencia está entre partidas, no en el chat.</h2>
           <p>
@@ -305,7 +550,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
             <li>Foco en tu rol, tu pool y el parche actual</li>
           </ul>
         </div>
-        <FightShowcase caption="Highlight de pelea · estilo Worlds" />
+        <CoachShowcase caption="Coach → proplayer" />
       </section>
 
       <section className="landing-roles" data-reveal>
@@ -313,8 +558,8 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
           <span className="eyebrow">Gameplays por línea</span>
           <h2>Top, Jungle, Mid, ADC y Support</h2>
           <p>
-            Paneles más grandes con rotación de jugadas por rol. Entra a tu
-            academia y conecta coaching con tu camino.
+            Rotación amplia de campeones por rol. Entra a tu academia y conecta
+            coaching con tu camino.
           </p>
         </div>
         <div className="lane-gameplay-grid">
@@ -332,7 +577,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
       </section>
 
       <section className="landing-band landing-band-reverse" data-reveal>
-        <FightShowcase caption="Momento de equipo · sin controles" />
+        <OfferShowcase />
         <div className="landing-band-copy">
           <span className="eyebrow">Qué ofrecemos</span>
           <h2>Todo el ciclo: draft, partida e informe.</h2>
