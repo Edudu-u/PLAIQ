@@ -4,11 +4,13 @@ import type { MouseEvent } from "react";
 const HERO_SPLASH =
   "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Mordekaiser_0.jpg";
 
-const FIGHT_REEL =
-  "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4";
-
-const AMBIENT_REEL =
-  "https://videos.pexels.com/video-files/5752729/5752729-uhd_2560_1440_30fps.mp4";
+const FIGHT_FRAMES = [
+  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
+  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
+  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
+  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
+  "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+];
 
 const ROLE_ACADEMIES = [
   {
@@ -43,34 +45,47 @@ type LandingHomeProps = {
   onExplorePro: () => void;
 };
 
-function AutoplayReel({
-  src,
-  poster,
-  caption,
-}: {
-  src: string;
-  poster: string;
-  caption: string;
-}) {
-  const [ready, setReady] = useState(false);
+function FightShowcase({ caption }: { caption: string }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (reduceMotion) {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      setIndex((current) => (current + 1) % FIGHT_FRAMES.length);
+    }, 4200);
+    return () => window.clearInterval(timer);
+  }, []);
 
   return (
-    <div className="media-reel">
-      <video
-        className={ready ? "is-ready" : undefined}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        poster={poster}
-        controls={false}
-        disablePictureInPicture
-        onCanPlay={() => setReady(true)}
-      >
-        <source src={src} type="video/mp4" />
-      </video>
+    <div className="media-reel media-reel-fight" aria-hidden="true">
+      {FIGHT_FRAMES.map((src, frameIndex) => (
+        <div
+          key={src}
+          className={`media-reel-frame${frameIndex === index ? " is-active" : ""}`}
+          style={{ backgroundImage: `url(${src})` }}
+        />
+      ))}
       <div className="media-reel-scrim" />
+      <div className="fight-hud">
+        <div className="fight-hud-top">
+          <span>5v5</span>
+          <strong>28:41</strong>
+          <span>Ace setup</span>
+        </div>
+        <div className="fight-hud-bars">
+          <span className="fight-bar ally" />
+          <span className="fight-bar enemy" />
+        </div>
+        <div className="fight-feed">
+          <span>Equipo azul inicia</span>
+          <span>Engage limpio · foco carry</span>
+        </div>
+      </div>
       <span className="media-reel-caption">{caption}</span>
     </div>
   );
@@ -187,11 +202,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
             <li>Foco en tu rol, tu pool y el parche actual</li>
           </ul>
         </div>
-        <AutoplayReel
-          src={FIGHT_REEL}
-          poster="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg"
-          caption="Atmósfera de pelea de equipo · autoplay"
-        />
+        <FightShowcase caption="Highlight de pelea · estilo Worlds" />
       </section>
 
       <section className="landing-roles" data-reveal>
@@ -224,11 +235,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
       </section>
 
       <section className="landing-band landing-band-reverse" data-reveal>
-        <AutoplayReel
-          src={AMBIENT_REEL}
-          poster="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Volibear_0.jpg"
-          caption="Ritmo de partida · sin controles"
-        />
+        <FightShowcase caption="Momento de equipo · sin controles" />
         <div className="landing-band-copy">
           <span className="eyebrow">Qué ofrecemos</span>
           <h2>Todo el ciclo: draft, partida e informe.</h2>
