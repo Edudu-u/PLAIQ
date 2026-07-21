@@ -1271,6 +1271,7 @@ h3 {
 .plan-panel .primary-button,
 .plan-panel .ghost-button {
   width: 100%;
+  margin-top: auto;
   justify-content: center;
 }
 
