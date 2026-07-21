@@ -328,29 +328,28 @@ h3 {
   background: #071018;
 }
 
-.tf-frame {
+.tf-youtube {
   position: absolute;
-  inset: -2%;
-  background-position: center 24%;
-  background-size: cover;
-  opacity: 0;
-  transform: scale(1.08);
-  transition: opacity 800ms ease;
-  filter: saturate(0.95) brightness(0.62);
-}
-
-.tf-frame.is-active {
-  opacity: 1;
-  animation: splashDrift 12s ease-in-out infinite alternate;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 177.78vh);
+  height: max(100%, 56.25vw);
+  border: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: saturate(0.95) brightness(0.72);
 }
 
 .tf-scrim {
   position: absolute;
   inset: 0;
+  z-index: 1;
   background:
     linear-gradient(100deg, rgba(7, 16, 24, 0.92) 0%, rgba(7, 16, 24, 0.55) 48%, rgba(7, 16, 24, 0.28) 100%),
     linear-gradient(180deg, rgba(7, 16, 24, 0.15), rgba(7, 16, 24, 0.82)),
     radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(45, 212, 191, 0.18), transparent 36%);
+  pointer-events: none;
 }
 
 .tf-hud {
@@ -706,7 +705,8 @@ h3 {
   position: relative;
   display: block;
   width: 100%;
-  min-height: 360px;
+  aspect-ratio: 308 / 560;
+  min-height: 420px;
   padding: 0;
   overflow: hidden;
   border: 1px solid rgba(125, 211, 196, 0.18);
@@ -727,35 +727,53 @@ h3 {
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.38);
 }
 
-.lane-frame {
+.lane-art-stage {
   position: absolute;
-  inset: -2%;
-  background-position: center 18%;
-  background-size: cover;
-  opacity: 0;
-  transform: scale(1.06);
-  transition: opacity 700ms ease;
-  filter: saturate(0.92) brightness(0.7);
+  inset: 0;
+  overflow: hidden;
+  background: #070b14;
 }
 
-.lane-frame.is-active {
+.lane-art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 700ms ease, transform 6.5s ease;
+  filter: saturate(0.95) brightness(0.88);
+  pointer-events: none;
+}
+
+.lane-art.is-active {
   opacity: 1;
-  animation: splashDrift 11s ease-in-out infinite alternate;
+  transform: scale(1);
+}
+
+.lane-gameplay:hover .lane-art.is-active {
+  transform: scale(1.05);
 }
 
 .lane-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(7, 16, 24, 0.05) 18%, rgba(7, 16, 24, 0.92) 78%);
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(7, 16, 24, 0.02) 42%, rgba(7, 16, 24, 0.9) 88%);
+  pointer-events: none;
 }
 
 .lane-hud {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   gap: 8px;
   align-content: end;
-  min-height: 360px;
+  min-height: 100%;
+  height: 100%;
   padding: 18px;
 }
 
@@ -2005,9 +2023,12 @@ h3 {
 
   .media-reel,
   .media-reel-xl,
-  .lane-gameplay,
+  .lane-gameplay {
+    min-height: 300px;
+  }
+
   .lane-hud {
-    min-height: 280px;
+    min-height: 0;
   }
 
   .lane-gameplay-grid,

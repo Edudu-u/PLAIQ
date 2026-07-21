@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 
-const TEAMFIGHT_COMPILATION = [
+const TEAMFIGHT_MONTAGE_ID = "qVWby_FIFD0";
+const TEAMFIGHT_MONTAGE_EMBED = `https://www.youtube-nocookie.com/embed/${TEAMFIGHT_MONTAGE_ID}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=${TEAMFIGHT_MONTAGE_ID}&iv_load_policy=3`;
+
+const TEAMFIGHT_STILLS = [
   {
     src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
     tag: "Baron pit · engage",
@@ -28,56 +31,40 @@ const TEAMFIGHT_COMPILATION = [
   },
 ] as const;
 
+function loadingArt(championId: string): string {
+  return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
+}
+
 const ROLE_ACADEMIES = [
   {
     role: "Top",
     blurb: "Wave control, trades y timing de TP.",
     label: "Gameplay Top",
-    frames: [
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg",
-    ],
+    frames: [loadingArt("Ornn"), loadingArt("Camille"), loadingArt("Aatrox")],
   },
   {
     role: "Jungle",
     blurb: "Pathing, tempo y objetivos.",
     label: "Gameplay Jungle",
-    frames: [
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Viego_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/LeeSin_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/JarvanIV_0.jpg",
-    ],
+    frames: [loadingArt("Viego"), loadingArt("LeeSin"), loadingArt("JarvanIV")],
   },
   {
     role: "Mid",
     blurb: "Prioridad, roam y wincons.",
     label: "Gameplay Mid",
-    frames: [
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Syndra_0.jpg",
-    ],
+    frames: [loadingArt("Ahri"), loadingArt("Yasuo"), loadingArt("Syndra")],
   },
   {
     role: "ADC",
     blurb: "CS, spacing y late game.",
     label: "Gameplay ADC",
-    frames: [
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Kaisa_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ezreal_0.jpg",
-    ],
+    frames: [loadingArt("Jinx"), loadingArt("Kaisa"), loadingArt("Ezreal")],
   },
   {
     role: "Support",
     blurb: "Visión, roam y sinergia.",
     label: "Gameplay Support",
-    frames: [
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Thresh_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nautilus_0.jpg",
-      "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lulu_0.jpg",
-    ],
+    frames: [loadingArt("Thresh"), loadingArt("Nautilus"), loadingArt("Lulu")],
   },
 ] as const;
 
@@ -109,39 +96,27 @@ function useFrameCycle(length: number, intervalMs: number) {
 }
 
 function TeamfightCompilation() {
-  const index = useFrameCycle(TEAMFIGHT_COMPILATION.length, 3200);
-  const current = TEAMFIGHT_COMPILATION[index];
-
   return (
     <div className="tf-compilation" aria-hidden="true">
-      {TEAMFIGHT_COMPILATION.map((frame, frameIndex) => (
-        <div
-          key={frame.src}
-          className={`tf-frame${frameIndex === index ? " is-active" : ""}`}
-          style={{ backgroundImage: `url(${frame.src})` }}
-        />
-      ))}
+      <iframe
+        className="tf-youtube"
+        src={TEAMFIGHT_MONTAGE_EMBED}
+        title="LoL best plays montage"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
       <div className="tf-scrim" />
       <div className="tf-hud">
         <div className="tf-hud-top">
-          <span>Teamfight compilation</span>
-          <strong>0{index + 1} / 0{TEAMFIGHT_COMPILATION.length}</strong>
-          <span>Worlds style</span>
+          <span>Teamfight montage</span>
+          <strong>Best plays</strong>
+          <span>Autoplay</span>
         </div>
         <div className="tf-hud-bars">
           <span className="fight-bar ally" />
           <span className="fight-bar enemy" />
         </div>
-        <div className="tf-tag">{current.tag}</div>
-      </div>
-      <div className="tf-thumbs">
-        {TEAMFIGHT_COMPILATION.map((frame, frameIndex) => (
-          <span
-            key={frame.src}
-            className={`tf-thumb${frameIndex === index ? " is-active" : ""}`}
-            style={{ backgroundImage: `url(${frame.src})` }}
-          />
-        ))}
+        <div className="tf-tag">Compilation · estilo Worlds</div>
       </div>
     </div>
   );
@@ -164,13 +139,16 @@ function LaneGameplay({
 
   return (
     <button className="lane-gameplay" type="button" onClick={onSelect}>
-      {frames.map((src, frameIndex) => (
-        <span
-          key={src}
-          className={`lane-frame${frameIndex === index ? " is-active" : ""}`}
-          style={{ backgroundImage: `url(${src})` }}
-        />
-      ))}
+      <span className="lane-art-stage">
+        {frames.map((src, frameIndex) => (
+          <img
+            key={src}
+            className={`lane-art${frameIndex === index ? " is-active" : ""}`}
+            src={src}
+            alt=""
+          />
+        ))}
+      </span>
       <span className="lane-scrim" />
       <span className="lane-hud">
         <span className="lane-chip">{label}</span>
@@ -182,11 +160,11 @@ function LaneGameplay({
 }
 
 function FightShowcase({ caption }: { caption: string }) {
-  const index = useFrameCycle(TEAMFIGHT_COMPILATION.length, 4000);
+  const index = useFrameCycle(TEAMFIGHT_STILLS.length, 4000);
 
   return (
     <div className="media-reel media-reel-xl" aria-hidden="true">
-      {TEAMFIGHT_COMPILATION.map((frame, frameIndex) => (
+      {TEAMFIGHT_STILLS.map((frame, frameIndex) => (
         <div
           key={frame.src}
           className={`media-reel-frame${frameIndex === index ? " is-active" : ""}`}
@@ -205,7 +183,7 @@ function FightShowcase({ caption }: { caption: string }) {
           <span className="fight-bar enemy" />
         </div>
         <div className="fight-feed">
-          <span>{TEAMFIGHT_COMPILATION[index].tag}</span>
+          <span>{TEAMFIGHT_STILLS[index].tag}</span>
           <span>Engage limpio · foco carry</span>
         </div>
       </div>
