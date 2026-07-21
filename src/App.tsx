@@ -756,96 +756,152 @@ export function App() {
         )}
 
         {view === "inicio" && (
-          <>
-            <header className="hero-panel">
-              <div>
+          <div className="landing">
+            <header className="landing-hero">
+              <div className="landing-hero-copy">
                 <p className="brand-hero">PLAIQ</p>
-                <h1>Juega con propósito.</h1>
+                <h1>Tu entrenador personal para League.</h1>
                 <p className="hero-copy">
-                  Coaching personalizado entre partidas: objetivos medibles,
-                  progreso real y un plan para tu rol.
+                  Coaching entre partidas con objetivos medibles y progreso
+                  real — no un copiloto que te diga cómo pelear.
                 </p>
+                <div className="landing-cta">
+                  <button
+                    className="primary-button"
+                    type="button"
+                    onClick={() => setView("perfiles")}
+                  >
+                    Empezar gratis
+                  </button>
+                  <button
+                    className="ghost-button"
+                    type="button"
+                    onClick={() => {
+                      document
+                        .getElementById("planes-plaiq")
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                  >
+                    Ver planes
+                  </button>
+                </div>
               </div>
-              <div className="hero-meta">
-                <span className="role-badge">
-                  {summary?.player.primaryRole ?? "ADC"}
-                </span>
-                <small>
-                  {profileDetail?.riotId ??
-                    activeProfile?.riotId ??
-                    summary?.player.riotId ??
-                    "Sin perfil vinculado"}
-                </small>
+              <div className="landing-hero-visual" aria-hidden="true">
+                <div className="landing-radar" />
+                <div className="landing-radar-core">
+                  <span>PLAY</span>
+                  <strong>IQ</strong>
+                </div>
               </div>
             </header>
 
-            {profileDetail && (
-              <section className="summary-profile-preview">
-                <img src={profileDetail.profileIconUrl} alt="" />
-                <div>
-                  <span className="eyebrow">Perfil activo</span>
-                  <strong>{profileDetail.riotId}</strong>
-                  <small>
-                    Nivel {profileDetail.summonerLevel} ·{" "}
-                    {formatTier(profileDetail.ranked.soloDuo)} Solo/Dúo
-                  </small>
-                </div>
-                <button
-                  className="ghost-button"
-                  type="button"
-                  onClick={() => setView("perfiles")}
-                >
-                  Ver perfil completo
-                </button>
-              </section>
-            )}
-
-            {summary ? (
-              <section className="focus-strip">
-                <div>
-                  <span className="eyebrow">Enfoque actual</span>
-                  <h2>{summary.focus}</h2>
-                  <p>{summary.coachMessage}</p>
-                </div>
-                <button
-                  className="ghost-button"
-                  type="button"
-                  onClick={() => setView("coaching")}
-                >
-                  Ver coaching
-                </button>
-              </section>
-            ) : (
-              <section className="loading-card">
-                {apiError
-                  ? "El coaching se cargará al conectar la API."
-                  : "Preparando tu plan de coaching…"}
-              </section>
-            )}
-
-            <section className="quick-grid">
-              <button
-                className="quick-card"
-                type="button"
-                onClick={() => setView("perfiles")}
-              >
-                <span className="eyebrow">Identidad</span>
-                <strong>Busca un Riot ID</strong>
-                <small>
-                  Icono, nivel, Solo/Dúo, Flex, TFT y maestrías.
-                </small>
-              </button>
-              <button
-                className="quick-card"
-                type="button"
-                onClick={() => setView("coaching")}
-              >
-                <span className="eyebrow">Plan</span>
-                <strong>Abre tu coaching</strong>
-                <small>Objetivos medibles y foco entre partidas.</small>
-              </button>
+            <section className="landing-section">
+              <span className="eyebrow">Qué es PLAIQ</span>
+              <h2>Play IQ: inteligencia para mejorar de verdad</h2>
+              <p>
+                PLAIQ acompaña todo el ciclo — draft, partida e informe — con
+                foco en hábitos y métricas. Las estadísticas se calculan en
+                código; la IA interpreta y propone el plan. Tu Riot API Key y
+                OpenAI viven solo en el backend: el escritorio nunca las ve.
+              </p>
             </section>
-          </>
+
+            <section className="landing-section">
+              <span className="eyebrow">Sistema</span>
+              <h2>Todo lo que ofrece el centro táctico</h2>
+              <ul className="landing-offer-list">
+                <li>
+                  <strong>Perfiles Riot</strong>
+                  <span>
+                    Vincula tu Riot ID, rangos Solo/Flex/TFT, maestrías e
+                    historial Match-v5 sin exponer tu PUUID.
+                  </span>
+                </li>
+                <li>
+                  <strong>Coaching con objetivos</strong>
+                  <span>
+                    Metas medibles (CS, visión, muertes tempranas) y un coach
+                    que habla claro entre partidas.
+                  </span>
+                </li>
+                <li>
+                  <strong>Draft inteligente</strong>
+                  <span>
+                    Alternativas puntuadas con tu rendimiento, maestría y
+                    sinergia — sin órdenes ni tracking enemigo oculto.
+                  </span>
+                </li>
+                <li>
+                  <strong>Tierlist y parche</strong>
+                  <span>
+                    Lectura del meta y notas del parche filtradas a tu rol y
+                    pool para decidir qué practicar.
+                  </span>
+                </li>
+                <li>
+                  <strong>Captura en partida</strong>
+                  <span>
+                    Recopilación silenciosa desde Live Client; HUD opcional
+                    solo con metas que ya definiste.
+                  </span>
+                </li>
+              </ul>
+            </section>
+
+            <section className="landing-section" id="planes-plaiq">
+              <span className="eyebrow">Planes</span>
+              <h2>Gratuito y PRO</h2>
+              <p className="landing-section-lead">
+                Hay capa gratuita siempre. PRO desbloquea el ritmo diario de
+                un entrenador de verdad.
+              </p>
+              <div className="plan-compare">
+                <article className="plan-panel">
+                  <span className="eyebrow">Gratis</span>
+                  <h3>PLAIQ Free</h3>
+                  <p className="plan-price">$0</p>
+                  <ul>
+                    <li>Vincular Riot ID y resumen de perfil</li>
+                    <li>Historial de partidas básico</li>
+                    <li>Coach general con cupo limitado</li>
+                    <li>Actividades semanales limitadas</li>
+                    <li>Acceso a Notas del Parche resumidas</li>
+                  </ul>
+                  <button
+                    className="ghost-button"
+                    type="button"
+                    onClick={() => setView("perfiles")}
+                  >
+                    Empezar en Free
+                  </button>
+                </article>
+
+                <article className="plan-panel plan-panel-pro">
+                  <span className="eyebrow">Recomendado</span>
+                  <h3>PLAIQ PRO</h3>
+                  <p className="plan-price">
+                    Suscripción
+                    <small>cuando abramos pagos</small>
+                  </p>
+                  <ul>
+                    <li>Sync automático y tendencias de progreso</li>
+                    <li>Coach especializado por rol</li>
+                    <li>Plan diario personalizado</li>
+                    <li>Análisis postpartida con IA</li>
+                    <li>Tierlist y parche orientados a tu pool</li>
+                    <li>Prioridad en nuevas herramientas de coaching</li>
+                  </ul>
+                  <button
+                    className="primary-button"
+                    type="button"
+                    onClick={() => setView("coaching")}
+                  >
+                    Explorar coaching PRO
+                  </button>
+                </article>
+              </div>
+            </section>
+          </div>
         )}
 
         {view === "perfiles" && (
