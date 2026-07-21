@@ -233,11 +233,20 @@ h3 {
   font-weight: 800;
   letter-spacing: -0.05em;
   line-height: 0.9;
+  color: #f4fffc;
   background: linear-gradient(120deg, #f4fffc 20%, var(--teal) 70%, var(--amber));
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  -webkit-text-fill-color: transparent;
   animation: brandReveal 700ms ease both;
+}
+
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .brand-hero {
+    color: var(--teal);
+    -webkit-text-fill-color: currentColor;
+    background: none;
+  }
 }
 
 .hero-panel {
