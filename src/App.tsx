@@ -125,10 +125,10 @@ function rankEmblemUrl(entry: RankedQueueEntry): string {
   ]);
 
   if (!known.has(tier)) {
-    return "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/unranked.png";
+    return "https://opgg-static.akamaized.net/images/medals/default.png";
   }
 
-  return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblem/emblem-${tier}.png`;
+  return `https://opgg-static.akamaized.net/images/medals_new/${tier}.png`;
 }
 
 function RankedCard({ entry }: { entry: RankedQueueEntry }) {
