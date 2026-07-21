@@ -86,10 +86,13 @@ export function getRiotSearchHistory(
   );
 }
 
+/** Riot Match-v5 max ids per request; used for sync + list. */
+export const MATCH_HISTORY_LIMIT = 100;
+
 export function syncProfileMatches(
   clientId: string,
   profileId: string,
-  count = 10,
+  count = MATCH_HISTORY_LIMIT,
 ): Promise<SyncMatchesResult> {
   return request<SyncMatchesResult>(
     `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches/sync`,
@@ -106,7 +109,7 @@ export function syncProfileMatches(
 export function getProfileMatches(
   clientId: string,
   profileId: string,
-  limit = 10,
+  limit = MATCH_HISTORY_LIMIT,
 ): Promise<MatchSummary[]> {
   return request<MatchSummary[]>(
     `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches?clientId=${encodeURIComponent(clientId)}&limit=${limit}`,

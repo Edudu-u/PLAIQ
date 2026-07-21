@@ -8,6 +8,7 @@ import {
   getRiotProfiles,
   getRiotSearchHistory,
   lookupRiotProfile,
+  MATCH_HISTORY_LIMIT,
   syncProfileMatches,
 } from "./lib/api";
 import { getClientId } from "./lib/client-id";
@@ -392,7 +393,7 @@ function ProfileDetailPanel({
           <div className="section-heading compact">
             <div>
               <span className="eyebrow">Historial</span>
-              <h2>Partidas recientes</h2>
+              <h2>Historial de partidas</h2>
             </div>
             <span>{matches.length} partidas</span>
           </div>
@@ -499,14 +500,26 @@ export function App() {
 
       if (refresh) {
         try {
-          const synced = await syncProfileMatches(clientId, detail.id, 10);
+          const synced = await syncProfileMatches(
+            clientId,
+            detail.id,
+            MATCH_HISTORY_LIMIT,
+          );
           setMatches(synced.matches);
         } catch {
-          const listed = await getProfileMatches(clientId, detail.id, 10);
+          const listed = await getProfileMatches(
+            clientId,
+            detail.id,
+            MATCH_HISTORY_LIMIT,
+          );
           setMatches(listed);
         }
       } else {
-        const listed = await getProfileMatches(clientId, detail.id, 10);
+        const listed = await getProfileMatches(
+          clientId,
+          detail.id,
+          MATCH_HISTORY_LIMIT,
+        );
         setMatches(listed);
       }
     } catch (error) {
@@ -581,7 +594,7 @@ export function App() {
 
     const controller = new AbortController();
 
-    getProfileMatches(clientId, activeProfile.id, 10)
+    getProfileMatches(clientId, activeProfile.id, MATCH_HISTORY_LIMIT)
       .then((list) => {
         if (!controller.signal.aborted) {
           setMatches(list);
@@ -621,7 +634,11 @@ export function App() {
       setApiError(null);
       await refreshRiotData();
       try {
-        const synced = await syncProfileMatches(clientId, detail.id, 10);
+        const synced = await syncProfileMatches(
+          clientId,
+          detail.id,
+          MATCH_HISTORY_LIMIT,
+        );
         setMatches(synced.matches);
       } catch {
         setMatches([]);
@@ -647,7 +664,11 @@ export function App() {
     setMatchMessage(null);
 
     try {
-      const result = await syncProfileMatches(clientId, activeProfile.id, 10);
+      const result = await syncProfileMatches(
+        clientId,
+        activeProfile.id,
+        MATCH_HISTORY_LIMIT,
+      );
       setMatches(result.matches);
       setMatchMessage(
         `Importadas ${result.imported} · omitidas ${result.skipped}.`,
@@ -1007,7 +1028,9 @@ export function App() {
                   void handleSyncMatches();
                 }}
               >
-                {isSyncing ? "Sincronizando…" : "Sincronizar últimas 10"}
+                {isSyncing
+                  ? "Sincronizando…"
+                  : `Sincronizar últimas ${MATCH_HISTORY_LIMIT}`}
               </button>
             </header>
 
