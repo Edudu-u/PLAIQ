@@ -1,6 +1,8 @@
 const { app, BrowserWindow, session } = require("electron");
 const path = require("node:path");
 
+const brandIcon = path.join(__dirname, "..", "public", "brand", "icon.png");
+
 function createWindow() {
   const window = new BrowserWindow({
     width: 1180,
@@ -9,6 +11,7 @@ function createWindow() {
     minHeight: 620,
     backgroundColor: "#12121a",
     title: "PLAYQ.GG",
+    icon: brandIcon,
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -25,6 +28,8 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  app.setName("PLAYQ.GG");
+
   // YouTube embeds often fail in Electron (Error 153) without a normal Referer.
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
     const url = details.url;

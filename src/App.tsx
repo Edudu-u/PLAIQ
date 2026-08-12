@@ -1010,6 +1010,7 @@ export function App() {
 
         {view === "tierlist" && (
           <section className="module-placeholder">
+            <BrandLogo className="brand-logo brand-logo-module" />
             <span className="eyebrow">Meta</span>
             <h1>Tierlist</h1>
             <p>
@@ -1021,6 +1022,7 @@ export function App() {
 
         {view === "notas-parche" && (
           <section className="module-placeholder">
+            <BrandLogo className="brand-logo brand-logo-module" />
             <span className="eyebrow">Actualizaciones</span>
             <h1>Notas del Parche</h1>
             <p>

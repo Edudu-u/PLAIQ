@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { BrandLogo } from "./BrandLogo";
 
 function loadingArt(championId: string): string {
   return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
@@ -203,7 +204,10 @@ export function LandingHome({
     <div className="blitz-home" ref={landingRef}>
       <section className="blitz-hero">
         <div className="blitz-hero-glow" aria-hidden="true" />
-        <span className="eyebrow">PLAYQ.GG</span>
+        <div className="blitz-hero-brand">
+          <BrandLogo className="brand-logo brand-logo-hero" />
+          <p className="blitz-hero-wordmark">PLAYQ.GG</p>
+        </div>
         <h1>Busca un invocador. Mejora con un plan.</h1>
         <p className="blitz-hero-lead">
           Perfiles Riot, coaching entre partidas, tierlist y parche — todo en un
