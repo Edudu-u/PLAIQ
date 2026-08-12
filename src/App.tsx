@@ -763,8 +763,6 @@ export function App() {
 
         {view === "inicio" && (
           <LandingHome
-            onStartFree={() => setView("perfiles")}
-            onExplorePro={() => setView("coaching")}
             gameName={gameName}
             tagLine={tagLine}
             platform={platform}
@@ -774,6 +772,7 @@ export function App() {
             onTagLineChange={setTagLine}
             onPlatformChange={setPlatform}
             onLookup={handleLookup}
+            onOpenModule={(id) => setView(id)}
           />
         )}
 

@@ -1,159 +1,83 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 
-const RANK_EMBLEM = (tier: string) =>
-  `/landing/emblems/${tier}.png`;
-
 function loadingArt(championId: string): string {
   return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
 }
 
-function squareArt(championId: string): string {
-  return `https://ddragon.leagueoflegends.com/cdn/16.14.1/img/champion/${championId}.png`;
-}
-
-const COACH_SESSIONS = [
-  {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Syndra_0.jpg",
-    coach: "Coach mid",
-    player: "Pro mid · LCK academy",
-    note: "Prioridad de wave antes del primer roam",
-    tag: "VOD review · 1:1",
-  },
-  {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Sejuani_0.jpg",
-    coach: "Coach jungle",
-    player: "Pro jungler · LEC",
-    note: "Pathing A → invade solo si hay info",
-    tag: "Scrim notes",
-  },
-  {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Camille_0.jpg",
-    coach: "Coach top",
-    player: "Pro top · CBLOL",
-    note: "TP sync con fight de Herald",
-    tag: "Draft + plan",
-  },
-  {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Nautilus_0.jpg",
-    coach: "Coach bot",
-    player: "Pro ADC / Support",
-    note: "Spacing en lane vs engage",
-    tag: "Lane clinic",
-  },
-  {
-    src: "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Azir_0.jpg",
-    coach: "Head coach",
-    player: "Roster completo",
-    note: "Wincon del draft y foco de pelea",
-    tag: "Team talk",
-  },
-] as const;
-
 const ROLE_ACADEMIES = [
   {
     role: "Top",
-    blurb: "Wave control, trades y timing de TP.",
-    label: "Gameplay Top",
-    frames: [
-      "Ornn",
-      "Camille",
-      "Aatrox",
-      "Renekton",
-      "Gwen",
-      "Sett",
-      "Jax",
-      "Darius",
-      "KSante",
-      "Gnar",
-    ].map(loadingArt),
+    blurb: "Wave, trades y TP.",
+    label: "Top",
+    frames: ["Ornn", "Camille", "Aatrox", "Renekton", "Gwen", "Sett"].map(
+      loadingArt,
+    ),
   },
   {
     role: "Jungle",
-    blurb: "Pathing, tempo y objetivos.",
-    label: "Gameplay Jungle",
-    frames: [
-      "Viego",
-      "LeeSin",
-      "JarvanIV",
-      "Sejuani",
-      "Elise",
-      "Nidalee",
-      "Vi",
-      "Belveth",
-      "Graves",
-      "Kindred",
-    ].map(loadingArt),
+    blurb: "Pathing y objetivos.",
+    label: "Jungle",
+    frames: ["Viego", "LeeSin", "JarvanIV", "Sejuani", "Elise", "Nidalee"].map(
+      loadingArt,
+    ),
   },
   {
     role: "Mid",
-    blurb: "Prioridad, roam y wincons.",
-    label: "Gameplay Mid",
-    frames: [
-      "Ahri",
-      "Yasuo",
-      "Syndra",
-      "Orianna",
-      "Zed",
-      "Viktor",
-      "Azir",
-      "Akali",
-      "Sylas",
-      "Leblanc",
-    ].map(loadingArt),
+    blurb: "Prioridad y roam.",
+    label: "Mid",
+    frames: ["Ahri", "Yasuo", "Syndra", "Orianna", "Zed", "Viktor"].map(
+      loadingArt,
+    ),
   },
   {
     role: "ADC",
-    blurb: "CS, spacing y late game.",
-    label: "Gameplay ADC",
-    frames: [
-      "Jinx",
-      "Kaisa",
-      "Ezreal",
-      "Lucian",
-      "Ashe",
-      "MissFortune",
-      "Zeri",
-      "Aphelios",
-      "Jhin",
-      "Caitlyn",
-    ].map(loadingArt),
+    blurb: "CS y spacing.",
+    label: "ADC",
+    frames: ["Jinx", "Kaisa", "Ezreal", "Lucian", "Ashe", "Zeri"].map(
+      loadingArt,
+    ),
   },
   {
     role: "Support",
-    blurb: "Visión, roam y sinergia.",
-    label: "Gameplay Support",
-    frames: [
-      "Thresh",
-      "Nautilus",
-      "Lulu",
-      "Rakan",
-      "Blitzcrank",
-      "Pyke",
-      "Nami",
-      "Renata",
-      "Milio",
-      "Bard",
-    ].map(loadingArt),
+    blurb: "Visión y sinergia.",
+    label: "Support",
+    frames: ["Thresh", "Nautilus", "Lulu", "Rakan", "Pyke", "Nami"].map(
+      loadingArt,
+    ),
   },
 ] as const;
 
-const OFFER_CHAMPS = [
-  "Ahri",
-  "LeeSin",
-  "Jinx",
-  "Thresh",
-  "Ornn",
-  "Viego",
-  "Ezreal",
-  "Lulu",
-  "Syndra",
-  "Camille",
+const HOME_MODULES = [
+  {
+    id: "perfiles",
+    title: "Perfiles",
+    blurb: "Riot ID, ranked, maestrías e historial Match-v5.",
+    tag: "Lookup",
+  },
+  {
+    id: "coaching",
+    title: "Coaching",
+    blurb: "Plan por rol, metas medibles y feedback entre partidas.",
+    tag: "PRO",
+  },
+  {
+    id: "tierlist",
+    title: "Tierlist",
+    blurb: "Prioridades del parche filtradas a tu pool.",
+    tag: "Meta",
+  },
+  {
+    id: "notas-parche",
+    title: "Notas del Parche",
+    blurb: "Cambios que importan para tu climb, sin ruido.",
+    tag: "Patch",
+  },
 ] as const;
 
+type HomeModuleId = (typeof HOME_MODULES)[number]["id"];
+
 type LandingHomeProps = {
-  onStartFree: () => void;
-  onExplorePro: () => void;
   gameName: string;
   tagLine: string;
   platform: string;
@@ -163,6 +87,7 @@ type LandingHomeProps = {
   onTagLineChange: (value: string) => void;
   onPlatformChange: (value: string) => void;
   onLookup: (event: FormEvent<HTMLFormElement>) => void;
+  onOpenModule: (id: HomeModuleId) => void;
 };
 
 function useFrameCycle(length: number, intervalMs: number) {
@@ -187,7 +112,7 @@ function useFrameCycle(length: number, intervalMs: number) {
   return index;
 }
 
-function LaneGameplay({
+function RoleCard({
   role,
   label,
   blurb,
@@ -203,113 +128,26 @@ function LaneGameplay({
   const index = useFrameCycle(frames.length, 3200 + role.length * 90);
 
   return (
-    <button className="lane-gameplay" type="button" onClick={onSelect}>
-      <span className="lane-art-stage">
+    <button className="blitz-role" type="button" onClick={onSelect}>
+      <span className="blitz-role-art">
         {frames.map((src, frameIndex) => (
           <img
             key={src}
-            className={`lane-art${frameIndex === index ? " is-active" : ""}`}
+            className={frameIndex === index ? "is-active" : ""}
             src={src}
             alt=""
           />
         ))}
       </span>
-      <span className="lane-scrim" />
-      <span className="lane-hud">
-        <span className="lane-chip">{label}</span>
-        <strong>{role}</strong>
+      <span className="blitz-role-copy">
+        <strong>{label}</strong>
         <small>{blurb}</small>
       </span>
     </button>
   );
 }
 
-function CoachShowcase({ caption }: { caption: string }) {
-  const index = useFrameCycle(COACH_SESSIONS.length, 4200);
-  const current = COACH_SESSIONS[index];
-
-  return (
-    <div className="media-reel media-reel-xl coach-reel" aria-hidden="true">
-      {COACH_SESSIONS.map((frame, frameIndex) => (
-        <div
-          key={frame.src}
-          className={`media-reel-frame${frameIndex === index ? " is-active" : ""}`}
-          style={{ backgroundImage: `url(${frame.src})` }}
-        />
-      ))}
-      <div className="media-reel-scrim" />
-      <div className="coach-hud">
-        <div className="coach-call">
-          <span className="coach-pill live">En vivo</span>
-          <strong>{current.coach}</strong>
-          <span>→ {current.player}</span>
-        </div>
-        <div className="coach-note">{current.note}</div>
-        <div className="coach-chips">
-          <span>VOD</span>
-          <span>Objetivos</span>
-          <span>Repetición</span>
-        </div>
-      </div>
-      <span className="media-reel-caption">
-        {caption} · {current.tag}
-      </span>
-    </div>
-  );
-}
-
-function OfferPanel() {
-  return (
-    <div className="offer-panel" aria-hidden="true">
-      <div className="offer-panel-select">
-        <div className="offer-select-grid">
-          {OFFER_CHAMPS.map((id) => (
-            <img key={id} src={squareArt(id)} alt="" />
-          ))}
-        </div>
-        <div className="offer-panel-meta">
-          <strong>Champion select</strong>
-          <span>Draft → partida → informe</span>
-        </div>
-      </div>
-      <div className="offer-panel-side">
-        <img
-          className="offer-panel-badge"
-          src={RANK_EMBLEM("challenger")}
-          alt=""
-        />
-        <svg className="offer-chart-svg" viewBox="0 0 220 90" role="img">
-          <polyline
-            className="offer-chart-line"
-            points="6,78 36,70 66,72 96,50 126,54 156,30 186,34 214,14"
-          />
-          <polyline
-            className="offer-chart-line alt"
-            points="6,82 36,80 66,74 96,66 126,60 156,52 186,46 214,36"
-          />
-        </svg>
-        <div className="offer-chart-stats compact">
-          <span>
-            <b>+LP</b>
-            tendencia
-          </span>
-          <span>
-            <b>WR</b>
-            estable
-          </span>
-          <span>
-            <b>CS</b>
-            /min
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function LandingHome({
-  onStartFree,
-  onExplorePro,
   gameName,
   tagLine,
   platform,
@@ -319,6 +157,7 @@ export function LandingHome({
   onTagLineChange,
   onPlatformChange,
   onLookup,
+  onOpenModule,
 }: LandingHomeProps) {
   const landingRef = useRef<HTMLDivElement | null>(null);
 
@@ -347,7 +186,7 @@ export function LandingHome({
           }
         }
       },
-      { threshold: 0.14, rootMargin: "0px 0px -6% 0px" },
+      { threshold: 0.12, rootMargin: "0px 0px -4% 0px" },
     );
 
     nodes.forEach((node) => observer.observe(node));
@@ -356,25 +195,24 @@ export function LandingHome({
 
   function scrollToPlans() {
     document
-      .getElementById("planes-plaiq")
+      .getElementById("planes-playq")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
-    <div className="landing" ref={landingRef}>
-      <section className="home-search">
-        <div className="home-search-copy">
-          <span className="eyebrow">Buscador de perfiles</span>
-          <h1>Encuentra tu Riot ID y empieza a mejorar.</h1>
-          <p>
-            Busca un invocador, revisa ranked y historial, y baja para ver todo
-            lo que PLAYQ.GG puede ofrecerte en tu climb.
-          </p>
-        </div>
+    <div className="blitz-home" ref={landingRef}>
+      <section className="blitz-hero">
+        <div className="blitz-hero-glow" aria-hidden="true" />
+        <span className="eyebrow">PLAYQ.GG</span>
+        <h1>Busca un invocador. Mejora con un plan.</h1>
+        <p className="blitz-hero-lead">
+          Perfiles Riot, coaching entre partidas, tierlist y parche — todo en un
+          centro táctico para ranked.
+        </p>
 
-        <form className="lookup-form home-search-form" onSubmit={onLookup}>
-          <label>
-            Game Name
+        <form className="blitz-search" onSubmit={onLookup}>
+          <label className="blitz-search-name">
+            <span>Riot ID</span>
             <input
               value={gameName}
               onChange={(event) => onGameNameChange(event.target.value)}
@@ -383,8 +221,11 @@ export function LandingHome({
               required
             />
           </label>
-          <label className="tag-input">
-            Tag
+          <span className="blitz-search-hash" aria-hidden="true">
+            #
+          </span>
+          <label className="blitz-search-tag">
+            <span>Tag</span>
             <input
               value={tagLine}
               onChange={(event) => onTagLineChange(event.target.value)}
@@ -393,8 +234,8 @@ export function LandingHome({
               required
             />
           </label>
-          <label className="platform-input">
-            Región
+          <label className="blitz-search-region">
+            <span>Región</span>
             <select
               value={platform}
               onChange={(event) => onPlatformChange(event.target.value)}
@@ -405,145 +246,80 @@ export function LandingHome({
               <option value="NA1">NA</option>
             </select>
           </label>
-          <button className="primary-button" disabled={isSearching}>
-            {isSearching ? "Buscando…" : "Buscar perfil"}
+          <button className="primary-button blitz-search-submit" disabled={isSearching}>
+            {isSearching ? "Buscando…" : "Buscar"}
           </button>
         </form>
 
-        {lookupMessage && (
-          <p className="lookup-message home-search-message">{lookupMessage}</p>
-        )}
+        {lookupMessage && <p className="lookup-message">{lookupMessage}</p>}
+
+        <div className="blitz-hero-actions">
+          <button className="ghost-button" type="button" onClick={scrollToPlans}>
+            Ver planes
+          </button>
+          <button
+            className="ghost-button"
+            type="button"
+            onClick={() => onOpenModule("coaching")}
+          >
+            Explorar coaching
+          </button>
+        </div>
       </section>
 
-      <header className="landing-hero-split" data-reveal>
-        <div className="landing-hero-content">
-          <span className="eyebrow">Centro táctico PLAYQ.GG</span>
-          <h2 className="landing-hero-title">
-            MEJORAR EN RANKED NUNCA FUE TAN CLARO.
-          </h2>
-          <p>
-            Coaching personalizado entre partidas, objetivos medibles y un plan
-            para tu rol. Sin copiloto en combate: progreso real fuera de la
-            Rift.
-          </p>
-          <div className="landing-cta">
-            <button
-              className="primary-button"
-              type="button"
-              onClick={onStartFree}
-            >
-              Ir a perfiles
-            </button>
-            <button
-              className="ghost-button"
-              type="button"
-              onClick={scrollToPlans}
-            >
-              Ver planes
-            </button>
-          </div>
+      <section className="blitz-section" data-reveal>
+        <div className="blitz-section-head">
+          <span className="eyebrow">Herramientas</span>
+          <h2>Todo lo que puedes hacer en PLAYQ.GG</h2>
         </div>
-        <figure className="landing-hero-ladder">
-          <img
-            src="/landing/rank-ladder-2026.png"
-            alt="Ascenso de liga desde Hierro hasta Retador"
-          />
-          <figcaption>Ranked 2025 · 2026 · logos actuales</figcaption>
-        </figure>
-      </header>
-
-      <section className="landing-band landing-band-coach" data-reveal>
-        <div className="landing-band-copy landing-band-copy-wide">
-          <span className="eyebrow">Por qué un coach</span>
-          <h2>La diferencia está entre partidas, no en el chat.</h2>
-          <p>
-            Un coach personalizado traduce tu historial en hábitos concretos:
-            qué practicar hoy, qué corregir mañana y cómo medir si estás
-            subiendo de verdad. PLAYQ.GG combina métricas objetivas con IA para
-            proponerte el siguiente paso — sin gritarte pelees en vivo.
-          </p>
-          <ul className="landing-check-list">
-            <li>Diagnóstico con datos de Match-v5 y tu perfil Riot</li>
-            <li>Objetivos diarios/semanales que sí se pueden completar</li>
-            <li>Foco en tu rol, tu pool y el parche actual</li>
-          </ul>
+        <div className="blitz-modules">
+          {HOME_MODULES.map((mod) => (
+            <button
+              key={mod.id}
+              className="blitz-module"
+              type="button"
+              onClick={() => onOpenModule(mod.id)}
+            >
+              <span className="blitz-module-tag">{mod.tag}</span>
+              <strong>{mod.title}</strong>
+              <span>{mod.blurb}</span>
+            </button>
+          ))}
         </div>
-        <CoachShowcase caption="Coach → proplayer" />
       </section>
 
-      <section className="landing-roles" data-reveal>
-        <div className="landing-roles-head">
-          <span className="eyebrow">Gameplays por línea</span>
-          <h2>Top, Jungle, Mid, ADC y Support</h2>
-          <p>
-            Rotación amplia de campeones por rol. Entra a tu academia y conecta
-            coaching con tu camino.
-          </p>
+      <section className="blitz-section" data-reveal>
+        <div className="blitz-section-head">
+          <span className="eyebrow">Por rol</span>
+          <h2>Elige tu línea y entra al plan</h2>
         </div>
-        <div className="lane-gameplay-grid">
+        <div className="blitz-roles">
           {ROLE_ACADEMIES.map((item) => (
-            <LaneGameplay
+            <RoleCard
               key={item.role}
               role={item.role}
               label={item.label}
               blurb={item.blurb}
               frames={item.frames}
-              onSelect={onExplorePro}
+              onSelect={() => onOpenModule("coaching")}
             />
           ))}
         </div>
       </section>
 
-      <section className="landing-band landing-band-offer" data-reveal>
-        <OfferPanel />
-        <div className="landing-band-copy landing-band-copy-offer">
-          <span className="eyebrow">Qué ofrecemos</span>
-          <h2>Todo el ciclo: draft, partida e informe.</h2>
+      <section
+        className="blitz-section landing-plans"
+        id="planes-playq"
+        data-reveal
+      >
+        <div className="blitz-section-head">
+          <span className="eyebrow">Planes</span>
+          <h2>Gratis para empezar. PRO para acelerar.</h2>
           <p>
-            PLAYQ.GG cubre el loop completo de mejora. Antes de la cola ves contexto
-            de draft y pool; durante la sesión el escritorio captura en silencio;
-            al terminar conviertes la partida en un informe accionable con
-            objetivos claros para la siguiente.
+            Misma base de perfiles e historial. PRO suma coach por rol, plan
+            diario y análisis postpartida.
           </p>
-          <p>
-            No es un feed de tips genéricos: conectamos tu Riot ID, historial
-            Match-v5, maestrías y tendencias para que el coach hable de tu juego,
-            no del de alguien más. Parche y tierlist se filtran a lo que realmente
-            usas.
-          </p>
-          <div className="landing-feature-row">
-            <article>
-              <strong>Coach inteligente</strong>
-              <span>
-                Plan por rol con prioridades semanales, feedback postpartida y
-                ajustes cuando tus números cambian.
-              </span>
-            </article>
-            <article>
-              <strong>Contenido práctico</strong>
-              <span>
-                Notas del parche, tierlist y focos de práctica alineados a tu
-                pool — menos ruido, más decisiones útiles.
-              </span>
-            </article>
-            <article>
-              <strong>Progreso visible</strong>
-              <span>
-                Actividades, rachas y tendencias de LP / WR / CS para saber si el
-                plan está funcionando de verdad.
-              </span>
-            </article>
-          </div>
         </div>
-      </section>
-
-      <section className="landing-section landing-plans" id="planes-plaiq" data-reveal>
-        <span className="eyebrow">Planes</span>
-        <h2>Gratuito y PRO</h2>
-        <p className="landing-section-lead">
-          Siempre hay capa gratuita. PRO acelera el ritmo de un entrenador
-          diario con más profundidad, automatización y foco en tu climb.
-        </p>
         <div className="plan-compare">
           <article className="plan-panel">
             <span className="eyebrow">Gratis</span>
@@ -552,15 +328,14 @@ export function LandingHome({
             <ul>
               <li>Vincular Riot ID y resumen de perfil</li>
               <li>Historial de partidas básico</li>
-              <li>Maestrías y visión general de ranked</li>
+              <li>Maestrías y ranked overview</li>
               <li>Coach general con cupo limitado</li>
-              <li>Actividades semanales limitadas</li>
               <li>Notas del Parche resumidas</li>
             </ul>
             <button
               className="ghost-button"
               type="button"
-              onClick={onStartFree}
+              onClick={() => onOpenModule("perfiles")}
             >
               Empezar en Free
             </button>
@@ -574,55 +349,22 @@ export function LandingHome({
               Suscripción
               <small>cuando abramos pagos</small>
             </p>
-            <p className="plan-pro-lead">
-              El ritmo de un coach diario: más datos, más foco y un plan que se
-              actualiza con tu climb.
-            </p>
             <ul>
-              <li>Sync automático del historial y tendencias de LP</li>
-              <li>Coach especializado por rol (Top → Support)</li>
-              <li>Plan diario personalizado con metas medibles</li>
-              <li>Análisis postpartida con IA y próximos focos</li>
-              <li>Tierlist y parche filtrados a tu pool</li>
-              <li>Actividades ilimitadas y seguimiento semanal</li>
-              <li>Prioridad en insights de winrate, CS y visión</li>
-              <li>Ruta de climb con checkpoints por división</li>
-              <li>Revisión de hábitos entre partidas (no en combate)</li>
-              <li>Acceso anticipado a módulos tácticos nuevos</li>
+              <li>Sync automático y tendencias de LP</li>
+              <li>Coach especializado por rol</li>
+              <li>Plan diario con metas medibles</li>
+              <li>Análisis postpartida con IA</li>
+              <li>Tierlist y parche para tu pool</li>
+              <li>Actividades ilimitadas y checkpoints</li>
             </ul>
             <button
               className="primary-button"
               type="button"
-              onClick={onExplorePro}
+              onClick={() => onOpenModule("coaching")}
             >
               Explorar coaching PRO
             </button>
           </article>
-        </div>
-      </section>
-
-      <section className="landing-finale" data-reveal>
-        <div
-          className="landing-finale-art"
-          style={{
-            backgroundImage:
-              "url(https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg)",
-          }}
-          aria-hidden="true"
-        />
-        <div className="landing-finale-copy">
-          <h2>Empieza tu climb con un plan, no con suerte.</h2>
-          <p>
-            Vincula tu Riot ID, mira tu historial y deja que PLAYQ.GG te marque el
-            siguiente objetivo.
-          </p>
-          <button
-            className="primary-button"
-            type="button"
-            onClick={onStartFree}
-          >
-            Empezar ahora
-          </button>
         </div>
       </section>
     </div>
