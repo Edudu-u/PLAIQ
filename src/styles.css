@@ -39,7 +39,8 @@ select {
   position: relative;
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 168px 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr;
   overflow-x: hidden;
 }
 
@@ -67,29 +68,32 @@ select {
   animation: gridDrift 28s linear infinite;
 }
 
-.sidebar,
+.top-nav,
 .content {
   position: relative;
   z-index: 1;
 }
 
-.sidebar {
-  align-self: stretch;
-  min-height: 100%;
-  height: auto;
-  padding: 24px 14px;
-  border-right: 1px solid var(--line);
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 12px clamp(16px, 2.8vw, 36px);
+  border-bottom: 1px solid var(--line);
   background: rgba(5, 14, 20, 0.92);
-  backdrop-filter: blur(10px);
-  display: flex;
-  flex-direction: column;
+  backdrop-filter: blur(12px);
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 36px;
+  margin-bottom: 0;
+  flex: 0 0 auto;
 }
 
 .brand-mark {
@@ -130,17 +134,20 @@ select {
   line-height: 1.2;
 }
 
-nav {
-  display: grid;
+.top-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   gap: 6px;
 }
 
 .nav-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 11px 12px;
+  gap: 8px;
+  width: auto;
+  padding: 9px 12px;
   text-align: left;
   color: var(--muted);
   border: 1px solid transparent;
@@ -150,12 +157,13 @@ nav {
   transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
   font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .nav-item svg {
   flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   stroke: currentColor;
   fill: none;
   stroke-width: 1.8;
@@ -179,10 +187,12 @@ nav {
 }
 
 .connection {
-  margin-top: auto;
+  margin-top: 0;
   color: var(--muted);
-  font-size: 13px;
-  padding-top: 24px;
+  font-size: 12px;
+  padding-top: 0;
+  justify-self: end;
+  white-space: nowrap;
 }
 
 .module-placeholder {
@@ -2293,8 +2303,21 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .sidebar {
-    display: none;
+  .top-nav {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .top-nav-links {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+
+  .connection {
+    justify-self: start;
   }
 
   .content {

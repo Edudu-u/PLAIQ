@@ -720,7 +720,7 @@ export function App() {
     <main className="app-shell">
       <div className="atmosphere" aria-hidden="true" />
 
-      <aside className="sidebar">
+      <header className="top-nav">
         <div className="brand">
           <span className="brand-mark">P</span>
           <div>
@@ -729,7 +729,7 @@ export function App() {
           </div>
         </div>
 
-        <nav>
+        <nav className="top-nav-links" aria-label="Principal">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
@@ -747,7 +747,7 @@ export function App() {
           <span className={apiError ? "status-dot offline" : "status-dot"} />
           {apiError ? "API desconectada" : "API conectada"}
         </div>
-      </aside>
+      </header>
 
       <section className="content">
         {apiError && (
