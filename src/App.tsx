@@ -721,13 +721,18 @@ export function App() {
       <div className="atmosphere" aria-hidden="true" />
 
       <header className="top-nav">
-        <div className="brand">
+        <button
+          className="brand brand-button"
+          type="button"
+          onClick={() => setView("inicio")}
+          aria-label="Ir a Inicio"
+        >
           <span className="brand-mark">P</span>
           <div>
             <strong>PLAYQ.GG</strong>
             <small>Centro táctico</small>
           </div>
-        </div>
+        </button>
 
         <nav className="top-nav-links" aria-label="Principal">
           {NAV_ITEMS.map((item) => (
@@ -760,6 +765,15 @@ export function App() {
           <LandingHome
             onStartFree={() => setView("perfiles")}
             onExplorePro={() => setView("coaching")}
+            gameName={gameName}
+            tagLine={tagLine}
+            platform={platform}
+            isSearching={isSearching}
+            lookupMessage={lookupMessage}
+            onGameNameChange={setGameName}
+            onTagLineChange={setTagLine}
+            onPlatformChange={setPlatform}
+            onLookup={handleLookup}
           />
         )}
 

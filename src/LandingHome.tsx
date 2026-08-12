@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 
 const RANK_EMBLEM = (tier: string) =>
   `/landing/emblems/${tier}.png`;
@@ -153,6 +154,15 @@ const OFFER_CHAMPS = [
 type LandingHomeProps = {
   onStartFree: () => void;
   onExplorePro: () => void;
+  gameName: string;
+  tagLine: string;
+  platform: string;
+  isSearching: boolean;
+  lookupMessage: string | null;
+  onGameNameChange: (value: string) => void;
+  onTagLineChange: (value: string) => void;
+  onPlatformChange: (value: string) => void;
+  onLookup: (event: FormEvent<HTMLFormElement>) => void;
 };
 
 function useFrameCycle(length: number, intervalMs: number) {
@@ -297,7 +307,19 @@ function OfferPanel() {
   );
 }
 
-export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
+export function LandingHome({
+  onStartFree,
+  onExplorePro,
+  gameName,
+  tagLine,
+  platform,
+  isSearching,
+  lookupMessage,
+  onGameNameChange,
+  onTagLineChange,
+  onPlatformChange,
+  onLookup,
+}: LandingHomeProps) {
   const landingRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -340,10 +362,65 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
 
   return (
     <div className="landing" ref={landingRef}>
-      <header className="landing-hero-split">
+      <section className="home-search">
+        <div className="home-search-copy">
+          <span className="eyebrow">Buscador de perfiles</span>
+          <h1>Encuentra tu Riot ID y empieza a mejorar.</h1>
+          <p>
+            Busca un invocador, revisa ranked y historial, y baja para ver todo
+            lo que PLAYQ.GG puede ofrecerte en tu climb.
+          </p>
+        </div>
+
+        <form className="lookup-form home-search-form" onSubmit={onLookup}>
+          <label>
+            Game Name
+            <input
+              value={gameName}
+              onChange={(event) => onGameNameChange(event.target.value)}
+              maxLength={64}
+              placeholder="Nombre"
+              required
+            />
+          </label>
+          <label className="tag-input">
+            Tag
+            <input
+              value={tagLine}
+              onChange={(event) => onTagLineChange(event.target.value)}
+              maxLength={16}
+              placeholder="TAG"
+              required
+            />
+          </label>
+          <label className="platform-input">
+            Región
+            <select
+              value={platform}
+              onChange={(event) => onPlatformChange(event.target.value)}
+            >
+              <option value="LA2">LAS</option>
+              <option value="LA1">LAN</option>
+              <option value="BR1">BR</option>
+              <option value="NA1">NA</option>
+            </select>
+          </label>
+          <button className="primary-button" disabled={isSearching}>
+            {isSearching ? "Buscando…" : "Buscar perfil"}
+          </button>
+        </form>
+
+        {lookupMessage && (
+          <p className="lookup-message home-search-message">{lookupMessage}</p>
+        )}
+      </section>
+
+      <header className="landing-hero-split" data-reveal>
         <div className="landing-hero-content">
           <span className="eyebrow">Centro táctico PLAYQ.GG</span>
-          <h1>MEJORAR EN RANKED NUNCA FUE TAN CLARO.</h1>
+          <h2 className="landing-hero-title">
+            MEJORAR EN RANKED NUNCA FUE TAN CLARO.
+          </h2>
           <p>
             Coaching personalizado entre partidas, objetivos medibles y un plan
             para tu rol. Sin copiloto en combate: progreso real fuera de la
@@ -355,7 +432,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
               type="button"
               onClick={onStartFree}
             >
-              Empezar gratis
+              Ir a perfiles
             </button>
             <button
               className="ghost-button"
