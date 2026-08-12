@@ -81,8 +81,8 @@ select {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 18px;
-  padding: 12px clamp(16px, 2.8vw, 36px);
+  gap: 22px;
+  padding: 16px clamp(20px, 3vw, 40px);
   border-bottom: 1px solid var(--line);
   background: rgba(5, 14, 20, 0.92);
   backdrop-filter: blur(12px);
@@ -91,7 +91,7 @@ select {
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 0;
   flex: 0 0 auto;
 }
@@ -99,11 +99,12 @@ select {
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   font-family: var(--font-display);
   font-weight: 800;
+  font-size: 18px;
   color: #04201c;
   background: linear-gradient(145deg, var(--teal), #78f0d8);
   box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.35);
@@ -124,13 +125,13 @@ select {
 .brand strong {
   font-family: var(--font-display);
   letter-spacing: 0.04em;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .brand small {
   margin-top: 3px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.2;
 }
 
@@ -139,31 +140,31 @@ select {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .nav-item {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   width: auto;
-  padding: 9px 12px;
+  padding: 12px 16px;
   text-align: left;
   color: var(--muted);
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 12px;
   background: transparent;
   cursor: pointer;
   transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   white-space: nowrap;
 }
 
 .nav-item svg {
   flex: 0 0 auto;
-  width: 16px;
-  height: 16px;
+  width: 19px;
+  height: 19px;
   stroke: currentColor;
   fill: none;
   stroke-width: 1.8;
@@ -189,7 +190,7 @@ select {
 .connection {
   margin-top: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   padding-top: 0;
   justify-self: end;
   white-space: nowrap;
