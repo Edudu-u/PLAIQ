@@ -2545,8 +2545,13 @@ h3 {
   }
 
   .lane-gameplay-grid,
-  .role-academy-grid {
+  .role-academy-grid,
+  .blitz-modules {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .blitz-roles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .tf-hud {
