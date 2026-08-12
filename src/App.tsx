@@ -12,6 +12,7 @@ import {
   syncProfileMatches,
 } from "./lib/api";
 import { LandingHome } from "./LandingHome";
+import { BrandLogo } from "./BrandLogo";
 import { getClientId } from "./lib/client-id";
 import type {
   AppView,
@@ -736,7 +737,9 @@ export function App() {
           onClick={() => setView("inicio")}
           aria-label="Ir a Inicio"
         >
-          <span className="brand-mark">P</span>
+          <span className="brand-mark">
+            <BrandLogo />
+          </span>
           <div>
             <strong>PLAYQ.GG</strong>
             <small>Centro táctico</small>
