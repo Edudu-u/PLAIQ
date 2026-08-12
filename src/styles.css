@@ -22,9 +22,10 @@
   --on-media: #f7fffc;
   --on-media-muted: #e4eeea;
   --card-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
-  /* Match source PNG: cyan → lime (transparent mark, no black box) */
-  --logo-a: #7bf5fd;
-  --logo-b: #b8ff4a;
+  /* Match brand PNG: cyan → emerald → lime */
+  --logo-a: #5cf0ff;
+  --logo-mid: #3dff9a;
+  --logo-b: #b8ff3c;
   --atmosphere-1: rgba(123, 245, 253, 0.14);
   --atmosphere-2: rgba(110, 168, 255, 0.12);
   --atmosphere-base: linear-gradient(160deg, #101018 0%, #181824 48%, #12121a 100%);
@@ -61,6 +62,7 @@
   --on-media-muted: #f0f2f8;
   --card-shadow: 0 18px 40px rgba(26, 29, 46, 0.12);
   --logo-a: #c43b32;
+  --logo-mid: #e05a32;
   --logo-b: #e07a3a;
   --atmosphere-1: rgba(196, 59, 50, 0.1);
   --atmosphere-2: rgba(224, 122, 58, 0.12);
