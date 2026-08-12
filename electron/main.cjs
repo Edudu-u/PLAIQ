@@ -7,7 +7,7 @@ function createWindow() {
     height: 760,
     minWidth: 920,
     minHeight: 620,
-    backgroundColor: "#090d16",
+    backgroundColor: "#12121a",
     title: "PLAYQ.GG",
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),

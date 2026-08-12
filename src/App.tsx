@@ -525,6 +525,10 @@ function ProfileDetailPanel({
 
 export function App() {
   const clientId = useMemo(() => getClientId(), []);
+  const [theme, setTheme] = useState<"zekrom" | "reshiram">(() => {
+    const saved = window.localStorage.getItem("playq.theme");
+    return saved === "reshiram" || saved === "zekrom" ? saved : "zekrom";
+  });
   const [view, setView] = useState<AppView>("inicio");
   const [summary, setSummary] = useState<CoachingSummary | null>(null);
   const [profiles, setProfiles] = useState<RiotProfile[]>([]);
@@ -616,6 +620,11 @@ export function App() {
       setIsRefreshingDetail(false);
     }
   }
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    window.localStorage.setItem("playq.theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -748,9 +757,38 @@ export function App() {
           ))}
         </nav>
 
-        <div className="connection">
-          <span className={apiError ? "status-dot offline" : "status-dot"} />
-          {apiError ? "API desconectada" : "API conectada"}
+        <div className="top-nav-end">
+          <button
+            className="theme-toggle"
+            type="button"
+            onClick={() =>
+              setTheme((current) =>
+                current === "zekrom" ? "reshiram" : "zekrom",
+              )
+            }
+            aria-label={
+              theme === "zekrom"
+                ? "Cambiar a modo claro Reshiram"
+                : "Cambiar a modo oscuro Zekrom"
+            }
+            title={
+              theme === "zekrom"
+                ? "Modo claro · Reshiram"
+                : "Modo oscuro · Zekrom"
+            }
+          >
+            <span className="theme-toggle-icon" aria-hidden="true">
+              {theme === "zekrom" ? "Z" : "R"}
+            </span>
+            <span>
+              {theme === "zekrom" ? "Zekrom" : "Reshiram"}
+              <small>{theme === "zekrom" ? "Oscuro" : "Claro"}</small>
+            </span>
+          </button>
+          <div className="connection">
+            <span className={apiError ? "status-dot offline" : "status-dot"} />
+            {apiError ? "API desconectada" : "API conectada"}
+          </div>
         </div>
       </header>
 
