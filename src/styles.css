@@ -157,7 +157,7 @@ select {
   cursor: pointer;
   transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 700;
   white-space: nowrap;
 }
 

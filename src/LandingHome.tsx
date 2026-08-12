@@ -342,7 +342,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
     <div className="landing" ref={landingRef}>
       <header className="landing-hero-split">
         <div className="landing-hero-content">
-          <span className="eyebrow">Centro táctico PLAIQ</span>
+          <span className="eyebrow">Centro táctico PLAYQ.GG</span>
           <h1>MEJORAR EN RANKED NUNCA FUE TAN CLARO.</h1>
           <p>
             Coaching personalizado entre partidas, objetivos medibles y un plan
@@ -382,7 +382,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
           <p>
             Un coach personalizado traduce tu historial en hábitos concretos:
             qué practicar hoy, qué corregir mañana y cómo medir si estás
-            subiendo de verdad. PLAIQ combina métricas objetivas con IA para
+            subiendo de verdad. PLAYQ.GG combina métricas objetivas con IA para
             proponerte el siguiente paso — sin gritarte pelees en vivo.
           </p>
           <ul className="landing-check-list">
@@ -423,7 +423,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
           <span className="eyebrow">Qué ofrecemos</span>
           <h2>Todo el ciclo: draft, partida e informe.</h2>
           <p>
-            PLAIQ cubre el loop completo de mejora. Antes de la cola ves contexto
+            PLAYQ.GG cubre el loop completo de mejora. Antes de la cola ves contexto
             de draft y pool; durante la sesión el escritorio captura en silencio;
             al terminar conviertes la partida en un informe accionable con
             objetivos claros para la siguiente.
@@ -470,7 +470,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
         <div className="plan-compare">
           <article className="plan-panel">
             <span className="eyebrow">Gratis</span>
-            <h3>PLAIQ Free</h3>
+            <h3>PLAYQ Free</h3>
             <p className="plan-price">$0</p>
             <ul>
               <li>Vincular Riot ID y resumen de perfil</li>
@@ -492,7 +492,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
           <article className="plan-panel plan-panel-pro">
             <span className="plan-badge">Más valor</span>
             <span className="eyebrow">Recomendado</span>
-            <h3>PLAIQ PRO</h3>
+            <h3>PLAYQ PRO</h3>
             <p className="plan-price">
               Suscripción
               <small>cuando abramos pagos</small>
@@ -536,7 +536,7 @@ export function LandingHome({ onStartFree, onExplorePro }: LandingHomeProps) {
         <div className="landing-finale-copy">
           <h2>Empieza tu climb con un plan, no con suerte.</h2>
           <p>
-            Vincula tu Riot ID, mira tu historial y deja que PLAIQ te marque el
+            Vincula tu Riot ID, mira tu historial y deja que PLAYQ.GG te marque el
             siguiente objetivo.
           </p>
           <button

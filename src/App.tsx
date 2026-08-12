@@ -629,7 +629,7 @@ export function App() {
         setSummary(summaryResult.value);
         setApiError(null);
       } else {
-        setApiError("No fue posible conectar con API-PLAIQ.");
+        setApiError("No fue posible conectar con la API de PLAYQ.GG.");
       }
 
       if (profilesResult.status === "fulfilled") {
@@ -724,7 +724,7 @@ export function App() {
         <div className="brand">
           <span className="brand-mark">P</span>
           <div>
-            <strong>PLAIQ</strong>
+            <strong>PLAYQ.GG</strong>
             <small>Centro táctico</small>
           </div>
         </div>
