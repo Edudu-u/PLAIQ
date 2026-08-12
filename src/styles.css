@@ -405,11 +405,17 @@ select {
 
 .blitz-search-hash {
   align-self: end;
-  padding-bottom: 12px;
+  justify-self: center;
+  width: 1ch;
+  min-width: 1ch;
+  padding: 0 0 14px;
   color: var(--teal);
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
 }
 
 .blitz-search-submit {
