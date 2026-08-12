@@ -124,8 +124,8 @@ select {
 
 .brand strong {
   font-family: var(--font-display);
-  letter-spacing: 0.04em;
-  font-size: 17px;
+  letter-spacing: 0.03em;
+  font-size: 16px;
 }
 
 .brand small {
