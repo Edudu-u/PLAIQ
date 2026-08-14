@@ -595,13 +595,23 @@ export function App() {
             MATCH_HISTORY_LIMIT,
           );
           setMatches(synced.matches);
-        } catch {
+          if (synced.matches.length === 0) {
+            setLookupMessage(
+              "Riot no devolvió partidas recientes para este perfil.",
+            );
+          }
+        } catch (error) {
           const listed = await getProfileMatches(
             clientId,
             detail.id,
             MATCH_HISTORY_LIMIT,
           );
           setMatches(listed);
+          setLookupMessage(
+            error instanceof Error
+              ? `No se pudo sincronizar partidas: ${error.message}`
+              : "No se pudo sincronizar el historial de partidas.",
+          );
         }
       } else {
         const listed = await getProfileMatches(
@@ -667,12 +677,18 @@ export function App() {
     }
 
     const controller = new AbortController();
+    const profileId = activeProfile.id;
 
-    getProfileDetail(clientId, activeProfile.id, false)
-      .then((detail) => {
-        if (!controller.signal.aborted) {
-          setProfileDetail(detail);
+    Promise.all([
+      getProfileDetail(clientId, profileId, false),
+      getProfileMatches(clientId, profileId, MATCH_HISTORY_LIMIT),
+    ])
+      .then(([detail, listed]) => {
+        if (controller.signal.aborted) {
+          return;
         }
+        setProfileDetail(detail);
+        setMatches(listed);
       })
       .catch(() => {
         // Cached detail may be empty until the first live lookup/refresh.
@@ -707,8 +723,18 @@ export function App() {
           MATCH_HISTORY_LIMIT,
         );
         setMatches(synced.matches);
-      } catch {
+        if (synced.matches.length === 0) {
+          setLookupMessage(
+            `${detail.riotId} sincronizado, pero Riot no devolvió partidas recientes.`,
+          );
+        }
+      } catch (error) {
         setMatches([]);
+        setLookupMessage(
+          error instanceof Error
+            ? `Perfil OK, pero el historial falló: ${error.message}`
+            : "Perfil OK, pero no se pudo sincronizar el historial.",
+        );
       }
     } catch (error) {
       setLookupMessage(
