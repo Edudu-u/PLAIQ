@@ -40,34 +40,42 @@
 
 [data-theme="reshiram"] {
   color-scheme: light;
-  /* Reshiram — Vast White / Fire plume */
-  --ink: #f3f4f9;
-  --ink-elevated: #ffffff;
-  --panel: #ffffff;
-  --line: rgba(196, 59, 50, 0.16);
-  --text: #1a1d2e;
-  --muted: #4e566c;
-  --teal: #c43b32;
-  --teal-deep: #8f2a24;
-  --accent-bright: #f0783c;
-  --amber: #e07a3a;
-  --danger: #c43b32;
-  --win: #2f9e6b;
+  /* Reshiram — silver field + fire plume (more contrast than flat white) */
+  --ink: #d8dbe6;
+  --ink-elevated: #fff8f4;
+  --panel: #fffdfb;
+  --line: rgba(180, 52, 42, 0.28);
+  --text: #171924;
+  --muted: #3f465c;
+  --teal: #b83228;
+  --teal-deep: #8a221c;
+  --accent-bright: #ef6a2c;
+  --amber: #d96528;
+  --danger: #b83228;
+  --win: #1f8a5c;
   --brand-mark-fg: #fff8f5;
-  --nav-bg: rgba(255, 255, 255, 0.94);
-  --surface-strong: #ffffff;
+  --nav-bg: rgba(255, 250, 246, 0.96);
+  --surface-strong: #fff7f1;
   --scrim: rgba(26, 29, 46, 0.88);
   --scrim-soft: rgba(26, 29, 46, 0.55);
   --on-media: #ffffff;
   --on-media-muted: #f0f2f8;
-  --card-shadow: 0 18px 40px rgba(26, 29, 46, 0.12);
-  --logo-a: #c43b32;
+  --card-shadow:
+    0 1px 0 rgba(184, 50, 40, 0.08),
+    0 14px 32px rgba(40, 28, 24, 0.12);
+  --logo-a: #b83228;
   --logo-mid: #e05a32;
-  --logo-b: #e07a3a;
-  --atmosphere-1: rgba(196, 59, 50, 0.1);
-  --atmosphere-2: rgba(224, 122, 58, 0.12);
-  --atmosphere-base: linear-gradient(160deg, #f7f8fc 0%, #eef0f7 48%, #f6f3f0 100%);
-  --grid-line: rgba(115, 123, 156, 0.12);
+  --logo-b: #ef6a2c;
+  --atmosphere-1: rgba(184, 50, 40, 0.18);
+  --atmosphere-2: rgba(239, 106, 44, 0.2);
+  --atmosphere-base: linear-gradient(
+    155deg,
+    #cfd3e0 0%,
+    #e4e2ea 42%,
+    #f0e4dc 78%,
+    #e8d8d0 100%
+  );
+  --grid-line: rgba(120, 70, 55, 0.14);
 }
 
 * {
@@ -197,7 +205,100 @@ select {
 }
 
 [data-theme="reshiram"] .brand-logo-hero {
-  filter: drop-shadow(0 4px 16px rgba(196, 59, 50, 0.22));
+  filter: drop-shadow(0 4px 16px rgba(184, 50, 40, 0.28));
+}
+
+/* Reshiram: stronger fire accents so panels don't wash out to flat white */
+[data-theme="reshiram"] .top-nav {
+  border-bottom-color: color-mix(in srgb, var(--teal) 32%, transparent);
+  box-shadow: 0 8px 24px rgba(60, 30, 24, 0.08);
+}
+
+[data-theme="reshiram"] .nav-item.active {
+  color: var(--teal-deep);
+  background: color-mix(in srgb, var(--accent-bright) 22%, #fff);
+  border-color: color-mix(in srgb, var(--teal) 45%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--teal) 12%, transparent);
+}
+
+[data-theme="reshiram"] .eyebrow {
+  color: var(--teal-deep);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+[data-theme="reshiram"] .lookup-panel,
+[data-theme="reshiram"] .profile-detail,
+[data-theme="reshiram"] .ranked-card,
+[data-theme="reshiram"] .module-placeholder,
+[data-theme="reshiram"] .blitz-module,
+[data-theme="reshiram"] .blitz-hero,
+[data-theme="reshiram"] .loading-card,
+[data-theme="reshiram"] .history-match-list > *,
+[data-theme="reshiram"] .mastery-column > * {
+  border-color: color-mix(in srgb, var(--teal) 26%, transparent);
+  box-shadow: var(--card-shadow);
+}
+
+[data-theme="reshiram"] .lookup-panel,
+[data-theme="reshiram"] .profile-detail {
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--accent-bright) 10%, transparent),
+      transparent 38%
+    ),
+    var(--panel);
+  border-width: 1.5px;
+}
+
+[data-theme="reshiram"] .ranked-card {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent-bright) 12%, transparent),
+      transparent 46%
+    ),
+    var(--panel);
+}
+
+[data-theme="reshiram"] .ranked-card.unranked {
+  opacity: 0.78;
+  background: color-mix(in srgb, var(--ink) 35%, var(--panel));
+}
+
+[data-theme="reshiram"] .lookup-form input,
+[data-theme="reshiram"] .lookup-form select,
+[data-theme="reshiram"] .blitz-search input,
+[data-theme="reshiram"] .blitz-search select,
+[data-theme="reshiram"] .match-toolbar select {
+  border: 1.5px solid color-mix(in srgb, var(--teal) 34%, transparent);
+  background: #fff;
+  box-shadow: inset 0 1px 2px rgba(40, 28, 24, 0.04);
+}
+
+[data-theme="reshiram"] .ghost-button {
+  border: 1.5px solid color-mix(in srgb, var(--teal) 40%, transparent);
+  background: color-mix(in srgb, var(--accent-bright) 10%, #fff);
+  color: var(--teal-deep);
+}
+
+[data-theme="reshiram"] .primary-button {
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--teal) 28%, transparent);
+}
+
+[data-theme="reshiram"] .theme-toggle {
+  border-color: color-mix(in srgb, var(--teal) 38%, transparent);
+  background: color-mix(in srgb, var(--accent-bright) 14%, #fff);
+}
+
+[data-theme="reshiram"] .api-status {
+  color: var(--muted);
+}
+
+[data-theme="reshiram"] .section-heading h2,
+[data-theme="reshiram"] .profile-hero-copy h2 {
+  color: var(--text);
 }
 
 .brand strong,
