@@ -598,7 +598,7 @@ select {
   font-family: var(--font-display);
   font-size: clamp(28px, 4.5vw, 42px);
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   line-height: 1;
   background: none;
   color: inherit;
@@ -606,28 +606,15 @@ select {
 }
 
 .brand-wordmark {
-  display: inline-flex;
-  align-items: center;
+  display: inline;
   font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   line-height: 1;
-}
-
-.brand-wordmark-text {
   background: linear-gradient(90deg, var(--logo-a), var(--logo-b));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-.brand-wordmark-q {
-  display: block;
-  width: 0.78em;
-  height: 0.92em;
-  margin: 0.02em 0.02em 0 0;
-  overflow: visible;
-  flex: 0 0 auto;
 }
 
 .blitz-hero h1 {
