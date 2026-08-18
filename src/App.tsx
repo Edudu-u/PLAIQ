@@ -59,9 +59,9 @@ function NavIcon({
           y2="12"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="var(--logo-a, #5cf0ff)" />
-          <stop offset="55%" stopColor="var(--logo-mid, #3dff9a)" />
-          <stop offset="100%" stopColor="var(--logo-b, #c8ff3c)" />
+          <stop offset="0%" stopColor="var(--logo-a, #5cefff)" />
+          <stop offset="55%" stopColor="var(--logo-mid, #5bb8ff)" />
+          <stop offset="100%" stopColor="var(--logo-b, #7a9dff)" />
         </linearGradient>
       </defs>
       {name === "home" ? (
