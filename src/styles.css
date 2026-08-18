@@ -41,42 +41,42 @@
 [data-theme="reshiram"] {
   color-scheme: light;
   /* Reshiram — cool silver field + neon fire, matching Zekrom electric punch */
-  --ink: #e6eaf4;
-  --ink-elevated: #fffdfa;
+  --ink: #e2e6f0;
+  --ink-elevated: #ffffff;
   --panel: #ffffff;
-  --line: rgba(255, 78, 0, 0.34);
-  --text: #14161f;
-  --muted: #4a5166;
-  --teal: #ff4e00;
-  --teal-deep: #e03600;
-  --accent-bright: #ff9a32;
-  --amber: #ffb400;
+  --line: rgba(255, 62, 0, 0.42);
+  --text: #12141c;
+  --muted: #454c60;
+  --teal: #ff3b00;
+  --teal-deep: #e02800;
+  --accent-bright: #ffb21a;
+  --amber: #ffcc33;
   --danger: #ff3355;
   --win: #00c47a;
   --brand-mark-fg: #fff7f0;
-  --nav-bg: rgba(255, 252, 249, 0.92);
-  --surface-strong: #fff6ee;
+  --nav-bg: rgba(248, 250, 255, 0.94);
+  --surface-strong: #fff8f1;
   --scrim: rgba(26, 29, 46, 0.88);
   --scrim-soft: rgba(26, 29, 46, 0.55);
   --on-media: #ffffff;
   --on-media-muted: #f0f2f8;
   --card-shadow:
-    0 0 0 1px color-mix(in srgb, var(--teal) 10%, transparent),
-    0 0 24px color-mix(in srgb, var(--teal) 16%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--teal) 14%, transparent),
+    0 0 32px color-mix(in srgb, var(--teal) 22%, transparent),
     0 16px 36px rgba(40, 28, 24, 0.08);
-  --logo-a: #ff3d00;
-  --logo-mid: #ff7a14;
-  --logo-b: #ffd24a;
-  --atmosphere-1: rgba(255, 78, 0, 0.32);
-  --atmosphere-2: rgba(255, 180, 0, 0.26);
+  --logo-a: #ff2d00;
+  --logo-mid: #ff6a00;
+  --logo-b: #ffd54a;
+  --atmosphere-1: rgba(255, 59, 0, 0.38);
+  --atmosphere-2: rgba(255, 196, 40, 0.28);
   --atmosphere-base: linear-gradient(
     155deg,
-    #dfe4f0 0%,
-    #eef1f8 38%,
-    #fff3e6 76%,
-    #ffe3c4 100%
+    #d5dbe8 0%,
+    #e8ecf5 46%,
+    #f4f1ee 78%,
+    #ffe7c8 100%
   );
-  --grid-line: rgba(255, 90, 0, 0.16);
+  --grid-line: rgba(255, 70, 0, 0.2);
 }
 
 * {
@@ -203,14 +203,16 @@ select {
 
 [data-theme="reshiram"] .brand-logo {
   filter:
-    drop-shadow(0 0 8px color-mix(in srgb, var(--logo-a) 70%, transparent))
-    drop-shadow(0 0 18px color-mix(in srgb, var(--logo-b) 45%, transparent));
+    drop-shadow(0 0 6px #ff3b00)
+    drop-shadow(0 0 16px color-mix(in srgb, var(--logo-a) 80%, transparent))
+    drop-shadow(0 0 28px color-mix(in srgb, var(--logo-b) 55%, transparent));
 }
 
 [data-theme="reshiram"] .brand-logo-hero {
   filter:
-    drop-shadow(0 0 16px color-mix(in srgb, var(--logo-a) 75%, transparent))
-    drop-shadow(0 0 38px color-mix(in srgb, var(--logo-b) 50%, transparent));
+    drop-shadow(0 0 10px #ff3b00)
+    drop-shadow(0 0 28px color-mix(in srgb, var(--logo-a) 85%, transparent))
+    drop-shadow(0 0 52px color-mix(in srgb, var(--logo-b) 60%, transparent));
 }
 
 [data-theme="reshiram"] .atmosphere::before {
@@ -218,23 +220,24 @@ select {
 }
 
 [data-theme="reshiram"] .blitz-hero-wordmark {
-  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--logo-a) 42%, transparent));
+  filter: drop-shadow(0 0 10px #ff3b00) drop-shadow(0 0 22px color-mix(in srgb, var(--logo-a) 55%, transparent));
 }
 
 [data-theme="reshiram"] .blitz-hero-glow {
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--teal) 48%, transparent),
-    color-mix(in srgb, var(--amber) 22%, transparent) 42%,
+    color-mix(in srgb, var(--teal) 62%, transparent),
+    color-mix(in srgb, var(--amber) 32%, transparent) 42%,
     transparent 72%
   );
-  filter: blur(4px);
+  filter: blur(2px);
 }
 
 [data-theme="reshiram"] .blitz-hero {
-  border-color: color-mix(in srgb, var(--teal) 42%, transparent);
+  border-color: color-mix(in srgb, var(--teal) 55%, transparent);
   box-shadow:
-    0 0 48px color-mix(in srgb, var(--teal) 22%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--amber) 35%, transparent),
+    0 0 56px color-mix(in srgb, var(--teal) 32%, transparent),
     var(--card-shadow);
 }
 
@@ -339,9 +342,11 @@ select {
 }
 
 [data-theme="reshiram"] .primary-button {
+  background: linear-gradient(135deg, #ff2d00 0%, #ff6a00 48%, #ffb21a 100%);
   box-shadow:
-    0 0 18px color-mix(in srgb, var(--teal) 50%, transparent),
-    0 8px 22px color-mix(in srgb, var(--teal) 28%, transparent);
+    0 0 10px #ff3b00,
+    0 0 28px color-mix(in srgb, var(--teal) 60%, transparent),
+    0 8px 22px color-mix(in srgb, var(--teal) 32%, transparent);
 }
 
 [data-theme="reshiram"] .theme-toggle {
