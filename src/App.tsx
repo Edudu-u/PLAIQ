@@ -13,6 +13,7 @@ import {
 } from "./lib/api";
 import { LandingHome } from "./LandingHome";
 import { BrandLogo } from "./BrandLogo";
+import { BrandWordmark } from "./BrandWordmark";
 import { getClientId } from "./lib/client-id";
 import type {
   AppView,
@@ -777,7 +778,9 @@ export function App() {
             <BrandLogo />
           </span>
           <div>
-            <strong>PLAYQ.GG</strong>
+            <strong>
+              <BrandWordmark />
+            </strong>
             <small>Centro táctico</small>
           </div>
         </button>

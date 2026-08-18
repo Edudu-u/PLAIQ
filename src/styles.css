@@ -185,43 +185,29 @@ select {
   height: 40px;
   display: block;
   flex-shrink: 0;
-  filter:
-    drop-shadow(0 0 6px var(--logo-a))
-    drop-shadow(0 0 16px color-mix(in srgb, var(--logo-a) 70%, transparent))
-    drop-shadow(0 0 28px color-mix(in srgb, var(--logo-mid) 45%, transparent));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--logo-a) 38%, transparent));
 }
 
 .brand-logo-hero {
   width: clamp(72px, 12vw, 112px);
   height: clamp(72px, 12vw, 112px);
   margin: 0 auto;
-  filter:
-    drop-shadow(0 0 8px var(--logo-a))
-    drop-shadow(0 0 24px color-mix(in srgb, var(--logo-a) 80%, transparent))
-    drop-shadow(0 0 48px color-mix(in srgb, var(--logo-b) 50%, transparent));
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--logo-a) 42%, transparent));
 }
 
 .brand-logo-module {
   width: 56px;
   height: 56px;
   margin: 0 0 12px;
-  filter:
-    drop-shadow(0 0 8px var(--logo-a))
-    drop-shadow(0 0 20px color-mix(in srgb, var(--logo-mid) 50%, transparent));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--logo-a) 32%, transparent));
 }
 
 [data-theme="reshiram"] .brand-logo {
-  filter:
-    drop-shadow(0 0 6px #ff3b00)
-    drop-shadow(0 0 16px color-mix(in srgb, var(--logo-a) 80%, transparent))
-    drop-shadow(0 0 28px color-mix(in srgb, var(--logo-b) 55%, transparent));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--logo-a) 36%, transparent));
 }
 
 [data-theme="reshiram"] .brand-logo-hero {
-  filter:
-    drop-shadow(0 0 10px #ff3b00)
-    drop-shadow(0 0 28px color-mix(in srgb, var(--logo-a) 85%, transparent))
-    drop-shadow(0 0 52px color-mix(in srgb, var(--logo-b) 60%, transparent));
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--logo-a) 40%, transparent));
 }
 
 [data-theme="reshiram"] .atmosphere::before {
@@ -229,17 +215,17 @@ select {
 }
 
 [data-theme="reshiram"] .blitz-hero-wordmark {
-  filter: drop-shadow(0 0 10px #ff3b00) drop-shadow(0 0 22px color-mix(in srgb, var(--logo-a) 55%, transparent));
+  filter: none;
 }
 
 [data-theme="reshiram"] .blitz-hero-glow {
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--teal) 62%, transparent),
-    color-mix(in srgb, var(--amber) 32%, transparent) 42%,
+    color-mix(in srgb, var(--teal) 28%, transparent),
+    color-mix(in srgb, var(--amber) 16%, transparent) 42%,
     transparent 72%
   );
-  filter: blur(2px);
+  filter: blur(6px);
 }
 
 [data-theme="reshiram"] .blitz-hero {
@@ -420,10 +406,8 @@ select {
   font-family: var(--font-display);
   letter-spacing: 0.03em;
   font-size: 16px;
-  background: linear-gradient(90deg, var(--logo-a), var(--logo-b));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  background: none;
+  color: inherit;
 }
 
 .brand small {
@@ -595,11 +579,11 @@ select {
   z-index: -1;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--teal) 42%, transparent),
-    color-mix(in srgb, var(--logo-mid) 22%, transparent) 45%,
+    color-mix(in srgb, var(--teal) 22%, transparent),
+    color-mix(in srgb, var(--logo-mid) 12%, transparent) 45%,
     transparent 72%
   );
-  filter: blur(4px);
+  filter: blur(8px);
 }
 
 .blitz-hero-brand {
@@ -614,13 +598,36 @@ select {
   font-family: var(--font-display);
   font-size: clamp(28px, 4.5vw, 42px);
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   line-height: 1;
+  background: none;
+  color: inherit;
+  filter: none;
+}
+
+.brand-wordmark {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.brand-wordmark-text {
   background: linear-gradient(90deg, var(--logo-a), var(--logo-b));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--logo-a) 60%, transparent));
+}
+
+.brand-wordmark-q {
+  display: block;
+  width: 0.78em;
+  height: 0.92em;
+  margin: 0.02em 0.02em 0 0;
+  overflow: visible;
+  flex: 0 0 auto;
 }
 
 .blitz-hero h1 {
@@ -2884,10 +2891,10 @@ h3 {
 @keyframes markPulse {
   0%,
   100% {
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--teal) 35%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--teal) 22%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--teal) 55%, transparent), 0 0 24px color-mix(in srgb, var(--teal) 28%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--teal) 38%, transparent), 0 0 10px color-mix(in srgb, var(--teal) 16%, transparent);
   }
 }
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { BrandLogo } from "./BrandLogo";
+import { BrandWordmark } from "./BrandWordmark";
 
 function loadingArt(championId: string): string {
   return `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
@@ -206,7 +207,9 @@ export function LandingHome({
         <div className="blitz-hero-glow" aria-hidden="true" />
         <div className="blitz-hero-brand">
           <BrandLogo className="brand-logo brand-logo-hero" />
-          <p className="blitz-hero-wordmark">PLAYQ.GG</p>
+          <p className="blitz-hero-wordmark">
+            <BrandWordmark />
+          </p>
         </div>
         <h1>Busca un invocador. Mejora con un plan.</h1>
         <p className="blitz-hero-lead">
