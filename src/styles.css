@@ -5,13 +5,13 @@
   --ink: #12121a;
   --ink-elevated: #1a1a24;
   --panel: rgba(28, 28, 40, 0.88);
-  --line: rgba(123, 245, 253, 0.16);
+  --line: rgba(123, 245, 253, 0.28);
   --text: #eef9ff;
   --muted: #8b93a8;
   --teal: #7bf5fd;
   --teal-deep: #2a9aa8;
-  --accent-bright: #b8fbff;
-  --amber: #6ea8ff;
+  --accent-bright: #d6ffff;
+  --amber: #7ec8ff;
   --danger: #ff7a8a;
   --win: #5dffa8;
   --brand-mark-fg: #0a1020;
@@ -25,11 +25,11 @@
   /* Match brand PNG: cyan → emerald → lime */
   --logo-a: #5cf0ff;
   --logo-mid: #3dff9a;
-  --logo-b: #b8ff3c;
-  --atmosphere-1: rgba(123, 245, 253, 0.14);
-  --atmosphere-2: rgba(110, 168, 255, 0.12);
-  --atmosphere-base: linear-gradient(160deg, #101018 0%, #181824 48%, #12121a 100%);
-  --grid-line: rgba(123, 245, 253, 0.07);
+  --logo-b: #c8ff3c;
+  --atmosphere-1: rgba(92, 240, 255, 0.28);
+  --atmosphere-2: rgba(61, 255, 154, 0.18);
+  --atmosphere-base: linear-gradient(160deg, #0a0a12 0%, #141422 48%, #101018 100%);
+  --grid-line: rgba(123, 245, 253, 0.12);
   --font-display: "Syne", "Avenir Next", sans-serif;
   --font-body: "DM Sans", "Segoe UI", sans-serif;
   color: var(--text);
@@ -120,7 +120,7 @@ select {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.22;
+  opacity: 0.3;
   background-image:
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
@@ -185,20 +185,29 @@ select {
   height: 40px;
   display: block;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--logo-a) 35%, transparent));
+  filter:
+    drop-shadow(0 0 6px var(--logo-a))
+    drop-shadow(0 0 16px color-mix(in srgb, var(--logo-a) 70%, transparent))
+    drop-shadow(0 0 28px color-mix(in srgb, var(--logo-mid) 45%, transparent));
 }
 
 .brand-logo-hero {
   width: clamp(72px, 12vw, 112px);
   height: clamp(72px, 12vw, 112px);
   margin: 0 auto;
-  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--logo-a) 45%, transparent));
+  filter:
+    drop-shadow(0 0 8px var(--logo-a))
+    drop-shadow(0 0 24px color-mix(in srgb, var(--logo-a) 80%, transparent))
+    drop-shadow(0 0 48px color-mix(in srgb, var(--logo-b) 50%, transparent));
 }
 
 .brand-logo-module {
   width: 56px;
   height: 56px;
   margin: 0 0 12px;
+  filter:
+    drop-shadow(0 0 8px var(--logo-a))
+    drop-shadow(0 0 20px color-mix(in srgb, var(--logo-mid) 50%, transparent));
 }
 
 [data-theme="reshiram"] .brand-logo {
@@ -411,6 +420,10 @@ select {
   font-family: var(--font-display);
   letter-spacing: 0.03em;
   font-size: 16px;
+  background: linear-gradient(90deg, var(--logo-a), var(--logo-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .brand small {
@@ -452,11 +465,14 @@ select {
   flex: 0 0 auto;
   width: 22px;
   height: 22px;
-  stroke: currentColor;
   fill: none;
   stroke-width: 1.85;
   stroke-linecap: round;
   stroke-linejoin: round;
+  overflow: visible;
+  filter:
+    drop-shadow(0 0 4px color-mix(in srgb, var(--logo-a) 70%, transparent))
+    drop-shadow(0 0 10px color-mix(in srgb, var(--logo-mid) 40%, transparent));
 }
 
 .nav-item:hover {
@@ -464,14 +480,20 @@ select {
   border-color: var(--line);
 }
 
-.nav-item.active {
-  color: var(--text);
-  background: color-mix(in srgb, var(--teal) 12%, transparent);
-  border-color: color-mix(in srgb, var(--teal) 30%, transparent);
+.nav-item:hover svg,
+.nav-item.active svg {
+  filter:
+    drop-shadow(0 0 5px var(--logo-a))
+    drop-shadow(0 0 12px color-mix(in srgb, var(--logo-mid) 65%, transparent));
 }
 
-.nav-item.active svg {
-  color: var(--teal);
+.nav-item.active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--teal) 14%, transparent);
+  border-color: color-mix(in srgb, var(--teal) 42%, transparent);
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--teal) 28%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--teal) 16%, transparent);
 }
 
 .connection {
@@ -556,12 +578,13 @@ select {
   overflow: hidden;
   margin: -8px 0 0;
   padding: clamp(36px, 6vh, 72px) 18px 40px;
-  border: 1px solid color-mix(in srgb, var(--teal) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--teal) 32%, transparent);
   border-radius: 24px;
   text-align: center;
   background:
-    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--teal) 16%, transparent), transparent 46%),
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--teal) 28%, transparent), transparent 46%),
     linear-gradient(180deg, color-mix(in srgb, var(--panel) 100%, transparent), color-mix(in srgb, var(--ink) 92%, transparent));
+  box-shadow: 0 0 48px color-mix(in srgb, var(--teal) 16%, transparent);
 }
 
 .blitz-hero-glow {
@@ -569,8 +592,13 @@ select {
   inset: auto 10% -40% 10%;
   height: 55%;
   z-index: -1;
-  background: radial-gradient(circle, color-mix(in srgb, var(--teal) 18%, transparent), transparent 70%);
-  filter: blur(8px);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--teal) 42%, transparent),
+    color-mix(in srgb, var(--logo-mid) 22%, transparent) 45%,
+    transparent 72%
+  );
+  filter: blur(4px);
 }
 
 .blitz-hero-brand {
@@ -591,6 +619,7 @@ select {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--logo-a) 60%, transparent));
 }
 
 .blitz-hero h1 {

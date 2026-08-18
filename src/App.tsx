@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   getCoachingSummary,
@@ -44,49 +44,59 @@ function NavIcon({
 }: {
   name: (typeof NAV_ITEMS)[number]["icon"];
 }) {
-  if (name === "home") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" />
-      </svg>
-    );
-  }
-
-  if (name === "user") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="8" r="3.5" />
-        <path d="M5 19.5c1.8-3.2 4-4.8 7-4.8s5.2 1.6 7 4.8" />
-      </svg>
-    );
-  }
-
-  if (name === "coaching") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="7.5" />
-        <circle cx="12" cy="12" r="3" />
-        <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" />
-      </svg>
-    );
-  }
-
-  if (name === "tierlist") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M5 7h14" />
-        <path d="M5 12h10" />
-        <path d="M5 17h6" />
-        <path d="M17 15.5 19.5 12 22 15.5" />
-      </svg>
-    );
-  }
+  const uid = useId().replace(/:/g, "");
+  const gradId = `navGrad-${uid}`;
+  const stroke = `url(#${gradId})`;
 
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 3.5h8l3 3V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
-      <path d="M15 3.5V7h3.5" />
-      <path d="M9 12h6M9 16h6" />
+      <defs>
+        <linearGradient
+          id={gradId}
+          x1="3"
+          y1="12"
+          x2="21"
+          y2="12"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="var(--logo-a, #5cf0ff)" />
+          <stop offset="55%" stopColor="var(--logo-mid, #3dff9a)" />
+          <stop offset="100%" stopColor="var(--logo-b, #c8ff3c)" />
+        </linearGradient>
+      </defs>
+      {name === "home" ? (
+        <path
+          d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z"
+          stroke={stroke}
+        />
+      ) : name === "user" ? (
+        <>
+          <circle cx="12" cy="8" r="3.5" stroke={stroke} />
+          <path d="M5 19.5c1.8-3.2 4-4.8 7-4.8s5.2 1.6 7 4.8" stroke={stroke} />
+        </>
+      ) : name === "coaching" ? (
+        <>
+          <circle cx="12" cy="12" r="7.5" stroke={stroke} />
+          <circle cx="12" cy="12" r="3" stroke={stroke} />
+          <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" stroke={stroke} />
+        </>
+      ) : name === "tierlist" ? (
+        <>
+          <path d="M5 7h14" stroke={stroke} />
+          <path d="M5 12h10" stroke={stroke} />
+          <path d="M5 17h6" stroke={stroke} />
+          <path d="M17 15.5 19.5 12 22 15.5" stroke={stroke} />
+        </>
+      ) : (
+        <>
+          <path
+            d="M7 3.5h8l3 3V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"
+            stroke={stroke}
+          />
+          <path d="M15 3.5V7h3.5" stroke={stroke} />
+          <path d="M9 12h6M9 16h6" stroke={stroke} />
+        </>
+      )}
     </svg>
   );
 }
