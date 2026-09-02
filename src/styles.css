@@ -840,6 +840,11 @@ select {
   border-color: color-mix(in srgb, var(--teal) 40%, transparent);
 }
 
+.blitz-role:hover .blitz-role-art,
+.blitz-role:focus-within .blitz-role-art {
+  filter: brightness(0.52);
+}
+
 .blitz-role-art {
   position: absolute;
   inset: 0;
@@ -893,12 +898,14 @@ select {
   justify-content: flex-end;
   gap: 6px;
   padding: 18px 12px 16px;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.08) 0%,
-    rgba(0, 0, 0, 0.38) 36%,
-    rgba(0, 0, 0, 0.88) 100%
-  );
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 62%, rgba(0, 0, 0, 0.42) 0%, transparent 72%),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.58) 0%,
+      rgba(0, 0, 0, 0.76) 38%,
+      rgba(0, 0, 0, 0.94) 100%
+    );
   text-align: center;
   opacity: 0;
   pointer-events: none;
@@ -920,7 +927,9 @@ select {
   width: 3.25rem;
   height: 3.25rem;
   object-fit: contain;
-  filter: drop-shadow(0 0 12px rgba(255, 196, 84, 0.38));
+  filter:
+    drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95))
+    drop-shadow(0 0 14px rgba(255, 196, 84, 0.42));
 }
 
 .blitz-role-hover-title {
