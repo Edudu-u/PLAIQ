@@ -788,10 +788,10 @@ select {
 
 .blitz-roles {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 9.6rem));
-  justify-content: start;
-  gap: 10px;
-  max-width: 52rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  justify-content: stretch;
+  gap: 12px;
+  width: min(100%, 70rem);
 }
 
 .blitz-role {
@@ -803,7 +803,7 @@ select {
   min-height: 0;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--surface-strong);
   color: inherit;
   text-align: left;
@@ -842,20 +842,20 @@ select {
   inset: auto 0 0 0;
   z-index: 1;
   display: grid;
-  gap: 2px;
-  padding: 10px 10px 12px;
+  gap: 3px;
+  padding: 12px 12px 14px;
   background: linear-gradient(180deg, transparent, var(--scrim));
 }
 
 .blitz-role-copy strong {
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   color: var(--on-media);
 }
 
 .blitz-role-copy small {
   color: var(--on-media-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .landing-plans.blitz-section {
@@ -2939,7 +2939,8 @@ h3 {
   }
 
   .blitz-roles {
-    grid-template-columns: repeat(3, minmax(0, 9.6rem));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(100%, 44rem);
   }
 
   .tf-hud {
