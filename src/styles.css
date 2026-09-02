@@ -831,11 +831,11 @@ select {
   background: var(--surface-strong);
   color: inherit;
   text-align: left;
-  cursor: pointer;
   transition: transform 180ms ease, border-color 180ms ease;
 }
 
-.blitz-role:hover {
+.blitz-role:hover,
+.blitz-role:focus-within {
   transform: translateY(-4px);
   border-color: color-mix(in srgb, var(--teal) 40%, transparent);
 }
@@ -869,17 +869,105 @@ select {
   gap: 3px;
   padding: 12px 12px 14px;
   background: linear-gradient(180deg, transparent, var(--scrim));
+  transition: opacity 200ms ease;
 }
 
 .blitz-role-copy strong {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1.12rem;
   color: var(--on-media);
 }
 
 .blitz-role-copy small {
   color: var(--on-media-muted);
   font-size: 12px;
+}
+
+.blitz-role-hover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 18px 12px 16px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.38) 36%,
+    rgba(0, 0, 0, 0.88) 100%
+  );
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+.blitz-role:hover .blitz-role-copy,
+.blitz-role:focus-within .blitz-role-copy {
+  opacity: 0;
+}
+
+.blitz-role:hover .blitz-role-hover,
+.blitz-role:focus-within .blitz-role-hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.blitz-role-icon {
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(255, 196, 84, 0.38));
+}
+
+.blitz-role-hover-title {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  color: var(--on-media);
+  line-height: 1.1;
+}
+
+.blitz-role-hover-kicker {
+  margin: 0;
+  color: color-mix(in srgb, var(--teal) 78%, white);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.blitz-role-learn {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--on-media-muted);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.blitz-role-cta {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 6px;
+  padding: 0 12px;
+  font-size: 0.82rem;
+}
+
+@media (hover: none) {
+  .blitz-role-copy {
+    opacity: 0;
+  }
+
+  .blitz-role-hover {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 .landing-plans.blitz-section {

@@ -12,6 +12,8 @@ const ROLE_ACADEMIES = [
     role: "Top",
     blurb: "Wave, trades y TP.",
     label: "Top",
+    icon: "/roles/top.png",
+    learn: ["Oleada, freeze y slow push", "Trades y matching", "Teleport y timing"],
     frames: ["Ornn", "Camille", "Aatrox", "Renekton", "Gwen", "Sett"].map(
       loadingArt,
     ),
@@ -20,6 +22,8 @@ const ROLE_ACADEMIES = [
     role: "Jungle",
     blurb: "Pathing y objetivos.",
     label: "Jungle",
+    icon: "/roles/jungle.png",
+    learn: ["Pathing y clear eficiente", "Objetivos y tempo", "Ganks y tracking"],
     frames: ["Viego", "LeeSin", "JarvanIV", "Sejuani", "Elise", "Nidalee"].map(
       loadingArt,
     ),
@@ -28,6 +32,8 @@ const ROLE_ACADEMIES = [
     role: "Mid",
     blurb: "Prioridad y roam.",
     label: "Mid",
+    icon: "/roles/mid.png",
+    learn: ["Prioridad de oleada", "Roam y visión", "Matchups y poke"],
     frames: ["Ahri", "Yasuo", "Syndra", "Orianna", "Zed", "Viktor"].map(
       loadingArt,
     ),
@@ -36,6 +42,8 @@ const ROLE_ACADEMIES = [
     role: "ADC",
     blurb: "CS y spacing.",
     label: "ADC",
+    icon: "/roles/adc.png",
+    learn: ["CS y spacing", "Trading en bot", "Posición en teamfight"],
     frames: ["Jinx", "Kaisa", "Ezreal", "Lucian", "Ashe", "Zeri"].map(
       loadingArt,
     ),
@@ -44,6 +52,8 @@ const ROLE_ACADEMIES = [
     role: "Support",
     blurb: "Visión y sinergia.",
     label: "Support",
+    icon: "/roles/support.png",
+    learn: ["Wards y control de visión", "Sinergia con tu ADC", "Engage, peel y roam"],
     frames: ["Thresh", "Nautilus", "Lulu", "Rakan", "Pyke", "Nami"].map(
       loadingArt,
     ),
@@ -118,20 +128,24 @@ function RoleCard({
   role,
   label,
   blurb,
+  icon,
+  learn,
   frames,
   onSelect,
 }: {
   role: string;
   label: string;
   blurb: string;
+  icon: string;
+  learn: readonly string[];
   frames: readonly string[];
   onSelect: () => void;
 }) {
   const index = useFrameCycle(frames.length, 3200 + role.length * 90);
 
   return (
-    <button className="blitz-role" type="button" onClick={onSelect}>
-      <span className="blitz-role-art">
+    <article className="blitz-role">
+      <span className="blitz-role-art" aria-hidden="true">
         {frames.map((src, frameIndex) => (
           <img
             key={src}
@@ -145,7 +159,20 @@ function RoleCard({
         <strong>{label}</strong>
         <small>{blurb}</small>
       </span>
-    </button>
+      <div className="blitz-role-hover">
+        <img className="blitz-role-icon" src={icon} alt="" />
+        <strong className="blitz-role-hover-title">{label}</strong>
+        <p className="blitz-role-hover-kicker">En el plan aprendes</p>
+        <ul className="blitz-role-learn">
+          {learn.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+        <button className="primary-button blitz-role-cta" type="button" onClick={onSelect}>
+          Ir al plan
+        </button>
+      </div>
+    </article>
   );
 }
 
@@ -307,6 +334,8 @@ export function LandingHome({
               role={item.role}
               label={item.label}
               blurb={item.blurb}
+              icon={item.icon}
+              learn={item.learn}
               frames={item.frames}
               onSelect={() => onOpenModule("coaching")}
             />
