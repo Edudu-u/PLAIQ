@@ -849,6 +849,7 @@ select {
   position: absolute;
   inset: 0;
   background: var(--surface-strong);
+  transition: filter 220ms ease;
 }
 
 .blitz-role-art img {
@@ -3173,5 +3174,132 @@ h3 {
 
   .primary-button {
     grid-column: auto;
+  }
+}
+
+.tierlist-lead,
+.tierlist-sync,
+.tierlist-footnote {
+  color: var(--muted);
+  max-width: 46rem;
+}
+
+.tierlist-sync {
+  margin: 0 0 16px;
+  color: var(--teal);
+}
+
+.tierlist-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 18px 0 22px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+}
+
+.tierlist-filters label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tierlist-filters select {
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--ink-elevated);
+  color: var(--text);
+}
+
+.tierlist-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+}
+
+.tierlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.tierlist-table th,
+.tierlist-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  white-space: nowrap;
+}
+
+.tierlist-table th {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tierlist-champ {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.tierlist-champ img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.tier-pill {
+  display: inline-flex;
+  min-width: 1.8rem;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+
+.tier-s {
+  color: #3a2200;
+  background: linear-gradient(135deg, #ffe08a, #ffb347);
+}
+
+.tier-a {
+  color: #041018;
+  background: linear-gradient(135deg, var(--teal), var(--accent-bright));
+}
+
+.tier-b {
+  color: var(--text);
+  background: color-mix(in srgb, var(--logo-b) 35%, transparent);
+}
+
+.tier-c,
+.tier-d,
+.tier-- {
+  color: var(--muted);
+  background: color-mix(in srgb, var(--line) 35%, transparent);
+}
+
+.tierlist-footnote {
+  padding: 12px 14px 16px;
+  margin: 0;
+}
+
+@media (max-width: 1020px) {
+  .tierlist-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
