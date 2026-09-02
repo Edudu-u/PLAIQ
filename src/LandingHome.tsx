@@ -295,7 +295,7 @@ export function LandingHome({
         </div>
       </section>
 
-      <section className="blitz-section" data-reveal>
+      <section className="blitz-section landing-roles" data-reveal>
         <div className="blitz-section-head">
           <span className="eyebrow">Por rol</span>
           <h2>Elige tu línea y entra al plan</h2>

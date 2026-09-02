@@ -791,7 +791,23 @@ select {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   justify-content: stretch;
   gap: 12px;
-  width: min(100%, 70rem);
+  width: 100%;
+}
+
+.landing-roles {
+  max-width: 70rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.landing-roles .blitz-section-head {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.landing-roles .blitz-roles {
+  text-align: left;
 }
 
 .blitz-role {
@@ -2940,7 +2956,7 @@ h3 {
 
   .blitz-roles {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    width: min(100%, 44rem);
+    width: 100%;
   }
 
   .tf-hud {
