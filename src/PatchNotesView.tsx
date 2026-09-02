@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { MouseEvent } from "react";
 import { getPatchArticle, getPatchIndex } from "./lib/api";
 import type { PatchArticle, PatchIndex } from "./types/patches";
 
@@ -18,9 +19,11 @@ export function PatchNotesView() {
   const [article, setArticle] = useState<PatchArticle | null>(null);
   const [year, setYear] = useState<number | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loadingList, setLoadingList] = useState(true);
   const [loadingArticle, setLoadingArticle] = useState(true);
+  const articleRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -28,14 +31,8 @@ export function PatchNotesView() {
     void getPatchIndex(controller.signal)
       .then((payload) => {
         setIndex(payload);
-        const newestYear = payload.years.length
-          ? Math.max(...payload.years.map((group) => group.year))
-          : null;
-        setYear(newestYear);
-        const newestGroup = payload.years.find(
-          (group) => group.year === newestYear,
-        );
-        setSlug(newestGroup?.patches[0]?.slug ?? payload.latestSlug);
+        setYear(payload.years[0]?.year ?? null);
+        setSlug(payload.latestSlug);
       })
       .catch((caught: unknown) => {
         setError(
@@ -56,7 +53,10 @@ export function PatchNotesView() {
     setLoadingArticle(true);
     setError(null);
     void getPatchArticle(slug, controller.signal)
-      .then(setArticle)
+      .then((payload) => {
+        setArticle(payload);
+        articleRef.current?.scrollTo({ top: 0 });
+      })
       .catch((caught: unknown) => {
         setError(
           caught instanceof Error
@@ -68,26 +68,37 @@ export function PatchNotesView() {
     return () => controller.abort();
   }, [slug]);
 
-  const visibleYears = useMemo(() => {
-    const years = index?.years ?? [];
-    if (!years.length) return [];
-    const newest = Math.max(...years.map((group) => group.year));
-    return years.filter((group) => group.year === newest);
-  }, [index]);
-
   const yearGroup = useMemo(
-    () =>
-      visibleYears.find((group) => group.year === year) ?? visibleYears[0],
-    [visibleYears, year],
+    () => index?.years.find((group) => group.year === year) ?? index?.years[0],
+    [index, year],
   );
+
+  const filteredPatches = useMemo(() => {
+    const patches = yearGroup?.patches ?? [];
+    const term = query.trim().toLowerCase();
+    if (!term) return patches;
+    return patches.filter(
+      (patch) =>
+        patch.version.toLowerCase().includes(term) ||
+        patch.title.toLowerCase().includes(term),
+    );
+  }, [yearGroup, query]);
 
   function selectYear(nextYear: number) {
     setYear(nextYear);
-    const group = visibleYears.find((item) => item.year === nextYear);
+    setQuery("");
+    const group = index?.years.find((item) => item.year === nextYear);
     const nextSlug = group?.patches[0]?.slug;
     if (nextSlug) {
       setSlug(nextSlug);
     }
+  }
+
+  function onTocClick(event: MouseEvent<HTMLAnchorElement>, id: string) {
+    event.preventDefault();
+    const root = articleRef.current;
+    const target = root?.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
@@ -119,7 +130,7 @@ export function PatchNotesView() {
           ) : (
             <>
               <div className="patches-years" role="tablist" aria-label="Año">
-                {visibleYears.map((group) => (
+                {index?.years.map((group) => (
                   <button
                     key={group.year}
                     type="button"
@@ -128,53 +139,97 @@ export function PatchNotesView() {
                     onClick={() => selectYear(group.year)}
                   >
                     {group.year}
+                    <span className="patches-year-count">
+                      {group.patches.length}
+                    </span>
                   </button>
                 ))}
               </div>
+              <label className="patches-search">
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Buscar 26.17, 25.24…"
+                  aria-label="Buscar parche"
+                />
+              </label>
               <div className="patches-list">
-                {yearGroup?.patches.map((patch) => (
-                  <button
-                    key={patch.slug}
-                    type="button"
-                    className={patch.slug === slug ? "is-active" : ""}
-                    onClick={() => setSlug(patch.slug)}
-                  >
-                    <strong>
-                      {patch.version}
-                      {patch.slug === index?.latestSlug ? (
-                        <span className="patch-latest">Última</span>
-                      ) : null}
-                    </strong>
-                    <small>{formatDate(patch.publishedAt)}</small>
-                  </button>
-                ))}
+                {filteredPatches.length === 0 ? (
+                  <p className="patches-nav-empty">
+                    No hay parches para esa búsqueda.
+                  </p>
+                ) : (
+                  filteredPatches.map((patch) => (
+                    <button
+                      key={patch.slug}
+                      type="button"
+                      className={patch.slug === slug ? "is-active" : ""}
+                      onClick={() => setSlug(patch.slug)}
+                    >
+                      <strong>
+                        {patch.version}
+                        {patch.slug === index?.latestSlug ? (
+                          <span className="patch-latest">Última</span>
+                        ) : null}
+                      </strong>
+                      <small>{formatDate(patch.publishedAt)}</small>
+                    </button>
+                  ))
+                )}
               </div>
             </>
           )}
         </aside>
 
         <section className="patches-stage">
-          {loadingArticle || !article ? (
+          {!article && loadingArticle ? (
             <div className="loading-card">Cargando notas oficiales de Riot…</div>
-          ) : (
-            <article className="patches-article">
-              {article.bannerUrl && (
-                <div className="patches-hero">
+          ) : article ? (
+            <article
+              ref={articleRef}
+              className={
+                loadingArticle
+                  ? "patches-article is-loading"
+                  : "patches-article"
+              }
+            >
+              <div
+                className={
+                  article.bannerUrl
+                    ? "patches-hero"
+                    : "patches-hero is-plain"
+                }
+              >
+                {article.bannerUrl && (
                   <img src={article.bannerUrl} alt="" />
-                  <div className="patches-hero-copy">
-                    <span className="eyebrow">Versión {article.version}</span>
-                    <h2>{article.title}</h2>
+                )}
+                <div className="patches-hero-copy">
+                  <span className="eyebrow">Versión {article.version}</span>
+                  <h2>{article.title}</h2>
+                  {article.publishedAt && (
                     <time dateTime={article.publishedAt}>
                       {formatDate(article.publishedAt)}
                     </time>
-                  </div>
+                  )}
+                  {(article.tags ?? []).length > 0 && (
+                    <div className="patches-tags">
+                      {(article.tags ?? []).map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
               {article.blurb && <p className="patches-blurb">{article.blurb}</p>}
               {article.toc.length > 0 && (
                 <nav className="patches-toc" aria-label="Índice">
                   {article.toc.map((item) => (
-                    <a key={item.id} href={`#${item.id}`}>
+                    <a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      onClick={(event) => onTocClick(event, item.id)}
+                    >
                       {item.title}
                     </a>
                   ))}
@@ -185,6 +240,10 @@ export function PatchNotesView() {
                 dangerouslySetInnerHTML={{ __html: article.html }}
               />
             </article>
+          ) : (
+            <div className="loading-card">
+              Elige un parche del historial para leer las notas oficiales.
+            </div>
           )}
         </section>
       </div>

@@ -31,6 +31,7 @@ export interface PatchArticle {
   publishedAt: string;
   bannerUrl: string | null;
   officialUrl: string;
+  tags: string[];
   html: string;
   toc: PatchTocItem[];
 }

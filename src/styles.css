@@ -3304,6 +3304,10 @@ h3 {
   }
 }
 
+.patches-shell {
+  min-height: 0;
+}
+
 .patches-layout {
   display: grid;
   grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
@@ -3349,11 +3353,42 @@ h3 {
 }
 
 .patches-years button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 34px;
   padding: 0 10px;
   border-radius: 999px;
   border-color: var(--line);
   font-weight: 700;
+}
+
+.patches-year-count {
+  min-width: 1.4em;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.patches-search {
+  display: block;
+  margin: 0 0 12px;
+}
+
+.patches-search input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  color: var(--text);
+}
+
+.patches-search input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--teal) 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
 }
 
 .patches-years button.is-active,
@@ -3402,15 +3437,25 @@ h3 {
 }
 
 .patches-article {
-  overflow: hidden;
+  max-height: calc(100vh - 150px);
+  overflow: auto;
   border: 1px solid var(--line);
   border-radius: 22px;
   background: var(--panel);
+  scroll-behavior: smooth;
+}
+
+.patches-article.is-loading {
+  opacity: 0.72;
 }
 
 .patches-hero {
   position: relative;
   min-height: 240px;
+}
+
+.patches-hero.is-plain {
+  min-height: 0;
 }
 
 .patches-hero img {
@@ -3427,6 +3472,11 @@ h3 {
   background: linear-gradient(180deg, transparent, rgba(6, 8, 16, 0.92));
 }
 
+.patches-hero.is-plain .patches-hero-copy {
+  position: static;
+  background: none;
+}
+
 .patches-hero-copy h2 {
   margin: 6px 0 8px;
   font-size: clamp(1.6rem, 3vw, 2.4rem);
@@ -3435,6 +3485,34 @@ h3 {
 .patches-hero-copy time {
   color: var(--on-media-muted);
   font-size: 13px;
+}
+
+.patches-hero.is-plain .patches-hero-copy time {
+  color: var(--muted);
+}
+
+.patches-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.patches-tags span {
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+  border-radius: 999px;
+  color: var(--on-media, #fff);
+  background: color-mix(in srgb, #000 35%, transparent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.patches-hero.is-plain .patches-tags span {
+  color: var(--text);
+  background: color-mix(in srgb, var(--teal) 10%, transparent);
 }
 
 .patches-blurb {
@@ -3481,6 +3559,7 @@ h3 {
 }
 
 .patches-html h2 {
+  scroll-margin-top: 18px;
   margin: 32px 0 14px;
   padding-bottom: 8px;
   border-bottom: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
@@ -3608,6 +3687,35 @@ h3 {
   text-decoration: none;
 }
 
+.patches-html .change-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.patches-html .patch-change-block > div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 4px 16px;
+  align-items: start;
+}
+
+.patches-html .patch-change-block > div > p:has(.reference-link) {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+}
+
+.patches-html .patch-change-block > div > .change-title {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  margin: 0;
+}
+
+.patches-html .patch-change-block > div > :not(p):not(.change-title) {
+  grid-column: 1 / -1;
+}
+
 .patches-html a.reference-link {
   display: inline-block;
 }
@@ -3655,6 +3763,10 @@ h3 {
 
   .patches-nav {
     position: static;
+    max-height: none;
+  }
+
+  .patches-article {
     max-height: none;
   }
 }
