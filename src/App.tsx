@@ -12,6 +12,7 @@ import {
   syncProfileMatches,
 } from "./lib/api";
 import { LandingHome } from "./LandingHome";
+import { PatchNotesView } from "./PatchNotesView";
 import { TierlistView } from "./TierlistView";
 import { BrandLogo } from "./BrandLogo";
 import { BrandWordmark } from "./BrandWordmark";
@@ -1050,17 +1051,7 @@ export function App() {
 
         {view === "tierlist" && <TierlistView />}
 
-        {view === "notas-parche" && (
-          <section className="module-placeholder">
-            <BrandLogo className="brand-logo brand-logo-module" />
-            <span className="eyebrow">Actualizaciones</span>
-            <h1>Notas del Parche</h1>
-            <p>
-              Resumen táctico de cambios relevantes para tu rol, campeones y
-              objetivos de coaching. Próximamente.
-            </p>
-          </section>
-        )}
+        {view === "notas-parche" && <PatchNotesView />}
       </section>
     </main>
   );

@@ -3303,3 +3303,219 @@ h3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.patches-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.patches-nav {
+  position: sticky;
+  top: 92px;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+}
+
+.patches-nav-kicker,
+.patches-nav-empty {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.patches-years {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.patches-years button,
+.patches-list button {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.patches-years button {
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border-color: var(--line);
+  font-weight: 700;
+}
+
+.patches-years button.is-active,
+.patches-list button.is-active {
+  border-color: color-mix(in srgb, var(--teal) 55%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+
+.patches-list {
+  display: grid;
+  gap: 6px;
+}
+
+.patches-list button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.patches-list button:hover {
+  background: color-mix(in srgb, var(--teal) 8%, transparent);
+}
+
+.patches-list strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+}
+
+.patches-list small {
+  color: var(--muted);
+}
+
+.patch-latest {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--teal), var(--accent-bright));
+  color: var(--brand-mark-fg);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.patches-article {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--panel);
+}
+
+.patches-hero {
+  position: relative;
+  min-height: 240px;
+}
+
+.patches-hero img {
+  display: block;
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.patches-hero-copy {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 28px 28px 22px;
+  background: linear-gradient(180deg, transparent, rgba(6, 8, 16, 0.92));
+}
+
+.patches-hero-copy h2 {
+  margin: 6px 0 8px;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+.patches-hero-copy time {
+  color: var(--on-media-muted);
+  font-size: 13px;
+}
+
+.patches-blurb {
+  margin: 0;
+  padding: 18px 28px 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.patches-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 18px 28px 0;
+}
+
+.patches-toc a {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.patches-toc a:hover {
+  border-color: color-mix(in srgb, var(--teal) 50%, transparent);
+  color: var(--teal);
+}
+
+.patches-html {
+  padding: 12px 28px 36px;
+  color: var(--text);
+  line-height: 1.65;
+}
+
+.patches-html img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.patches-html h2 {
+  margin: 32px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+  font-family: var(--font-display);
+  color: var(--teal);
+}
+
+.patches-html h3,
+.patches-html .change-title,
+.patches-html .header-primary {
+  margin: 22px 0 8px;
+  color: #f3d48a;
+  font-family: var(--font-display);
+}
+
+.patches-html blockquote,
+.patches-html .content-border,
+.patches-html .patch-change-block {
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--ink-elevated) 80%, transparent);
+}
+
+.patches-html .attribute-change,
+.patches-html li {
+  margin: 4px 0;
+}
+
+@media (max-width: 1020px) {
+  .patches-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .patches-nav {
+    position: static;
+    max-height: none;
+  }
+}
