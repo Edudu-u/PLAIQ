@@ -233,8 +233,8 @@ export function TierlistView() {
         <section className="loading-card">Cargando meta Riot…</section>
       ) : !data?.rows.length ? (
         <section className="loading-card">
-          No hay partidas agregadas todavía. Pulsa <strong>Actualizar con Riot</strong>{" "}
-          con una production/development key en la API.
+          No hay partidas en este recorte. Pulsa <strong>Actualizar con Riot</strong>{" "}
+          cuando la API tenga una key de Riot, o cambia región/liga/modo.
         </section>
       ) : (
         <div className="tierlist-table-wrap">
