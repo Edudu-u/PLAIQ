@@ -110,7 +110,7 @@ export function PatchNotesView() {
         </div>
         {article && (
           <a
-            className="ghost-button"
+            className="ghost-button patches-official-link"
             href={article.officialUrl}
             target="_blank"
             rel="noreferrer"
