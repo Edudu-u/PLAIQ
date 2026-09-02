@@ -8,6 +8,11 @@ import type {
   RiotSearchHistory,
   SyncMatchesResult,
 } from "../types/coaching";
+import type {
+  TierlistQuery,
+  TierlistResponse,
+  TierlistSyncStatus,
+} from "../types/tierlist";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
@@ -124,4 +129,37 @@ export function getMatchDetail(
   return request<MatchDetail>(
     `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches/${encodeURIComponent(matchId)}?clientId=${encodeURIComponent(clientId)}`,
   );
+}
+
+export function getTierlist(query: TierlistQuery): Promise<TierlistResponse> {
+  const params = new URLSearchParams({
+    platform: query.platform,
+    role: query.role,
+    patch: query.patch,
+    league: query.league,
+    queueId: query.queueId,
+  });
+  return request<TierlistResponse>(`/v1/tierlist?${params}`);
+}
+
+export function getTierlistSyncStatus(
+  signal?: AbortSignal,
+): Promise<TierlistSyncStatus> {
+  return request<TierlistSyncStatus>("/v1/tierlist/sync", { signal });
+}
+
+export function startTierlistSync(): Promise<TierlistSyncStatus> {
+  return request<TierlistSyncStatus>("/v1/tierlist/sync", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      platforms: ["LA2", "LA1"],
+      queueIds: [420],
+      includeDiamond: false,
+      playersPerTier: 5,
+      matchesPerPlayer: 8,
+    }),
+  });
 }

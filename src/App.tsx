@@ -12,6 +12,7 @@ import {
   syncProfileMatches,
 } from "./lib/api";
 import { LandingHome } from "./LandingHome";
+import { TierlistView } from "./TierlistView";
 import { BrandLogo } from "./BrandLogo";
 import { BrandWordmark } from "./BrandWordmark";
 import { getClientId } from "./lib/client-id";
@@ -1047,17 +1048,7 @@ export function App() {
           </>
         )}
 
-        {view === "tierlist" && (
-          <section className="module-placeholder">
-            <BrandLogo className="brand-logo brand-logo-module" />
-            <span className="eyebrow">Meta</span>
-            <h1>Tierlist</h1>
-            <p>
-              Ranking de campeones por rol y parche para orientar picks y bans.
-              Este módulo se conectará a datos vivos más adelante.
-            </p>
-          </section>
-        )}
+        {view === "tierlist" && <TierlistView />}
 
         {view === "notas-parche" && (
           <section className="module-placeholder">
