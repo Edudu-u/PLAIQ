@@ -332,7 +332,8 @@ select {
 [data-theme="reshiram"] .ghost-button {
   border: 1.5px solid color-mix(in srgb, var(--teal) 50%, transparent);
   background: color-mix(in srgb, var(--accent-bright) 14%, #fff);
-  color: var(--teal-deep);
+  color: var(--text);
+  text-decoration: none;
   box-shadow: 0 0 14px color-mix(in srgb, var(--teal) 18%, transparent);
 }
 
@@ -2289,6 +2290,7 @@ h3 {
   color: var(--text);
   border: 1px solid var(--line);
   background: transparent;
+  text-decoration: none;
 }
 
 .primary-button:disabled {
@@ -3469,12 +3471,26 @@ h3 {
   position: absolute;
   inset: auto 0 0 0;
   padding: 28px 28px 22px;
-  background: linear-gradient(180deg, transparent, rgba(6, 8, 16, 0.92));
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--scrim) 72%, transparent) 42%,
+    var(--scrim) 100%
+  );
 }
 
 .patches-hero.is-plain .patches-hero-copy {
   position: static;
   background: none;
+}
+
+.patches-hero-copy h2,
+.patches-hero-copy .eyebrow,
+.patches-hero-copy time {
+  color: var(--on-media);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.88),
+    0 10px 28px rgba(0, 0, 0, 0.55);
 }
 
 .patches-hero-copy h2 {
@@ -3487,8 +3503,19 @@ h3 {
   font-size: 13px;
 }
 
+.patches-hero.is-plain .patches-hero-copy h2 {
+  color: var(--text);
+  text-shadow: none;
+}
+
+.patches-hero.is-plain .patches-hero-copy .eyebrow {
+  color: var(--teal);
+  text-shadow: none;
+}
+
 .patches-hero.is-plain .patches-hero-copy time {
   color: var(--muted);
+  text-shadow: none;
 }
 
 .patches-tags {
@@ -3550,6 +3577,11 @@ h3 {
   line-height: 1.65;
 }
 
+.patches-html :is(h1, h2, h3, h4, h5, .header-primary, .change-title, .change-detail-title, .ability-title)[style*="color"],
+.patches-html :is(h1, h2, h3, h4, h5, .header-primary, .change-title, .change-detail-title, .ability-title)[style*="COLOR"] {
+  color: inherit !important;
+}
+
 .patches-html img {
   display: block;
   max-width: 100%;
@@ -3558,6 +3590,7 @@ h3 {
   border-radius: 12px;
 }
 
+.patches-html h1,
 .patches-html h2 {
   scroll-margin-top: 18px;
   margin: 32px 0 14px;
@@ -3569,10 +3602,29 @@ h3 {
 
 .patches-html h3,
 .patches-html .change-title,
-.patches-html .header-primary {
+.patches-html .header-primary,
+.patches-html .change-detail-title,
+.patches-html .ability-title {
   margin: 22px 0 8px;
   color: #f3d48a;
   font-family: var(--font-display);
+}
+
+[data-theme="reshiram"] .patches-html {
+  color: var(--text);
+}
+
+[data-theme="reshiram"] .patches-html h1,
+[data-theme="reshiram"] .patches-html h2 {
+  color: var(--teal-deep);
+}
+
+[data-theme="reshiram"] .patches-html h3,
+[data-theme="reshiram"] .patches-html .change-title,
+[data-theme="reshiram"] .patches-html .header-primary,
+[data-theme="reshiram"] .patches-html .change-detail-title,
+[data-theme="reshiram"] .patches-html .ability-title {
+  color: var(--teal-deep);
 }
 
 .patches-html blockquote {
@@ -3678,7 +3730,7 @@ h3 {
 
 .patches-html .skin-title {
   margin: 10px 0 0;
-  color: #f3d48a;
+  color: var(--on-media);
   font-size: 0.95rem;
 }
 

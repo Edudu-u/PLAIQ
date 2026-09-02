@@ -115,7 +115,7 @@ export function PatchNotesView() {
             target="_blank"
             rel="noreferrer"
           >
-            Ver en LoL
+            Ver en la página oficial
           </a>
         )}
       </header>
