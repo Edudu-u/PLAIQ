@@ -28,8 +28,14 @@ export function PatchNotesView() {
     void getPatchIndex(controller.signal)
       .then((payload) => {
         setIndex(payload);
-        setYear(payload.years[0]?.year ?? null);
-        setSlug(payload.latestSlug);
+        const newestYear = payload.years.length
+          ? Math.max(...payload.years.map((group) => group.year))
+          : null;
+        setYear(newestYear);
+        const newestGroup = payload.years.find(
+          (group) => group.year === newestYear,
+        );
+        setSlug(newestGroup?.patches[0]?.slug ?? payload.latestSlug);
       })
       .catch((caught: unknown) => {
         setError(
@@ -62,14 +68,22 @@ export function PatchNotesView() {
     return () => controller.abort();
   }, [slug]);
 
+  const visibleYears = useMemo(() => {
+    const years = index?.years ?? [];
+    if (!years.length) return [];
+    const newest = Math.max(...years.map((group) => group.year));
+    return years.filter((group) => group.year === newest);
+  }, [index]);
+
   const yearGroup = useMemo(
-    () => index?.years.find((group) => group.year === year) ?? index?.years[0],
-    [index, year],
+    () =>
+      visibleYears.find((group) => group.year === year) ?? visibleYears[0],
+    [visibleYears, year],
   );
 
   function selectYear(nextYear: number) {
     setYear(nextYear);
-    const group = index?.years.find((item) => item.year === nextYear);
+    const group = visibleYears.find((item) => item.year === nextYear);
     const nextSlug = group?.patches[0]?.slug;
     if (nextSlug) {
       setSlug(nextSlug);
@@ -105,7 +119,7 @@ export function PatchNotesView() {
           ) : (
             <>
               <div className="patches-years" role="tablist" aria-label="Año">
-                {index?.years.map((group) => (
+                {visibleYears.map((group) => (
                   <button
                     key={group.year}
                     type="button"
