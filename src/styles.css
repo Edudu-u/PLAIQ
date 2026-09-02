@@ -959,17 +959,6 @@ select {
   font-size: 0.82rem;
 }
 
-@media (hover: none) {
-  .blitz-role-copy {
-    opacity: 0;
-  }
-
-  .blitz-role-hover {
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
-
 .landing-plans.blitz-section {
   margin-left: auto;
   margin-right: auto;
