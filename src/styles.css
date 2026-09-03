@@ -332,7 +332,8 @@ select {
 [data-theme="reshiram"] .ghost-button {
   border: 1.5px solid color-mix(in srgb, var(--teal) 50%, transparent);
   background: color-mix(in srgb, var(--accent-bright) 14%, #fff);
-  color: var(--teal-deep);
+  color: var(--text);
+  text-decoration: none;
   box-shadow: 0 0 14px color-mix(in srgb, var(--teal) 18%, transparent);
 }
 
@@ -2289,6 +2290,7 @@ h3 {
   color: var(--text);
   border: 1px solid var(--line);
   background: transparent;
+  text-decoration: none;
 }
 
 .primary-button:disabled {
@@ -3301,5 +3303,600 @@ h3 {
 @media (max-width: 1020px) {
   .tierlist-filters {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.patches-shell {
+  min-height: 0;
+}
+
+.patches-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.patches-nav {
+  position: sticky;
+  top: 92px;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+}
+
+.patches-nav-kicker,
+.patches-nav-empty {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.patches-years {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.patches-years button,
+.patches-list button {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.patches-years button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border-color: var(--line);
+  font-weight: 700;
+}
+
+.patches-year-count {
+  min-width: 1.4em;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.patches-search {
+  display: block;
+  margin: 0 0 12px;
+}
+
+.patches-search input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  color: var(--text);
+}
+
+.patches-search input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--teal) 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+
+.patches-years button.is-active,
+.patches-list button.is-active {
+  border-color: color-mix(in srgb, var(--teal) 55%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+
+.patches-list {
+  display: grid;
+  gap: 6px;
+}
+
+.patches-list button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.patches-list button:hover {
+  background: color-mix(in srgb, var(--teal) 8%, transparent);
+}
+
+.patches-list strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+}
+
+.patches-list small {
+  color: var(--muted);
+}
+
+.patch-latest {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--teal), var(--accent-bright));
+  color: var(--brand-mark-fg);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.patches-article {
+  max-height: calc(100vh - 150px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--panel);
+  scroll-behavior: smooth;
+}
+
+.patches-article.is-loading {
+  opacity: 0.72;
+}
+
+.patches-hero {
+  position: relative;
+  min-height: 240px;
+}
+
+.patches-hero.is-plain {
+  min-height: 0;
+}
+
+.patches-hero img {
+  display: block;
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.patches-hero-copy {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 28px 28px 22px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--scrim) 72%, transparent) 42%,
+    var(--scrim) 100%
+  );
+}
+
+.patches-hero.is-plain .patches-hero-copy {
+  position: static;
+  background: none;
+}
+
+.patches-hero-copy h2,
+.patches-hero-copy .eyebrow,
+.patches-hero-copy time {
+  color: var(--on-media);
+  -webkit-text-fill-color: var(--on-media);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.88),
+    0 10px 28px rgba(0, 0, 0, 0.55);
+}
+
+.patches-hero-copy h2 {
+  margin: 6px 0 8px;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+.patches-hero-copy time {
+  color: var(--on-media-muted);
+  -webkit-text-fill-color: var(--on-media-muted);
+  font-size: 13px;
+}
+
+.patches-hero.is-plain .patches-hero-copy h2 {
+  color: var(--text);
+  -webkit-text-fill-color: var(--text);
+  text-shadow: none;
+}
+
+.patches-hero.is-plain .patches-hero-copy .eyebrow {
+  color: var(--teal);
+  -webkit-text-fill-color: var(--teal);
+  text-shadow: none;
+}
+
+.patches-hero.is-plain .patches-hero-copy time {
+  color: var(--muted);
+  text-shadow: none;
+}
+
+.patches-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.patches-tags span {
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+  border-radius: 999px;
+  color: var(--on-media, #fff);
+  background: color-mix(in srgb, #000 35%, transparent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.patches-hero.is-plain .patches-tags span {
+  color: var(--text);
+  background: color-mix(in srgb, var(--teal) 10%, transparent);
+}
+
+.patches-blurb {
+  margin: 0;
+  padding: 18px 28px 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.patches-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 18px 28px 0;
+}
+
+.patches-toc a {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.patches-toc a:hover {
+  border-color: color-mix(in srgb, var(--teal) 50%, transparent);
+  color: var(--teal);
+}
+
+.patches-official-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--teal) 28%, transparent);
+}
+
+.patches-official-link svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.patches-official-link:hover {
+  text-decoration: none;
+}
+
+.patches-html {
+  padding: 12px 28px 36px;
+  color: var(--text);
+  line-height: 1.65;
+}
+
+.patches-html a {
+  color: #c8aa6e;
+}
+
+.patches-html a:hover {
+  color: #e6c97a;
+}
+
+.patches-html :is(h1, h2, h3, h4, h5, .header-primary, .change-title, .change-detail-title, .ability-title)[style*="color"],
+.patches-html :is(h1, h2, h3, h4, h5, .header-primary, .change-title, .change-detail-title, .ability-title)[style*="COLOR"] {
+  color: inherit !important;
+}
+
+.patches-html img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.patches-html h1,
+.patches-html h2 {
+  scroll-margin-top: 18px;
+  margin: 32px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+  font-family: var(--font-display);
+  color: var(--teal);
+}
+
+.patches-html h3,
+.patches-html .change-title,
+.patches-html .header-primary,
+.patches-html .change-detail-title,
+.patches-html .ability-title {
+  margin: 22px 0 8px;
+  color: #f3d48a;
+  font-family: var(--font-display);
+}
+
+[data-theme="reshiram"] .patches-html {
+  color: var(--text);
+}
+
+[data-theme="reshiram"] .patches-html h1,
+[data-theme="reshiram"] .patches-html h2 {
+  color: var(--teal-deep);
+}
+
+[data-theme="reshiram"] .patches-html h3,
+[data-theme="reshiram"] .patches-html .change-title,
+[data-theme="reshiram"] .patches-html .header-primary,
+[data-theme="reshiram"] .patches-html .change-detail-title,
+[data-theme="reshiram"] .patches-html .ability-title {
+  color: var(--teal-deep);
+}
+
+/* Riot champion/item blocks stay navy — never inherit Reshiram black/teal-deep type. */
+.patches-html #patch-notes-container .patch-change-block,
+.patches-html .patch-change-block,
+.patches-html .white-stone {
+  color: #f9f9f9;
+}
+
+.patches-html .patch-change-block,
+.patches-html .white-stone {
+  padding: 12px 4px;
+  border-radius: 12px;
+}
+
+.patches-html .patch-change-block,
+.patches-html #patch-notes-container .patch-change-block {
+  background: color-mix(in srgb, #0b1424 92%, var(--ink));
+}
+
+.patches-html .patch-change-block h2,
+.patches-html .patch-change-block h3,
+.patches-html .white-stone h2,
+.patches-html .white-stone h3,
+.patches-html .patch-change-block .change-title,
+.patches-html .patch-change-block .header-primary,
+.patches-html .patch-change-block .change-detail-title,
+.patches-html .patch-change-block .ability-title,
+[data-theme="reshiram"] .patches-html .patch-change-block h2,
+[data-theme="reshiram"] .patches-html .patch-change-block h3,
+[data-theme="reshiram"] .patches-html .white-stone h2,
+[data-theme="reshiram"] .patches-html .white-stone h3,
+[data-theme="reshiram"] .patches-html .patch-change-block .change-title,
+[data-theme="reshiram"] .patches-html .patch-change-block .header-primary,
+[data-theme="reshiram"] .patches-html .patch-change-block .change-detail-title,
+[data-theme="reshiram"] .patches-html .patch-change-block .ability-title {
+  color: #f3d48a;
+}
+
+.patches-html .patch-change-block a,
+.patches-html .white-stone a,
+[data-theme="reshiram"] .patches-html .patch-change-block a,
+[data-theme="reshiram"] .patches-html .white-stone a {
+  color: #e6c97a;
+}
+
+.patches-html blockquote {
+  margin: 14px 0;
+  padding: 12px 16px;
+  border-left: 3px solid color-mix(in srgb, var(--teal) 70%, transparent);
+  border-radius: 0 12px 12px 0;
+  background: color-mix(in srgb, var(--ink-elevated) 80%, transparent);
+}
+
+.patches-html div.content-border {
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--ink-elevated) 80%, transparent);
+}
+
+.patches-html div.content-border > .patch-change-block,
+.patches-html div.content-border > .white-stone {
+  margin: 0;
+  padding: 12px 4px;
+  border: 0;
+}
+
+.patches-html .context-designers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin: 10px 0;
+}
+
+.patches-html .context-designer {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  color: var(--text);
+  font-weight: 600;
+  text-align: left;
+}
+
+.patches-html .context-designer img {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+}
+
+.patches-html a.skins,
+.patches-html a.skins.cboxElement {
+  display: block;
+  max-width: 100%;
+}
+
+.patches-html span.content-border,
+.patches-html a.skins .content-border,
+.patches-html .skin-box .content-border {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--teal) 40%, transparent);
+  border-radius: 12px;
+  background: #0b1018;
+  box-sizing: border-box;
+}
+
+.patches-html a.skins img,
+.patches-html span.content-border > img,
+.patches-html .skin-box img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0;
+}
+
+.patches-html .gs-container.default-2-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 16px 0 8px;
+}
+
+.patches-html .skin-box {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+}
+
+.patches-html .skin-box p {
+  margin: 0;
+}
+
+.patches-html .skin-title {
+  margin: 10px 0 0;
+  color: var(--on-media);
+  font-size: 0.95rem;
+}
+
+.patches-html .skin-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.patches-html .change-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.patches-html .patch-change-block > div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 4px 16px;
+  align-items: start;
+}
+
+.patches-html .patch-change-block > div > p:has(.reference-link) {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+}
+
+.patches-html .patch-change-block > div > .change-title {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  margin: 0;
+}
+
+.patches-html .patch-change-block > div > :not(p):not(.change-title) {
+  grid-column: 1 / -1;
+}
+
+.patches-html a.reference-link {
+  display: inline-block;
+}
+
+.patches-html a.reference-link img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--teal) 40%, transparent);
+}
+
+.patches-html a.reference-link[href*="/item/"] img,
+.patches-html a.reference-link img[src*="/item/"] {
+  border-radius: 10px;
+}
+
+.patches-html .ability-title img,
+.patches-html .change-detail-title img {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+  vertical-align: middle;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.patches-html .attribute-change,
+.patches-html li {
+  margin: 4px 0;
+}
+
+@media (max-width: 720px) {
+  .patches-html .gs-container.default-2-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1020px) {
+  .patches-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .patches-nav {
+    position: static;
+    max-height: none;
+  }
+
+  .patches-article {
+    max-height: none;
   }
 }

@@ -9,6 +9,10 @@ import type {
   SyncMatchesResult,
 } from "../types/coaching";
 import type {
+  PatchArticle,
+  PatchIndex,
+} from "../types/patches";
+import type {
   TierlistQuery,
   TierlistResponse,
   TierlistSyncStatus,
@@ -162,4 +166,18 @@ export function startTierlistSync(): Promise<TierlistSyncStatus> {
       matchesPerPlayer: 8,
     }),
   });
+}
+
+export function getPatchIndex(signal?: AbortSignal): Promise<PatchIndex> {
+  return request<PatchIndex>("/v1/patches", { signal });
+}
+
+export function getPatchArticle(
+  slug: string,
+  signal?: AbortSignal,
+): Promise<PatchArticle> {
+  return request<PatchArticle>(
+    `/v1/patches/${encodeURIComponent(slug)}`,
+    { signal },
+  );
 }
