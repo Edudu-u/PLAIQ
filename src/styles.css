@@ -3575,20 +3575,27 @@ h3 {
   color: var(--teal);
 }
 
-.ghost-button.patches-official-link,
-[data-theme="reshiram"] .ghost-button.patches-official-link {
-  color: var(--on-media);
-  border: 1.5px solid color-mix(in srgb, var(--on-media) 70%, transparent);
-  background: color-mix(in srgb, #0a0c14 78%, transparent);
-  box-shadow: none;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.patches-official-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--teal) 28%, transparent);
 }
 
-.ghost-button.patches-official-link:hover,
-[data-theme="reshiram"] .ghost-button.patches-official-link:hover {
-  color: var(--on-media);
-  border-color: var(--on-media);
+.patches-official-link svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.patches-official-link:hover {
+  text-decoration: none;
 }
 
 .patches-html {

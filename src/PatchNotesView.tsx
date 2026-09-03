@@ -124,12 +124,22 @@ export function PatchNotesView() {
         </div>
         {article && (
           <a
-            className="ghost-button patches-official-link"
+            className="primary-button patches-official-link"
             href={article.officialUrl}
             target="_blank"
             rel="noreferrer"
           >
             Ver en la página oficial
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path
+                d="M6.5 3.5H3.75A1.25 1.25 0 0 0 2.5 4.75v7.5c0 .69.56 1.25 1.25 1.25h7.5c.69 0 1.25-.56 1.25-1.25V9.5M9.5 2.5h4v4M7 9l6.5-6.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </a>
         )}
       </header>
