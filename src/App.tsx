@@ -576,14 +576,12 @@ export function App() {
 
     setProfiles(savedProfiles);
     setHistory(searches);
-
-    if (
-      savedProfiles.length > 0 &&
-      (!selectedProfileId ||
-        !savedProfiles.some((profile) => profile.id === selectedProfileId))
-    ) {
-      setSelectedProfileId(savedProfiles[0].id);
-    }
+    setSelectedProfileId((current) => {
+      if (current && savedProfiles.some((profile) => profile.id === current)) {
+        return current;
+      }
+      return savedProfiles[0]?.id ?? current;
+    });
 
     return savedProfiles;
   }
