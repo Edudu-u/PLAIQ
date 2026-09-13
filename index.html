@@ -3,8 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#090d16" />
-    <title>PLAIQ</title>
+    <meta name="theme-color" content="#12121a" />
+    <link rel="icon" type="image/svg+xml" href="/landing/playq-logo.svg" />
+    <link rel="alternate icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/brand/playq-logo-256.png" />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("playq.theme");
+          document.documentElement.setAttribute(
+            "data-theme",
+            saved === "reshiram" || saved === "zekrom" ? saved : "zekrom",
+          );
+        } catch {
+          document.documentElement.setAttribute("data-theme", "zekrom");
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <title>PLAYQ.GG</title>
   </head>
   <body>
     <div id="root"></div>

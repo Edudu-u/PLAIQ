@@ -1,8 +1,12 @@
 import type {
   CoachingSummary,
   LookupRiotProfileInput,
+  MatchDetail,
+  MatchSummary,
+  PlayerProfileDetail,
   RiotProfile,
   RiotSearchHistory,
+  SyncMatchesResult,
 } from "../types/coaching";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
@@ -43,8 +47,8 @@ export function getCoachingSummary(
 
 export function lookupRiotProfile(
   input: LookupRiotProfileInput,
-): Promise<RiotProfile> {
-  return request<RiotProfile>("/v1/riot/profiles/lookup", {
+): Promise<PlayerProfileDetail> {
+  return request<PlayerProfileDetail>("/v1/riot/profiles/lookup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -59,10 +63,65 @@ export function getRiotProfiles(clientId: string): Promise<RiotProfile[]> {
   );
 }
 
+export function getProfileDetail(
+  clientId: string,
+  profileId: string,
+  refresh = true,
+): Promise<PlayerProfileDetail> {
+  const params = new URLSearchParams({
+    clientId,
+    refresh: refresh ? "true" : "false",
+  });
+
+  return request<PlayerProfileDetail>(
+    `/v1/riot/profiles/${encodeURIComponent(profileId)}/detail?${params}`,
+  );
+}
+
 export function getRiotSearchHistory(
   clientId: string,
 ): Promise<RiotSearchHistory[]> {
   return request<RiotSearchHistory[]>(
     `/v1/riot/search-history?clientId=${encodeURIComponent(clientId)}&limit=20`,
+  );
+}
+
+/** Riot Match-v5 max ids per request; used for sync + list. */
+export const MATCH_HISTORY_LIMIT = 100;
+
+export function syncProfileMatches(
+  clientId: string,
+  profileId: string,
+  count = MATCH_HISTORY_LIMIT,
+): Promise<SyncMatchesResult> {
+  return request<SyncMatchesResult>(
+    `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches/sync`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ clientId, count }),
+    },
+  );
+}
+
+export function getProfileMatches(
+  clientId: string,
+  profileId: string,
+  limit = MATCH_HISTORY_LIMIT,
+): Promise<MatchSummary[]> {
+  return request<MatchSummary[]>(
+    `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches?clientId=${encodeURIComponent(clientId)}&limit=${limit}`,
+  );
+}
+
+export function getMatchDetail(
+  clientId: string,
+  profileId: string,
+  matchId: string,
+): Promise<MatchDetail> {
+  return request<MatchDetail>(
+    `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches/${encodeURIComponent(matchId)}?clientId=${encodeURIComponent(clientId)}`,
   );
 }

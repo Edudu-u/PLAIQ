@@ -1,5 +1,7 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, session } = require("electron");
 const path = require("node:path");
+
+const brandIcon = path.join(__dirname, "..", "public", "brand", "icon.png");
 
 function createWindow() {
   const window = new BrowserWindow({
@@ -7,8 +9,9 @@ function createWindow() {
     height: 760,
     minWidth: 920,
     minHeight: 620,
-    backgroundColor: "#090d16",
-    title: "PLAIQ",
+    backgroundColor: "#12121a",
+    title: "PLAYQ.GG",
+    icon: brandIcon,
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -25,6 +28,26 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  app.setName("PLAYQ.GG");
+
+  // YouTube embeds often fail in Electron (Error 153) without a normal Referer.
+  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+    const url = details.url;
+    if (
+      url.includes("youtube.com") ||
+      url.includes("youtu.be") ||
+      url.includes("googlevideo.com") ||
+      url.includes("ytimg.com") ||
+      url.includes("google.com/js") ||
+      url.includes("gstatic.com")
+    ) {
+      details.requestHeaders.Referer = "https://www.youtube.com/";
+      details.requestHeaders["Sec-Fetch-Site"] = "cross-site";
+      details.requestHeaders["Sec-Fetch-Mode"] = "navigate";
+    }
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
+  });
+
   createWindow();
 
   app.on("activate", () => {
