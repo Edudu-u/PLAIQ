@@ -38,7 +38,7 @@ export function PatchNotesView() {
         const newestGroup = payload.years.find(
           (group) => group.year === newestYear,
         );
-        setSlug(newestGroup?.patches[0]?.slug ?? payload.latestSlug);
+        setSlug(newestGroup?.patches[0]?.slug ?? payload.latestSlug ?? null);
       })
       .catch((caught: unknown) => {
         setError(
@@ -46,6 +46,8 @@ export function PatchNotesView() {
             ? caught.message
             : "No se pudieron cargar las notas oficiales.",
         );
+        setSlug(null);
+        setLoadingArticle(false);
       })
       .finally(() => setLoadingList(false));
     return () => controller.abort();
@@ -53,6 +55,7 @@ export function PatchNotesView() {
 
   useEffect(() => {
     if (!slug) {
+      setLoadingArticle(false);
       return;
     }
     const controller = new AbortController();
@@ -181,7 +184,9 @@ export function PatchNotesView() {
               <div className="patches-list">
                 {filteredPatches.length === 0 ? (
                   <p className="patches-nav-empty">
-                    No hay parches para esa búsqueda.
+                    {error
+                      ? "No se pudo cargar el historial de parches."
+                      : "No hay parches para esa búsqueda."}
                   </p>
                 ) : (
                   filteredPatches.map((patch) => (

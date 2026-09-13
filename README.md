@@ -25,6 +25,8 @@ cp .env.example .env
 npm run dev
 ```
 
+`.env.example` apunta a `http://127.0.0.1:3000/api`. Reinicia Vite si creas o cambias `.env`. No pongas `RIOT_API_KEY` aquí; vive solo en `api-plaiq/.env`.
+
 La búsqueda inicial utiliza `Jøy Đ Bøy#NPM` como ejemplo editable y `LA2` como región.
 
 ## Persistencia

@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import {
   getCoachingSummary,
@@ -505,7 +505,7 @@ function ProfileDetailPanel({
             ) : (
               matches.map((match) => (
                 <ExpandableMatchCard
-                  key={match.id}
+                  key={`${detail.id}-${match.id}`}
                   match={match}
                   profileId={detail.id}
                   clientId={clientId}
@@ -560,12 +560,11 @@ export function App() {
   const [lookupMessage, setLookupMessage] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isRefreshingDetail, setIsRefreshingDetail] = useState(false);
+  const profileRequestId = useRef(0);
 
   const activeProfile = useMemo(
     () =>
-      profiles.find((profile) => profile.id === selectedProfileId) ??
-      profiles[0] ??
-      null,
+      profiles.find((profile) => profile.id === selectedProfileId) ?? null,
     [profiles, selectedProfileId],
   );
 
@@ -577,14 +576,12 @@ export function App() {
 
     setProfiles(savedProfiles);
     setHistory(searches);
-
-    if (
-      savedProfiles.length > 0 &&
-      (!selectedProfileId ||
-        !savedProfiles.some((profile) => profile.id === selectedProfileId))
-    ) {
-      setSelectedProfileId(savedProfiles[0].id);
-    }
+    setSelectedProfileId((current) => {
+      if (current && savedProfiles.some((profile) => profile.id === current)) {
+        return current;
+      }
+      return savedProfiles[0]?.id ?? current;
+    });
 
     return savedProfiles;
   }
@@ -593,9 +590,14 @@ export function App() {
     profileId: string,
     refresh = true,
   ): Promise<void> {
+    const requestId = ++profileRequestId.current;
     setIsRefreshingDetail(true);
+    setMatches([]);
     try {
       const detail = await getProfileDetail(clientId, profileId, refresh);
+      if (requestId !== profileRequestId.current) {
+        return;
+      }
       setProfileDetail(detail);
       setSelectedProfileId(detail.id);
       setLookupMessage(null);
@@ -607,6 +609,9 @@ export function App() {
             detail.id,
             MATCH_HISTORY_LIMIT,
           );
+          if (requestId !== profileRequestId.current) {
+            return;
+          }
           setMatches(synced.matches);
           if (synced.matches.length === 0) {
             setLookupMessage(
@@ -619,6 +624,9 @@ export function App() {
             detail.id,
             MATCH_HISTORY_LIMIT,
           );
+          if (requestId !== profileRequestId.current) {
+            return;
+          }
           setMatches(listed);
           setLookupMessage(
             error instanceof Error
@@ -632,16 +640,24 @@ export function App() {
           detail.id,
           MATCH_HISTORY_LIMIT,
         );
+        if (requestId !== profileRequestId.current) {
+          return;
+        }
         setMatches(listed);
       }
     } catch (error) {
+      if (requestId !== profileRequestId.current) {
+        return;
+      }
       setLookupMessage(
         error instanceof Error
           ? error.message
           : "No fue posible cargar el detalle del perfil.",
       );
     } finally {
-      setIsRefreshingDetail(false);
+      if (requestId === profileRequestId.current) {
+        setIsRefreshingDetail(false);
+      }
     }
   }
 
@@ -681,23 +697,26 @@ export function App() {
   }, [clientId]);
 
   useEffect(() => {
-    if (!activeProfile || (view !== "perfiles" && view !== "inicio")) {
+    if (
+      !selectedProfileId ||
+      (view !== "perfiles" && view !== "inicio")
+    ) {
       return;
     }
 
-    if (profileDetail?.id === activeProfile.id) {
+    if (profileDetail?.id === selectedProfileId) {
       return;
     }
 
-    const controller = new AbortController();
-    const profileId = activeProfile.id;
+    const requestId = ++profileRequestId.current;
+    const profileId = selectedProfileId;
 
     Promise.all([
       getProfileDetail(clientId, profileId, false),
       getProfileMatches(clientId, profileId, MATCH_HISTORY_LIMIT),
     ])
       .then(([detail, listed]) => {
-        if (controller.signal.aborted) {
+        if (requestId !== profileRequestId.current) {
           return;
         }
         setProfileDetail(detail);
@@ -706,14 +725,14 @@ export function App() {
       .catch(() => {
         // Cached detail may be empty until the first live lookup/refresh.
       });
-
-    return () => controller.abort();
-  }, [activeProfile, clientId, profileDetail?.id, view]);
+  }, [selectedProfileId, clientId, profileDetail?.id, view]);
 
   async function handleLookup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const requestId = ++profileRequestId.current;
     setIsSearching(true);
     setLookupMessage(null);
+    setMatches([]);
 
     try {
       const detail = await lookupRiotProfile({
@@ -723,18 +742,28 @@ export function App() {
         platform,
       });
 
+      if (requestId !== profileRequestId.current) {
+        return;
+      }
+
       setProfileDetail(detail);
       setLookupMessage(`${detail.riotId} sincronizado con Riot.`);
       setSelectedProfileId(detail.id);
       setView("perfiles");
       setApiError(null);
       await refreshRiotData();
+      if (requestId !== profileRequestId.current) {
+        return;
+      }
       try {
         const synced = await syncProfileMatches(
           clientId,
           detail.id,
           MATCH_HISTORY_LIMIT,
         );
+        if (requestId !== profileRequestId.current) {
+          return;
+        }
         setMatches(synced.matches);
         if (synced.matches.length === 0) {
           setLookupMessage(
@@ -742,6 +771,9 @@ export function App() {
           );
         }
       } catch (error) {
+        if (requestId !== profileRequestId.current) {
+          return;
+        }
         setMatches([]);
         setLookupMessage(
           error instanceof Error
@@ -750,13 +782,18 @@ export function App() {
         );
       }
     } catch (error) {
+      if (requestId !== profileRequestId.current) {
+        return;
+      }
       setLookupMessage(
         error instanceof Error
           ? error.message
           : "No fue posible buscar el Riot ID.",
       );
     } finally {
-      setIsSearching(false);
+      if (requestId === profileRequestId.current) {
+        setIsSearching(false);
+      }
     }
   }
 

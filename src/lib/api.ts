@@ -18,31 +18,63 @@ import type {
   TierlistSyncStatus,
 } from "../types/tierlist";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+const API_URL = (import.meta.env.VITE_API_URL || "http://127.0.0.1:3000/api").replace(
+  /\/$/,
+  "",
+);
+
+function joinApiUrl(path: string): string {
+  const suffix = path.startsWith("/") ? path : `/${path}`;
+  return `${API_URL}${suffix}`;
+}
+
+function friendlyApiMessage(
+  status: number,
+  raw: string,
+  path: string,
+): string {
+  const isMissingRoute =
+    /cannot get\s+\//i.test(raw) ||
+    /route get:\//i.test(raw) ||
+    (status === 404 && /\/v1\/(patches|tierlist)\b/.test(path));
+
+  if (isMissingRoute) {
+    return `La API en ${API_URL} no tiene ${path}. Reinicia api-plaiq con el código actual (npm run dev) y deja el puerto 3000 libre de un proceso viejo.`;
+  }
+
+  if (raw.trim()) {
+    return raw.trim();
+  }
+
+  return `La API respondió ${status} en ${path}.`;
+}
+
+async function readErrorMessage(response: Response): Promise<string> {
+  const text = await response.text();
+
+  try {
+    const payload = JSON.parse(text) as { message?: string | string[] };
+    if (payload.message) {
+      return Array.isArray(payload.message)
+        ? payload.message.join(", ")
+        : payload.message;
+    }
+  } catch {
+    // Use the raw body when the API did not return JSON.
+  }
+
+  return text;
+}
 
 async function request<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, options);
+  const response = await fetch(joinApiUrl(path), options);
 
   if (!response.ok) {
-    let message = `API request failed with status ${response.status}`;
-
-    try {
-      const payload = (await response.json()) as {
-        message?: string | string[];
-      };
-      if (payload.message) {
-        message = Array.isArray(payload.message)
-          ? payload.message.join(", ")
-          : payload.message;
-      }
-    } catch {
-      // Keep the fallback status message when the API has no JSON body.
-    }
-
-    throw new Error(message);
+    const raw = await readErrorMessage(response);
+    throw new Error(friendlyApiMessage(response.status, raw, path));
   }
 
   return response.json() as Promise<T>;
