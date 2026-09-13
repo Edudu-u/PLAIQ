@@ -5,13 +5,13 @@
   --ink: #12121a;
   --ink-elevated: #1a1a24;
   --panel: rgba(28, 28, 40, 0.88);
-  --line: rgba(123, 245, 253, 0.16);
+  --line: rgba(123, 245, 253, 0.28);
   --text: #eef9ff;
   --muted: #8b93a8;
-  --teal: #7bf5fd;
-  --teal-deep: #2a9aa8;
-  --accent-bright: #b8fbff;
-  --amber: #6ea8ff;
+  --teal: #6ee8ff;
+  --teal-deep: #2a78b8;
+  --accent-bright: #c8eeff;
+  --amber: #7eb0ff;
   --danger: #ff7a8a;
   --win: #5dffa8;
   --brand-mark-fg: #0a1020;
@@ -22,14 +22,14 @@
   --on-media: #f7fffc;
   --on-media-muted: #e4eeea;
   --card-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
-  /* Match brand PNG: cyan → emerald → lime */
-  --logo-a: #5cf0ff;
-  --logo-mid: #3dff9a;
-  --logo-b: #b8ff3c;
-  --atmosphere-1: rgba(123, 245, 253, 0.14);
-  --atmosphere-2: rgba(110, 168, 255, 0.12);
-  --atmosphere-base: linear-gradient(160deg, #101018 0%, #181824 48%, #12121a 100%);
-  --grid-line: rgba(123, 245, 253, 0.07);
+  /* Zekrom electric: cyan → azure → ice blue (no lime) */
+  --logo-a: #5cefff;
+  --logo-mid: #5bb8ff;
+  --logo-b: #7a9dff;
+  --atmosphere-1: rgba(92, 232, 255, 0.28);
+  --atmosphere-2: rgba(90, 160, 255, 0.22);
+  --atmosphere-base: linear-gradient(160deg, #0a0a12 0%, #141422 48%, #101018 100%);
+  --grid-line: rgba(123, 245, 253, 0.12);
   --font-display: "Syne", "Avenir Next", sans-serif;
   --font-body: "DM Sans", "Segoe UI", sans-serif;
   color: var(--text);
@@ -40,42 +40,43 @@
 
 [data-theme="reshiram"] {
   color-scheme: light;
-  /* Reshiram — silver field + fire plume (more contrast than flat white) */
-  --ink: #d8dbe6;
-  --ink-elevated: #fff8f4;
-  --panel: #fffdfb;
-  --line: rgba(180, 52, 42, 0.28);
-  --text: #171924;
-  --muted: #3f465c;
-  --teal: #b83228;
-  --teal-deep: #8a221c;
-  --accent-bright: #ef6a2c;
-  --amber: #d96528;
-  --danger: #b83228;
-  --win: #1f8a5c;
-  --brand-mark-fg: #fff8f5;
-  --nav-bg: rgba(255, 250, 246, 0.96);
-  --surface-strong: #fff7f1;
+  /* Reshiram — cool silver field + neon fire, matching Zekrom electric punch */
+  --ink: #e2e6f0;
+  --ink-elevated: #ffffff;
+  --panel: #ffffff;
+  --line: rgba(255, 62, 0, 0.42);
+  --text: #12141c;
+  --muted: #454c60;
+  --teal: #ff3b00;
+  --teal-deep: #e02800;
+  --accent-bright: #ffb21a;
+  --amber: #ffcc33;
+  --danger: #ff3355;
+  --win: #00c47a;
+  --brand-mark-fg: #fff7f0;
+  --nav-bg: rgba(248, 250, 255, 0.94);
+  --surface-strong: #fff8f1;
   --scrim: rgba(26, 29, 46, 0.88);
   --scrim-soft: rgba(26, 29, 46, 0.55);
   --on-media: #ffffff;
   --on-media-muted: #f0f2f8;
   --card-shadow:
-    0 1px 0 rgba(184, 50, 40, 0.08),
-    0 14px 32px rgba(40, 28, 24, 0.12);
-  --logo-a: #b83228;
-  --logo-mid: #e05a32;
-  --logo-b: #ef6a2c;
-  --atmosphere-1: rgba(184, 50, 40, 0.18);
-  --atmosphere-2: rgba(239, 106, 44, 0.2);
+    0 0 0 1px color-mix(in srgb, var(--teal) 14%, transparent),
+    0 0 32px color-mix(in srgb, var(--teal) 22%, transparent),
+    0 16px 36px rgba(40, 28, 24, 0.08);
+  --logo-a: #ff2d00;
+  --logo-mid: #ff6a00;
+  --logo-b: #ffd54a;
+  --atmosphere-1: rgba(255, 59, 0, 0.38);
+  --atmosphere-2: rgba(255, 196, 40, 0.28);
   --atmosphere-base: linear-gradient(
     155deg,
-    #cfd3e0 0%,
-    #e4e2ea 42%,
-    #f0e4dc 78%,
-    #e8d8d0 100%
+    #d5dbe8 0%,
+    #e8ecf5 46%,
+    #f4f1ee 78%,
+    #ffe7c8 100%
   );
-  --grid-line: rgba(120, 70, 55, 0.14);
+  --grid-line: rgba(255, 70, 0, 0.2);
 }
 
 * {
@@ -119,7 +120,7 @@ select {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.22;
+  opacity: 0.3;
   background-image:
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
@@ -184,47 +185,87 @@ select {
   height: 40px;
   display: block;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--logo-a) 35%, transparent));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--logo-a) 38%, transparent));
 }
 
 .brand-logo-hero {
   width: clamp(72px, 12vw, 112px);
   height: clamp(72px, 12vw, 112px);
   margin: 0 auto;
-  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--logo-a) 45%, transparent));
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--logo-a) 42%, transparent));
 }
 
 .brand-logo-module {
   width: 56px;
   height: 56px;
   margin: 0 0 12px;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--logo-a) 32%, transparent));
 }
 
 [data-theme="reshiram"] .brand-logo {
-  filter: drop-shadow(0 1px 2px rgba(26, 29, 46, 0.18));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--logo-a) 36%, transparent));
 }
 
 [data-theme="reshiram"] .brand-logo-hero {
-  filter: drop-shadow(0 4px 16px rgba(184, 50, 40, 0.28));
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--logo-a) 40%, transparent));
 }
 
-/* Reshiram: stronger fire accents so panels don't wash out to flat white */
+[data-theme="reshiram"] .atmosphere::before {
+  opacity: 0.34;
+}
+
+[data-theme="reshiram"] .blitz-hero-wordmark {
+  filter: none;
+}
+
+[data-theme="reshiram"] .blitz-hero-glow {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--teal) 28%, transparent),
+    color-mix(in srgb, var(--amber) 16%, transparent) 42%,
+    transparent 72%
+  );
+  filter: blur(6px);
+}
+
+[data-theme="reshiram"] .blitz-hero {
+  border-color: color-mix(in srgb, var(--teal) 55%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--amber) 35%, transparent),
+    0 0 56px color-mix(in srgb, var(--teal) 32%, transparent),
+    var(--card-shadow);
+}
+
+[data-theme="reshiram"] .blitz-search {
+  border-color: color-mix(in srgb, var(--teal) 40%, transparent);
+  background: color-mix(in srgb, #fff 86%, var(--accent-bright));
+  box-shadow:
+    0 0 28px color-mix(in srgb, var(--teal) 20%, transparent),
+    0 16px 36px rgba(40, 28, 24, 0.08);
+}
+
+/* Reshiram: neon fire chrome so accents punch like Zekrom cyan */
 [data-theme="reshiram"] .top-nav {
-  border-bottom-color: color-mix(in srgb, var(--teal) 32%, transparent);
-  box-shadow: 0 8px 24px rgba(60, 30, 24, 0.08);
+  border-bottom-color: color-mix(in srgb, var(--teal) 48%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--accent-bright) 35%, transparent),
+    0 10px 28px color-mix(in srgb, var(--teal) 14%, transparent);
 }
 
 [data-theme="reshiram"] .nav-item.active {
   color: var(--teal-deep);
-  background: color-mix(in srgb, var(--accent-bright) 22%, #fff);
-  border-color: color-mix(in srgb, var(--teal) 45%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--teal) 12%, transparent);
+  background: color-mix(in srgb, var(--accent-bright) 24%, #fff);
+  border-color: color-mix(in srgb, var(--teal) 58%, transparent);
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--teal) 32%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--teal) 18%, transparent);
 }
 
 [data-theme="reshiram"] .eyebrow {
-  color: var(--teal-deep);
+  color: var(--teal);
   font-weight: 800;
   letter-spacing: 0.16em;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--teal) 35%, transparent);
 }
 
 [data-theme="reshiram"] .lookup-panel,
@@ -232,11 +273,10 @@ select {
 [data-theme="reshiram"] .ranked-card,
 [data-theme="reshiram"] .module-placeholder,
 [data-theme="reshiram"] .blitz-module,
-[data-theme="reshiram"] .blitz-hero,
 [data-theme="reshiram"] .loading-card,
 [data-theme="reshiram"] .history-match-list > *,
 [data-theme="reshiram"] .mastery-column > * {
-  border-color: color-mix(in srgb, var(--teal) 26%, transparent);
+  border-color: color-mix(in srgb, var(--teal) 34%, transparent);
   box-shadow: var(--card-shadow);
 }
 
@@ -245,8 +285,8 @@ select {
   background:
     linear-gradient(
       165deg,
-      color-mix(in srgb, var(--accent-bright) 10%, transparent),
-      transparent 38%
+      color-mix(in srgb, var(--accent-bright) 18%, transparent),
+      transparent 42%
     ),
     var(--panel);
   border-width: 1.5px;
@@ -256,8 +296,8 @@ select {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--accent-bright) 12%, transparent),
-      transparent 46%
+      color-mix(in srgb, var(--accent-bright) 20%, transparent),
+      transparent 48%
     ),
     var(--panel);
 }
@@ -272,24 +312,59 @@ select {
 [data-theme="reshiram"] .blitz-search input,
 [data-theme="reshiram"] .blitz-search select,
 [data-theme="reshiram"] .match-toolbar select {
-  border: 1.5px solid color-mix(in srgb, var(--teal) 34%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--teal) 42%, transparent);
   background: #fff;
-  box-shadow: inset 0 1px 2px rgba(40, 28, 24, 0.04);
+  box-shadow:
+    inset 0 1px 2px rgba(40, 28, 24, 0.04),
+    0 0 0 1px color-mix(in srgb, var(--accent-bright) 18%, transparent);
+}
+
+[data-theme="reshiram"] .lookup-form input:focus,
+[data-theme="reshiram"] .lookup-form select:focus,
+[data-theme="reshiram"] .blitz-search input:focus,
+[data-theme="reshiram"] .blitz-search select:focus,
+[data-theme="reshiram"] .match-toolbar select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 22%, transparent),
+    0 0 18px color-mix(in srgb, var(--teal) 28%, transparent);
 }
 
 [data-theme="reshiram"] .ghost-button {
-  border: 1.5px solid color-mix(in srgb, var(--teal) 40%, transparent);
-  background: color-mix(in srgb, var(--accent-bright) 10%, #fff);
+  border: 1.5px solid color-mix(in srgb, var(--teal) 50%, transparent);
+  background: color-mix(in srgb, var(--accent-bright) 14%, #fff);
   color: var(--teal-deep);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--teal) 18%, transparent);
 }
 
 [data-theme="reshiram"] .primary-button {
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--teal) 28%, transparent);
+  background: linear-gradient(135deg, #ff2d00 0%, #ff6a00 48%, #ffb21a 100%);
+  box-shadow:
+    0 0 10px #ff3b00,
+    0 0 28px color-mix(in srgb, var(--teal) 60%, transparent),
+    0 8px 22px color-mix(in srgb, var(--teal) 32%, transparent);
 }
 
 [data-theme="reshiram"] .theme-toggle {
-  border-color: color-mix(in srgb, var(--teal) 38%, transparent);
-  background: color-mix(in srgb, var(--accent-bright) 14%, #fff);
+  border-color: color-mix(in srgb, var(--teal) 48%, transparent);
+  background: color-mix(in srgb, var(--accent-bright) 18%, #fff);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+
+[data-theme="reshiram"] .theme-toggle-icon {
+  box-shadow: 0 0 12px color-mix(in srgb, var(--teal) 55%, transparent);
+}
+
+[data-theme="reshiram"] .blitz-module-tag {
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--teal) 32%, transparent);
+}
+
+[data-theme="reshiram"] .blitz-search-hash {
+  text-shadow: 0 0 12px color-mix(in srgb, var(--teal) 55%, transparent);
+}
+
+[data-theme="reshiram"] .status-dot:not(.offline) {
+  box-shadow: 0 0 12px rgba(0, 196, 122, 0.7);
 }
 
 [data-theme="reshiram"] .api-status {
@@ -299,6 +374,21 @@ select {
 [data-theme="reshiram"] .section-heading h2,
 [data-theme="reshiram"] .profile-hero-copy h2 {
   color: var(--text);
+}
+
+[data-theme="reshiram"] .plan-panel-pro {
+  border-color: color-mix(in srgb, var(--teal) 58%, transparent);
+  box-shadow:
+    0 0 32px color-mix(in srgb, var(--teal) 22%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--amber) 22%, transparent);
+}
+
+[data-theme="reshiram"] .blitz-module:hover,
+[data-theme="reshiram"] .plan-panel:hover {
+  border-color: color-mix(in srgb, var(--teal) 62%, transparent);
+  box-shadow:
+    0 0 28px color-mix(in srgb, var(--teal) 24%, transparent),
+    var(--card-shadow);
 }
 
 .brand strong,
@@ -316,6 +406,8 @@ select {
   font-family: var(--font-display);
   letter-spacing: 0.03em;
   font-size: 16px;
+  background: none;
+  color: inherit;
 }
 
 .brand small {
@@ -357,11 +449,14 @@ select {
   flex: 0 0 auto;
   width: 22px;
   height: 22px;
-  stroke: currentColor;
   fill: none;
   stroke-width: 1.85;
   stroke-linecap: round;
   stroke-linejoin: round;
+  overflow: visible;
+  filter:
+    drop-shadow(0 0 4px color-mix(in srgb, var(--logo-a) 70%, transparent))
+    drop-shadow(0 0 10px color-mix(in srgb, var(--logo-mid) 40%, transparent));
 }
 
 .nav-item:hover {
@@ -369,14 +464,20 @@ select {
   border-color: var(--line);
 }
 
-.nav-item.active {
-  color: var(--text);
-  background: color-mix(in srgb, var(--teal) 12%, transparent);
-  border-color: color-mix(in srgb, var(--teal) 30%, transparent);
+.nav-item:hover svg,
+.nav-item.active svg {
+  filter:
+    drop-shadow(0 0 5px var(--logo-a))
+    drop-shadow(0 0 12px color-mix(in srgb, var(--logo-mid) 65%, transparent));
 }
 
-.nav-item.active svg {
-  color: var(--teal);
+.nav-item.active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--teal) 14%, transparent);
+  border-color: color-mix(in srgb, var(--teal) 42%, transparent);
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--teal) 28%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--teal) 16%, transparent);
 }
 
 .connection {
@@ -426,6 +527,7 @@ select {
   font-size: 12px;
   font-weight: 800;
   line-height: 1;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--teal) 55%, transparent);
 }
 
 .theme-toggle > span:last-child {
@@ -461,12 +563,13 @@ select {
   overflow: hidden;
   margin: -8px 0 0;
   padding: clamp(36px, 6vh, 72px) 18px 40px;
-  border: 1px solid color-mix(in srgb, var(--teal) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--teal) 32%, transparent);
   border-radius: 24px;
   text-align: center;
   background:
-    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--teal) 16%, transparent), transparent 46%),
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--teal) 28%, transparent), transparent 46%),
     linear-gradient(180deg, color-mix(in srgb, var(--panel) 100%, transparent), color-mix(in srgb, var(--ink) 92%, transparent));
+  box-shadow: 0 0 48px color-mix(in srgb, var(--teal) 16%, transparent);
 }
 
 .blitz-hero-glow {
@@ -474,7 +577,12 @@ select {
   inset: auto 10% -40% 10%;
   height: 55%;
   z-index: -1;
-  background: radial-gradient(circle, color-mix(in srgb, var(--teal) 18%, transparent), transparent 70%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--teal) 22%, transparent),
+    color-mix(in srgb, var(--logo-mid) 12%, transparent) 45%,
+    transparent 72%
+  );
   filter: blur(8px);
 }
 
@@ -490,7 +598,18 @@ select {
   font-family: var(--font-display);
   font-size: clamp(28px, 4.5vw, 42px);
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  background: none;
+  color: inherit;
+  filter: none;
+}
+
+.brand-wordmark {
+  display: inline;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.02em;
   line-height: 1;
   background: linear-gradient(90deg, var(--logo-a), var(--logo-b));
   -webkit-background-clip: text;
@@ -523,7 +642,7 @@ select {
   margin: 0 auto;
   padding: 14px;
   border-radius: 16px;
-  border: 1px solid rgba(125, 211, 196, 0.28);
+  border: 1px solid color-mix(in srgb, var(--teal) 28%, transparent);
   background: color-mix(in srgb, var(--ink) 78%, transparent);
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
 }
@@ -670,7 +789,32 @@ select {
 .blitz-roles {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
+  justify-content: stretch;
+  justify-items: stretch;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+}
+
+.landing-roles {
+  width: 100%;
+  max-width: none;
+  align-self: stretch;
+  margin-left: 0;
+  margin-right: 0;
+  text-align: center;
+}
+
+.landing-roles .blitz-section-head {
+  max-width: none;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.landing-roles .blitz-roles {
+  width: 100%;
+  max-width: none;
+  text-align: left;
 }
 
 .blitz-role {
@@ -678,20 +822,27 @@ select {
   display: block;
   overflow: hidden;
   aspect-ratio: 308 / 560;
+  width: 100%;
+  min-width: 0;
   min-height: 0;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 14px;
   background: var(--surface-strong);
   color: inherit;
   text-align: left;
-  cursor: pointer;
   transition: transform 180ms ease, border-color 180ms ease;
 }
 
-.blitz-role:hover {
+.blitz-role:hover,
+.blitz-role:focus-within {
   transform: translateY(-4px);
   border-color: color-mix(in srgb, var(--teal) 40%, transparent);
+}
+
+.blitz-role:hover .blitz-role-art,
+.blitz-role:focus-within .blitz-role-art {
+  filter: brightness(0.52);
 }
 
 .blitz-role-art {
@@ -720,20 +871,101 @@ select {
   inset: auto 0 0 0;
   z-index: 1;
   display: grid;
-  gap: 4px;
-  padding: 16px;
+  gap: 3px;
+  padding: 12px 12px 14px;
   background: linear-gradient(180deg, transparent, var(--scrim));
+  transition: opacity 200ms ease;
 }
 
 .blitz-role-copy strong {
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   color: var(--on-media);
 }
 
 .blitz-role-copy small {
   color: var(--on-media-muted);
   font-size: 12px;
+}
+
+.blitz-role-hover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 18px 12px 16px;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 62%, rgba(0, 0, 0, 0.42) 0%, transparent 72%),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.58) 0%,
+      rgba(0, 0, 0, 0.76) 38%,
+      rgba(0, 0, 0, 0.94) 100%
+    );
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+.blitz-role:hover .blitz-role-copy,
+.blitz-role:focus-within .blitz-role-copy {
+  opacity: 0;
+}
+
+.blitz-role:hover .blitz-role-hover,
+.blitz-role:focus-within .blitz-role-hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.blitz-role-icon {
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95))
+    drop-shadow(0 0 14px rgba(255, 196, 84, 0.42));
+}
+
+.blitz-role-hover-title {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  color: var(--on-media);
+  line-height: 1.1;
+}
+
+.blitz-role-hover-kicker {
+  margin: 0;
+  color: color-mix(in srgb, var(--teal) 78%, white);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.blitz-role-learn {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--on-media-muted);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.blitz-role-cta {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 6px;
+  padding: 0 12px;
+  font-size: 0.82rem;
 }
 
 .landing-plans.blitz-section {
@@ -911,7 +1143,7 @@ h3 {
   bottom: 14px;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(125, 211, 196, 0.3);
+  border: 1px solid color-mix(in srgb, var(--teal) 30%, transparent);
   background: var(--scrim-soft);
   color: var(--on-media-muted);
   font-size: 11px;
@@ -940,7 +1172,7 @@ h3 {
   justify-content: space-between;
   gap: 8px;
   padding: 8px 10px;
-  border: 1px solid rgba(125, 211, 196, 0.22);
+  border: 1px solid color-mix(in srgb, var(--teal) 22%, transparent);
   border-radius: 10px;
   background: var(--scrim-soft);
   backdrop-filter: blur(8px);
@@ -986,7 +1218,7 @@ h3 {
   width: 64px;
   height: 40px;
   border-radius: 8px;
-  border: 1px solid rgba(125, 211, 196, 0.2);
+  border: 1px solid color-mix(in srgb, var(--teal) 20%, transparent);
   background-position: center;
   background-size: cover;
   opacity: 0.45;
@@ -1182,7 +1414,7 @@ h3 {
   display: grid;
   gap: 4px;
   padding: 12px 14px;
-  border: 1px solid rgba(125, 211, 196, 0.28);
+  border: 1px solid color-mix(in srgb, var(--teal) 28%, transparent);
   border-radius: 14px;
   background: var(--scrim-soft);
   backdrop-filter: blur(10px);
@@ -1235,7 +1467,7 @@ h3 {
 .coach-chips span {
   padding: 5px 9px;
   border-radius: 999px;
-  border: 1px solid rgba(125, 211, 196, 0.25);
+  border: 1px solid color-mix(in srgb, var(--teal) 25%, transparent);
   background: var(--scrim-soft);
   color: var(--on-media-muted);
   font-size: 11px;
@@ -1272,7 +1504,7 @@ h3 {
   width: 100%;
   aspect-ratio: 1;
   border-radius: 10px;
-  border: 1px solid rgba(125, 211, 196, 0.25);
+  border: 1px solid color-mix(in srgb, var(--teal) 25%, transparent);
   background: #0c1822;
 }
 
@@ -1295,7 +1527,7 @@ h3 {
   align-items: center;
   padding: 12px;
   border-radius: 14px;
-  border: 1px solid rgba(125, 211, 196, 0.18);
+  border: 1px solid color-mix(in srgb, var(--teal) 18%, transparent);
   background: var(--scrim-soft);
 }
 
@@ -1345,7 +1577,7 @@ h3 {
   gap: 2px;
   padding: 10px;
   border-radius: 12px;
-  border: 1px solid rgba(125, 211, 196, 0.18);
+  border: 1px solid color-mix(in srgb, var(--teal) 18%, transparent);
   background: var(--scrim-soft);
   color: var(--muted);
   font-size: 12px;
@@ -1402,7 +1634,7 @@ h3 {
   bottom: 14px;
   z-index: 2;
   padding: 6px 10px;
-  border: 1px solid rgba(125, 211, 196, 0.28);
+  border: 1px solid color-mix(in srgb, var(--teal) 28%, transparent);
   border-radius: 999px;
   background: var(--scrim-soft);
   color: var(--teal);
@@ -1426,7 +1658,7 @@ h3 {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 10px;
-  border: 1px solid rgba(125, 211, 196, 0.2);
+  border: 1px solid color-mix(in srgb, var(--teal) 20%, transparent);
   border-radius: 10px;
   background: var(--scrim-soft);
   backdrop-filter: blur(8px);
@@ -1523,7 +1755,7 @@ h3 {
   min-height: 0;
   padding: 0;
   overflow: hidden;
-  border: 1px solid rgba(125, 211, 196, 0.18);
+  border: 1px solid color-mix(in srgb, var(--teal) 18%, transparent);
   border-radius: 18px;
   background: var(--surface-strong);
   color: inherit;
@@ -2023,7 +2255,7 @@ h3 {
   margin-top: 7px;
   padding: 12px 13px;
   color: var(--text);
-  border: 1px solid rgba(125, 211, 196, 0.2);
+  border: 1px solid color-mix(in srgb, var(--teal) 20%, transparent);
   border-radius: 10px;
   outline: none;
   background: var(--ink-elevated);
@@ -2070,7 +2302,7 @@ h3 {
 
 .lookup-message {
   margin: 16px 0 0;
-  color: #9fe9d8;
+  color: var(--teal);
 }
 
 .profile-layout {
@@ -2633,7 +2865,7 @@ h3 {
   gap: 8px;
   align-items: center;
   padding: 8px 2px;
-  border-bottom: 1px solid rgba(125, 211, 196, 0.08);
+  border-bottom: 1px solid color-mix(in srgb, var(--teal) 8%, transparent);
 }
 
 .match-player-line:last-child {
@@ -2759,10 +2991,10 @@ h3 {
 @keyframes markPulse {
   0%,
   100% {
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--teal) 35%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--teal) 22%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--teal) 55%, transparent), 0 0 24px color-mix(in srgb, var(--teal) 28%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--teal) 38%, transparent), 0 0 10px color-mix(in srgb, var(--teal) 16%, transparent);
   }
 }
 
@@ -2818,6 +3050,7 @@ h3 {
 
   .blitz-roles {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
   }
 
   .tf-hud {
