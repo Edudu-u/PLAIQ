@@ -295,3 +295,52 @@ export function getGameSession(
       params.toString(),
   );
 }
+
+export interface CoachAiNarrative {
+  headline: string;
+  summary: string;
+  strengths: Array<{ title: string; evidence: string }>;
+  weaknesses: Array<{ title: string; evidence: string; impact: string }>;
+  actionPlan: Array<{ title: string; reason: string; measurable: string }>;
+  confidence: "low" | "medium" | "high";
+  limitations: string[];
+}
+
+export interface CoachAiAnalysis {
+  id: string | null;
+  model: string;
+  analysisVersion: string;
+  sampleSize: number;
+  narrative: CoachAiNarrative;
+  responseId: string | null;
+  createdAt: string;
+  cached: boolean;
+}
+
+export function generateAiCoaching(
+  clientId: string,
+  profileId: string,
+  limit = 20,
+): Promise<CoachAiAnalysis> {
+  const params = new URLSearchParams({
+    clientId,
+    profileId,
+    limit: String(limit),
+  });
+
+  return request<CoachAiAnalysis>(
+    "/v1/coaching/ai-analysis?" + params.toString(),
+    { method: "POST" },
+  );
+}
+
+export function getLatestAiCoaching(
+  clientId: string,
+  profileId: string,
+): Promise<CoachAiAnalysis | null> {
+  const params = new URLSearchParams({ clientId, profileId });
+
+  return request<CoachAiAnalysis | null>(
+    "/v1/coaching/ai-analysis/latest?" + params.toString(),
+  );
+}
