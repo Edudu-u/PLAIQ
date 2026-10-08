@@ -400,7 +400,8 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
                     <div className="coach-ai-list">
                       {aiAnalysis.narrative.strengths.map((item) => (
                         <article key={item.title}>
-                          <strong>{item.title}</strong>
+                                                    <strong>{item.title}</strong>
+                          <small className="coach-ai-metric">{item.metricKey}</small>
                           <span>{item.evidence}</span>
                         </article>
                       ))}
@@ -412,7 +413,8 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
                     <div className="coach-ai-list">
                       {aiAnalysis.narrative.weaknesses.map((item) => (
                         <article key={item.title}>
-                          <strong>{item.title}</strong>
+                                                    <strong>{item.title}</strong>
+                          <small className="coach-ai-metric">{item.metricKey}</small>
                           <span>{item.evidence}</span>
                           <small>{item.impact}</small>
                         </article>
@@ -426,9 +428,10 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
                   <div className="coach-ai-plan">
                     {aiAnalysis.narrative.actionPlan.map((item, index) => (
                       <article key={item.title}>
-                        <strong>
+                                                <strong>
                           {String(index + 1).padStart(2, "0")} · {item.title}
                         </strong>
+                        <small className="coach-ai-metric">{item.metricKey}</small>
                         <p>{item.reason}</p>
                         <span>{item.measurable}</span>
                       </article>
