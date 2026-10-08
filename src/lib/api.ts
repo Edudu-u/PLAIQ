@@ -365,3 +365,14 @@ export function getLatestAiCoaching(
     "/v1/coaching/ai-analysis/latest?" + params.toString(),
   );
 }
+
+export function generateSessionAiCoaching(
+  clientId: string,
+  sessionId: string,
+): Promise<CoachAiAnalysis> {
+  const params = new URLSearchParams({ clientId, sessionId });
+  return request<CoachAiAnalysis>(
+    "/v1/coaching/ai-analysis/session?" + params.toString(),
+    { method: "POST" },
+  );
+}
