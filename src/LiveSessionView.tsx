@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   createGameSession,
+  generateSessionAiCoaching,
   getGameSession,
   getGameSessions,
   syncProfileMatches,
@@ -97,6 +98,9 @@ export function LiveSessionView({
   const [sessions, setSessions] = useState<GameSessionSummary[]>([]);
   const [selectedSession, setSelectedSession] = useState<GameSessionDetail | null>(null);
   const [loadingSessions, setLoadingSessions] = useState(false);
+  const [sessionAi, setSessionAi] = useState<Record<string, import("./lib/api").CoachAiAnalysis | null>>({});
+  const [sessionAiLoading, setSessionAiLoading] = useState<string | null>(null);
+  const [sessionAiError, setSessionAiError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!available) return;
@@ -327,6 +331,36 @@ function Sparkline({
   );
 }
 
+  async function handleAnalyzeSession() {
+    if (!selectedSession) return;
+
+    setSessionAiLoading(selectedSession.id);
+    setSessionAiError(null);
+
+    try {
+      const result = await generateSessionAiCoaching(
+        clientId,
+        selectedSession.id,
+      );
+      setSessionAi((current) => ({
+        ...current,
+        [selectedSession.id]: result,
+      }));
+    } catch (caught) {
+      setSessionAiError(
+        caught instanceof Error
+          ? caught.message
+          : "No se pudo analizar la sesión con IA.",
+      );
+    } finally {
+      setSessionAiLoading(null);
+    }
+  }
+
+  const selectedSessionAi = selectedSession
+    ? sessionAi[selectedSession.id] ?? null
+    : null;
+
   if (!available) {
     return (
       <section className="live-empty">
@@ -524,6 +558,87 @@ function Sparkline({
                     <strong>{selectedSession.analysis.quality}</strong>
                   </div>
                 </div>
+                <div className="live-ai-session">
+                  <div className="live-ai-session-head">
+                    <div>
+                      <span className="eyebrow">Analista postpartida</span>
+                      <h3>
+                        {selectedSessionAi
+                          ? selectedSessionAi.narrative.headline
+                          : "¿Qué pasó en esta partida?"}
+                      </h3>
+                    </div>
+                    <button
+                      className="primary-button"
+                      type="button"
+                      onClick={() => void handleAnalyzeSession()}
+                      disabled={
+                        sessionAiLoading === selectedSession.id ||
+                        selectedSession.analysis.quality === "insufficient"
+                      }
+                    >
+                      {sessionAiLoading === selectedSession.id
+                        ? "Analizando…"
+                        : selectedSessionAi
+                          ? "Regenerar"
+                          : "Analizar con IA"}
+                    </button>
+                  </div>
+
+                  {sessionAiError && (
+                    <p className="lookup-message">{sessionAiError}</p>
+                  )}
+
+                  {!selectedSessionAi ? (
+                    <p className="live-ai-session-empty">
+                      La IA recibirá únicamente métricas y hitos calculados de
+                      esta sesión. No analiza decisiones tácticas en tiempo real.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="live-ai-session-summary">
+                        {selectedSessionAi.narrative.summary}
+                      </p>
+
+                      {selectedSessionAi.narrative.actionPlan.length > 0 && (
+                        <div className="live-ai-session-plan">
+                          {selectedSessionAi.narrative.actionPlan.map(
+                            (item, index) => (
+                              <article key={item.title}>
+                                <span>
+                                  {String(index + 1).padStart(2, "0")} ·{" "}
+                                  {item.metricKey}
+                                </span>
+                                <strong>{item.title}</strong>
+                                <p>{item.measurable}</p>
+                              </article>
+                            ),
+                          )}
+                        </div>
+                      )}
+
+                      <div className="live-ai-session-meta">
+                        <span>
+                          {selectedSessionAi.cached
+                            ? "Resultado en caché"
+                            : "Nuevo análisis"}
+                        </span>
+                        {selectedSessionAi.totalTokens != null && (
+                          <>
+                            <span>·</span>
+                            <span>
+                              {selectedSessionAi.totalTokens.toLocaleString(
+                                "es-CL",
+                              )}{" "}
+                              tokens
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+
                 <div className="live-chart-grid">
                   <article className="live-chart-card">
                     <span className="eyebrow">CS</span>
