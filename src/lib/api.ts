@@ -244,6 +244,12 @@ export interface GameSessionSummary {
   endedAt: string;
   sampleCount: number;
   durationSeconds: number;
+  match: {
+    riotMatchId: string;
+    queueId: number;
+    patchVersion: string | null;
+    win: boolean | null;
+  } | null;
 }
 
 export interface GameSessionDetail extends GameSessionSummary {
