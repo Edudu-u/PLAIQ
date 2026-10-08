@@ -11,6 +11,7 @@ import {
   MATCH_HISTORY_LIMIT,
   syncProfileMatches,
 } from "./lib/api";
+import { CoachingView } from "./CoachingView";
 import { LandingHome } from "./LandingHome";
 import { PatchNotesView } from "./PatchNotesView";
 import { TierlistView } from "./TierlistView";
@@ -20,7 +21,6 @@ import { getClientId } from "./lib/client-id";
 import type {
   AppView,
   ChampionMasteryEntry,
-  CoachingSummary,
   MatchDetail,
   MatchPlayerSummary,
   MatchSummary,
@@ -154,44 +154,6 @@ function formatTier(entry: RankedQueueEntry): string {
 
   const tier = entry.tier.charAt(0) + entry.tier.slice(1).toLowerCase();
   return entry.rank ? `${tier} ${entry.rank}` : tier;
-}
-
-function GoalCard({
-  title,
-  current,
-  target,
-  unit,
-  completed,
-}: CoachingSummary["goals"][number]) {
-  const progress = Math.min(
-    100,
-    Math.round((current / Math.max(target, 1)) * 100),
-  );
-
-  return (
-    <article className={`goal-card ${completed ? "is-complete" : ""}`}>
-      <div className="goal-heading">
-        <div>
-          <span className="eyebrow">
-            {completed ? "Completado" : "En progreso"}
-          </span>
-          <h3>{title}</h3>
-        </div>
-        <span className={completed ? "goal-state complete" : "goal-state"}>
-          {completed ? "✓" : `${progress}%`}
-        </span>
-      </div>
-      <div className="progress-track">
-        <div
-          className={completed ? "progress-value complete" : "progress-value"}
-          style={{ width: `${completed ? 100 : progress}%` }}
-        />
-      </div>
-      <p className="metric">
-        <strong>{current}</strong> / {target} {unit}
-      </p>
-    </article>
-  );
 }
 
 function rankEmblemUrl(entry: RankedQueueEntry): string {
