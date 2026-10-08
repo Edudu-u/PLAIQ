@@ -1,3 +1,4 @@
+export type CoachingRole = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY";
 export type GoalMetric =
   | "cs_at_10"
   | "deaths_before_15"
@@ -80,6 +81,7 @@ export interface RiotProfile {
   gameName: string;
   tagLine: string;
   platform: string;
+  primaryRole: CoachingRole | null;
   profileIconId: number | null;
   profileIconUrl?: string | null;
   summonerLevel: number | null;
@@ -133,6 +135,7 @@ export interface PlayerProfileDetail {
   gameName: string;
   tagLine: string;
   platform: string;
+  primaryRole: CoachingRole | null;
   profileIconId: number;
   profileIconUrl: string;
   summonerLevel: number;
