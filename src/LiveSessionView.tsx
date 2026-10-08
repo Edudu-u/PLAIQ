@@ -480,6 +480,36 @@ function Sparkline({
                   </div>
                   <span>{selectedSession.sampleCount} muestras</span>
                 </div>
+                <div className="live-session-summary">
+                  <div>
+                    <span className="eyebrow">CS @ 10</span>
+                    <strong>
+                      {selectedSession.analysis.csAt10 == null
+                        ? "—"
+                        : selectedSession.analysis.csAt10}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="eyebrow">Muertes @ 15</span>
+                    <strong>
+                      {selectedSession.analysis.deathsAt15 == null
+                        ? "—"
+                        : selectedSession.analysis.deathsAt15}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="eyebrow">KDA final</span>
+                    <strong>
+                      {selectedSession.analysis.finalKda == null
+                        ? "—"
+                        : selectedSession.analysis.finalKda.toFixed(2)}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="eyebrow">Calidad</span>
+                    <strong>{selectedSession.analysis.quality}</strong>
+                  </div>
+                </div>
                 <div className="live-chart-grid">
                   <article className="live-chart-card">
                     <span className="eyebrow">CS</span>
