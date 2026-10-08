@@ -245,6 +245,36 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
             ))}
           </section>
 
+          <section className="coach-panel coach-champions-panel">
+            <div className="section-heading compact">
+              <div>
+                <span className="eyebrow">Rendimiento</span>
+                <h2>Tu pool reciente</h2>
+              </div>
+              <span>{summary.champions.length} campeones</span>
+            </div>
+
+            {summary.champions.length === 0 ? (
+              <div className="empty-state">No hay suficiente información por campeón.</div>
+            ) : (
+              <div className="coach-champion-table">
+                {summary.champions.map((champion) => (
+                  <article className="coach-champion-row" key={champion.championName}>
+                    <div>
+                      <strong>{champion.championName}</strong>
+                      <small>{champion.games} partidas · {champion.winRate.toFixed(1)}% WR</small>
+                    </div>
+                    <div>
+                      <span>CS/min <b>{champion.csPerMinute.toFixed(2)}</b></span>
+                      <span>Muertes <b>{champion.averageDeaths.toFixed(1)}</b></span>
+                      <span>Daño/min <b>{champion.damagePerMinute.toLocaleString("es-CL")}</b></span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+
           <div className="coach-main-grid">
             <section className="coach-panel">
               <div className="section-heading compact">
