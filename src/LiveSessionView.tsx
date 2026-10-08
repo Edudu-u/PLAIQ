@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { createGameSession } from "./lib/api";
+import {
+  createGameSession,
+  getGameSession,
+  getGameSessions,
+  type GameSessionDetail,
+  type GameSessionSummary,
+} from "./lib/api";
 import type { RiotProfile } from "./types/coaching";
 
 type LiveSessionViewProps = {
@@ -87,6 +93,9 @@ export function LiveSessionView({
     "idle" | "uploading" | "stored" | "failed"
   >("idle");
   const [lastUpload, setLastUpload] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<GameSessionSummary[]>([]);
+  const [selectedSession, setSelectedSession] = useState<GameSessionDetail | null>(null);
+  const [loadingSessions, setLoadingSessions] = useState(false);
 
   useEffect(() => {
     if (!available) return;
@@ -108,6 +117,27 @@ export function LiveSessionView({
       window.clearInterval(timer);
     };
   }, [available]);
+
+  useEffect(() => {
+    if (!available || !profile) return;
+    let cancelled = false;
+
+    setLoadingSessions(true);
+    void getGameSessions(clientId, profile.id, 10)
+      .then((items) => {
+        if (!cancelled) setSessions(items);
+      })
+      .catch(() => {
+        if (!cancelled) setSessions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingSessions(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [available, clientId, profile]);
 
   useEffect(() => {
     if (!available) return;
@@ -165,11 +195,15 @@ export function LiveSessionView({
         endedAt: session.endedAt ?? new Date().toISOString(),
         snapshots: session.snapshots,
       })
-        .then((result) => {
+        .then(async (result) => {
           setUploadState("stored");
-          setLastUpload(
-            result.receivedSnapshots + " snapshots almacenados",
-          );
+          setLastUpload(result.receivedSnapshots + " snapshots almacenados");
+          const latest = await getGameSessions(clientId, profile.id, 10);
+          setSessions(latest);
+          const stored = latest.find((item) => item.id === result.sessionId);
+          if (stored) {
+            setSelectedSession(await getGameSession(clientId, stored.id));
+          }
         })
         .catch((caught) => {
           setUploadState("failed");
@@ -234,6 +268,50 @@ export function LiveSessionView({
         : [],
     [latest],
   );
+
+
+function Sparkline({
+  values,
+  label,
+}: {
+  values: number[];
+  label: string;
+}) {
+  if (values.length < 2) {
+    return <span className="live-chart-empty">Sin suficientes muestras</span>;
+  }
+
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const span = Math.max(max - min, 1);
+  const width = 420;
+  const height = 96;
+  const points = values
+    .map((value, index) => {
+      const x = (index / (values.length - 1)) * width;
+      const y = height - ((value - min) / span) * (height - 12) - 6;
+      return x.toFixed(1) + "," + y.toFixed(1);
+    })
+    .join(" ");
+
+  return (
+    <div className="live-chart" role="img" aria-label={label}>
+      <svg viewBox={"0 0 " + width + " " + height} preserveAspectRatio="none">
+        <polyline
+          points={points}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+      <div className="live-chart-range">
+        <span>{min.toFixed(1)}</span>
+        <span>{max.toFixed(1)}</span>
+      </div>
+    </div>
+  );
+}
 
   if (!available) {
     return (
@@ -347,6 +425,87 @@ export function LiveSessionView({
           </div>
         </section>
       )}
+
+      <section className="live-session-history">
+        <div className="section-heading compact">
+          <div>
+            <span className="eyebrow">Historial local</span>
+            <h2>Sesiones capturadas</h2>
+          </div>
+          <span>{loadingSessions ? "Cargando…" : sessions.length + " sesiones"}</span>
+        </div>
+
+        <div className="live-history-grid">
+          <div className="live-session-list">
+            {sessions.length === 0 ? (
+              <div className="empty-state">Todavía no hay sesiones almacenadas.</div>
+            ) : (
+              sessions.map((session) => (
+                <button
+                  type="button"
+                  key={session.id}
+                  className={
+                    selectedSession?.id === session.id
+                      ? "live-session-row active"
+                      : "live-session-row"
+                  }
+                  onClick={() => {
+                    void getGameSession(clientId, session.id).then(setSelectedSession);
+                  }}
+                >
+                  <span>
+                    <strong>{session.championName}</strong>
+                    <small>
+                      {session.role} · {session.sampleCount} muestras
+                    </small>
+                  </span>
+                  <span>
+                    <strong>{mmss(session.durationSeconds)}</strong>
+                    <small>{new Date(session.startedAt).toLocaleDateString("es-CL")}</small>
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+
+          <div className="live-session-detail">
+            {selectedSession ? (
+              <>
+                <div className="section-heading compact">
+                  <div>
+                    <span className="eyebrow">
+                      {selectedSession.championName} · {selectedSession.role}
+                    </span>
+                    <h2>Curva de entrenamiento</h2>
+                  </div>
+                  <span>{selectedSession.sampleCount} muestras</span>
+                </div>
+                <div className="live-chart-grid">
+                  <article className="live-chart-card">
+                    <span className="eyebrow">CS</span>
+                    <Sparkline
+                      label="Evolución de CS durante la sesión"
+                      values={selectedSession.snapshots.map((item) => item.creepScore)}
+                    />
+                  </article>
+                  <article className="live-chart-card">
+                    <span className="eyebrow">Visión</span>
+                    <Sparkline
+                      label="Evolución de visión durante la sesión"
+                      values={selectedSession.snapshots.map((item) => item.visionScore)}
+                    />
+                  </article>
+                </div>
+              </>
+            ) : (
+              <div className="live-chart-empty-wrap">
+                <span className="eyebrow">Detalle</span>
+                <p>Selecciona una sesión para ver su evolución temporal.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
 
       <section className="live-method">
         <span className="eyebrow">Arquitectura</span>
