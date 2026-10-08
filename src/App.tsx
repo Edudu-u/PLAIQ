@@ -1,7 +1,6 @@
 import { useEffect, useId, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
-  getCoachingSummary,
   getMatchDetail,
   getProfileDetail,
   getProfileMatches,
