@@ -219,6 +219,8 @@ export interface CreateGameSessionResult {
   profileId: string;
   status: "stored";
   receivedSnapshots: number;
+  matchedToRiotMatch: boolean;
+  matchId: string | null;
   acceptedAt: string;
 }
 
