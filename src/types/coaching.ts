@@ -10,7 +10,8 @@ export type AppView =
   | "perfiles"
   | "coaching"
   | "tierlist"
-  | "notas-parche";
+  | "notas-parche"
+  | "en-vivo";
 
 export interface CoachingGoal {
   id: string;
