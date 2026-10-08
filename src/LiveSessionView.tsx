@@ -206,7 +206,11 @@ export function LiveSessionView({
         })
           .then(async (result) => {
           setUploadState("stored");
-          setLastUpload(result.receivedSnapshots + " snapshots almacenados");
+          setLastUpload(
+            result.receivedSnapshots +
+              " snapshots almacenados" +
+              (result.matchedToRiotMatch ? " · Match-v5 enlazado" : ""),
+          );
           const latest = await getGameSessions(clientId, profile.id, 10);
           setSessions(latest);
           const stored = latest.find((item) => item.id === result.sessionId);
