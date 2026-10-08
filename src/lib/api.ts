@@ -330,14 +330,28 @@ export type CoachMetricKey =
   | "average_deaths"
   | "cs_per_minute"
   | "vision_per_minute"
-  | "damage_per_minute";
+  | "damage_per_minute"
+  | "cs_at_10"
+  | "deaths_at_15"
+  | "vision_at_15"
+  | "final_kda";
 
 export interface CoachAiNarrative {
   headline: string;
   summary: string;
   strengths: Array<{ title: string; metricKey: CoachMetricKey; evidence: string }>;
-  weaknesses: Array<{ title: string; metricKey: string; evidence: string; impact: string }>;
-  actionPlan: Array<{ title: string; metricKey: string; reason: string; measurable: string }>;
+  weaknesses: Array<{
+    title: string;
+    metricKey: CoachMetricKey;
+    evidence: string;
+    impact: string;
+  }>;
+  actionPlan: Array<{
+    title: string;
+    metricKey: CoachMetricKey;
+    reason: string;
+    measurable: string;
+  }>;
   confidence: "low" | "medium" | "high";
   limitations: string[];
 }
