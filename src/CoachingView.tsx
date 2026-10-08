@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getCoachingSummary } from "./lib/api";
+import {
+  generateAiCoaching,
+  getCoachingSummary,
+  getLatestAiCoaching,
+  type CoachAiAnalysis,
+} from "./lib/api";
 import type {
   CoachingGoal,
   CoachingInsight,
@@ -61,6 +66,9 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
   const [summary, setSummary] = useState<CoachingSummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [aiAnalysis, setAiAnalysis] = useState<CoachAiAnalysis | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!profile) {
@@ -88,6 +96,47 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!profile) {
+      setAiAnalysis(null);
+      return;
+    }
+
+    let cancelled = false;
+    void getLatestAiCoaching(clientId, profile.id)
+      .then((payload) => {
+        if (!cancelled) setAiAnalysis(payload);
+      })
+      .catch(() => {
+        // AI is optional; deterministic coaching remains available.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clientId, profile]);
+
+
+  async function handleGenerateAi() {
+    if (!profile) return;
+
+    setAiLoading(true);
+    setAiError(null);
+
+    try {
+      const result = await generateAiCoaching(clientId, profile.id, 20);
+      setAiAnalysis(result);
+    } catch (caught) {
+      setAiError(
+        caught instanceof Error
+          ? caught.message
+          : "No se pudo generar el coaching IA.",
+      );
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   const criticalCount = useMemo(
     () => summary?.insights.filter((item) => item.severity === "critical").length ?? 0,
@@ -272,6 +321,114 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
               </div>
             </section>
           </div>
+
+          <section className="coach-ai-panel">
+            <div className="coach-ai-header">
+              <div>
+                <span className="eyebrow">Coach IA</span>
+                <h2>
+                  {aiAnalysis
+                    ? aiAnalysis.narrative.headline
+                    : "Convierte el diagnóstico en un plan"}
+                </h2>
+              </div>
+              <button
+                className="primary-button coach-ai-button"
+                type="button"
+                onClick={() => void handleGenerateAi()}
+                disabled={aiLoading || summary.sampleSize < 5}
+              >
+                {aiLoading
+                  ? "Generando…"
+                  : aiAnalysis
+                    ? "Regenerar plan"
+                    : "Generar plan IA"}
+              </button>
+            </div>
+
+            {aiError && <p className="lookup-message">{aiError}</p>}
+
+            {!aiAnalysis ? (
+              <div className="coach-ai-empty">
+                <p>
+                  La IA no sustituye las métricas. Recibe el diagnóstico
+                  determinista y lo transforma en un plan de entrenamiento
+                  estructurado y verificable.
+                </p>
+                <small>
+                  Requiere al menos 5 partidas y OPENAI_API_KEY configurada en
+                  API-PLAIQ.
+                </small>
+              </div>
+            ) : (
+              <>
+                <p className="coach-ai-summary">{aiAnalysis.narrative.summary}</p>
+
+                <div className="coach-ai-columns">
+                  <div>
+                    <span className="eyebrow">Fortalezas</span>
+                    <div className="coach-ai-list">
+                      {aiAnalysis.narrative.strengths.map((item) => (
+                        <article key={item.title}>
+                          <strong>{item.title}</strong>
+                          <span>{item.evidence}</span>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="eyebrow">Debilidades</span>
+                    <div className="coach-ai-list">
+                      {aiAnalysis.narrative.weaknesses.map((item) => (
+                        <article key={item.title}>
+                          <strong>{item.title}</strong>
+                          <span>{item.evidence}</span>
+                          <small>{item.impact}</small>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="coach-ai-actions">
+                  <span className="eyebrow">Plan del próximo bloque</span>
+                  <div className="coach-ai-plan">
+                    {aiAnalysis.narrative.actionPlan.map((item, index) => (
+                      <article key={item.title}>
+                        <strong>
+                          {String(index + 1).padStart(2, "0")} · {item.title}
+                        </strong>
+                        <p>{item.reason}</p>
+                        <span>{item.measurable}</span>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+
+                {aiAnalysis.narrative.limitations.length > 0 && (
+                  <div className="coach-ai-limitations">
+                    <span className="eyebrow">
+                      Confianza {aiAnalysis.narrative.confidence}
+                    </span>
+                    <p>{aiAnalysis.narrative.limitations.join(" · ")}</p>
+                  </div>
+                )}
+
+                <div className="coach-ai-meta">
+                  <span>
+                    {aiAnalysis.cached ? "Resultado en caché" : "Nuevo análisis"}
+                  </span>
+                  <span>·</span>
+                  <span>{aiAnalysis.sampleSize} partidas</span>
+                  <span>·</span>
+                  <span>{aiAnalysis.model}</span>
+                  <span>·</span>
+                  <span>{new Date(aiAnalysis.createdAt).toLocaleString("es-CL")}</span>
+                </div>
+              </>
+            )}
+          </section>
 
           <section className="coach-methodology">
             <span className="eyebrow">Cómo decide PLAIQ</span>
