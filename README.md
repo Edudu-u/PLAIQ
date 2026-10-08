@@ -42,3 +42,10 @@ Este repositorio no contiene claves de Riot ni OpenAI. React tampoco tiene acces
 ---
 
 PLAIQ no está respaldado por Riot Games y no refleja las opiniones de Riot Games ni de ninguna persona involucrada oficialmente en la producción o administración de sus propiedades. Riot Games y todas las propiedades asociadas son marcas comerciales o marcas registradas de Riot Games, Inc.
+
+
+## Coaching real
+
+La vista **Coaching** ya no utiliza objetivos demo: consume el perfil activo y muestra un diagnóstico calculado sobre sus últimas partidas Ranked Solo, incluyendo métricas, tendencias, focos y objetivos medibles.
+
+La interfaz separa visualmente los datos calculados de futuras recomendaciones generadas por IA para que cada conclusión tenga una fuente trazable.

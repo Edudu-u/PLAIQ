@@ -1,4 +1,10 @@
-export type GoalMetric = "cs_at_10" | "deaths_before_15" | "vision_score";
+export type GoalMetric =
+  | "cs_at_10"
+  | "deaths_before_15"
+  | "vision_score"
+  | "average_deaths"
+  | "cs_per_minute"
+  | "vision_per_minute";
 export type AppView =
   | "inicio"
   | "perfiles"
@@ -16,6 +22,30 @@ export interface CoachingGoal {
   completed: boolean;
 }
 
+export interface CoachingMetric {
+  key:
+    | "games"
+    | "win_rate"
+    | "average_kda"
+    | "average_deaths"
+    | "cs_per_minute"
+    | "vision_per_minute"
+    | "damage_per_minute";
+  label: string;
+  value: number;
+  unit: string;
+  delta: number | null;
+  direction: "higher" | "lower" | null;
+}
+
+export interface CoachingInsight {
+  severity: "positive" | "attention" | "critical";
+  title: string;
+  evidence: string;
+  recommendation: string;
+  metric: string;
+}
+
 export interface CoachingSummary {
   player: {
     riotId: string;
@@ -24,7 +54,12 @@ export interface CoachingSummary {
   };
   focus: string;
   coachMessage: string;
+  metrics: CoachingMetric[];
+  insights: CoachingInsight[];
   goals: CoachingGoal[];
+  sampleSize: number;
+  source: "match_v5";
+  analysisVersion: string;
   generatedAt: string;
 }
 

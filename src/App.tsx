@@ -1,7 +1,6 @@
 import { useEffect, useId, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
-  getCoachingSummary,
   getMatchDetail,
   getProfileDetail,
   getProfileMatches,
@@ -11,6 +10,7 @@ import {
   MATCH_HISTORY_LIMIT,
   syncProfileMatches,
 } from "./lib/api";
+import { CoachingView } from "./CoachingView";
 import { LandingHome } from "./LandingHome";
 import { PatchNotesView } from "./PatchNotesView";
 import { TierlistView } from "./TierlistView";
@@ -20,7 +20,6 @@ import { getClientId } from "./lib/client-id";
 import type {
   AppView,
   ChampionMasteryEntry,
-  CoachingSummary,
   MatchDetail,
   MatchPlayerSummary,
   MatchSummary,
@@ -154,44 +153,6 @@ function formatTier(entry: RankedQueueEntry): string {
 
   const tier = entry.tier.charAt(0) + entry.tier.slice(1).toLowerCase();
   return entry.rank ? `${tier} ${entry.rank}` : tier;
-}
-
-function GoalCard({
-  title,
-  current,
-  target,
-  unit,
-  completed,
-}: CoachingSummary["goals"][number]) {
-  const progress = Math.min(
-    100,
-    Math.round((current / Math.max(target, 1)) * 100),
-  );
-
-  return (
-    <article className={`goal-card ${completed ? "is-complete" : ""}`}>
-      <div className="goal-heading">
-        <div>
-          <span className="eyebrow">
-            {completed ? "Completado" : "En progreso"}
-          </span>
-          <h3>{title}</h3>
-        </div>
-        <span className={completed ? "goal-state complete" : "goal-state"}>
-          {completed ? "✓" : `${progress}%`}
-        </span>
-      </div>
-      <div className="progress-track">
-        <div
-          className={completed ? "progress-value complete" : "progress-value"}
-          style={{ width: `${completed ? 100 : progress}%` }}
-        />
-      </div>
-      <p className="metric">
-        <strong>{current}</strong> / {target} {unit}
-      </p>
-    </article>
-  );
 }
 
 function rankEmblemUrl(entry: RankedQueueEntry): string {
@@ -544,7 +505,6 @@ export function App() {
     return saved === "reshiram" || saved === "zekrom" ? saved : "zekrom";
   });
   const [view, setView] = useState<AppView>("inicio");
-  const [summary, setSummary] = useState<CoachingSummary | null>(null);
   const [profiles, setProfiles] = useState<RiotProfile[]>([]);
   const [history, setHistory] = useState<RiotSearchHistory[]>([]);
   const [matches, setMatches] = useState<MatchSummary[]>([]);
@@ -651,36 +611,6 @@ export function App() {
   }, [theme]);
 
   useEffect(() => {
-    const controller = new AbortController();
-
-    Promise.allSettled([
-      getCoachingSummary(controller.signal),
-      getRiotProfiles(clientId),
-      getRiotSearchHistory(clientId),
-    ]).then(([summaryResult, profilesResult, historyResult]) => {
-      if (summaryResult.status === "fulfilled") {
-        setSummary(summaryResult.value);
-        setApiError(null);
-      } else {
-        setApiError("No fue posible conectar con la API de PLAYQ.GG.");
-      }
-
-      if (profilesResult.status === "fulfilled") {
-        setProfiles(profilesResult.value);
-        if (profilesResult.value[0]) {
-          setSelectedProfileId(profilesResult.value[0].id);
-        }
-      }
-
-      if (historyResult.status === "fulfilled") {
-        setHistory(historyResult.value);
-      }
-    });
-
-    return () => controller.abort();
-  }, [clientId]);
-
-  useEffect(() => {
     if (!activeProfile || (view !== "perfiles" && view !== "inicio")) {
       return;
     }
@@ -759,11 +689,6 @@ export function App() {
       setIsSearching(false);
     }
   }
-
-  const completedGoals = useMemo(
-    () => summary?.goals.filter((goal) => goal.completed).length ?? 0,
-    [summary],
-  );
 
   return (
     <main className="app-shell">
@@ -1024,29 +949,7 @@ export function App() {
         )}
 
         {view === "coaching" && (
-          <>
-            <header className="topbar">
-              <div>
-                <span className="eyebrow">Coaching</span>
-                <h1>Entrenamiento activo</h1>
-              </div>
-              <span>
-                {completedGoals}/{summary?.goals.length ?? 0} completados
-              </span>
-            </header>
-
-            {summary ? (
-              <section className="goal-grid">
-                {summary.goals.map((goal) => (
-                  <GoalCard key={goal.id} {...goal} />
-                ))}
-              </section>
-            ) : (
-              <section className="loading-card">
-                Conecta la API para ver tus metas de entrenamiento.
-              </section>
-            )}
-          </>
+          <CoachingView clientId={clientId} profile={activeProfile} />
         )}
 
         {view === "tierlist" && <TierlistView />}
