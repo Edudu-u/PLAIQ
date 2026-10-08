@@ -3,6 +3,7 @@ import {
   createGameSession,
   getGameSession,
   getGameSessions,
+  syncProfileMatches,
   type GameSessionDetail,
   type GameSessionSummary,
 } from "./lib/api";
@@ -183,7 +184,15 @@ export function LiveSessionView({
       setUploadState("uploading");
       setError(null);
 
-      void createGameSession({
+      void (async () => {
+        // Best effort: refresh Match-v5 before storing so the API can correlate the session.
+        try {
+          await syncProfileMatches(clientId, profile.id, 20);
+        } catch {
+          // The session itself remains valuable even when Riot sync is unavailable.
+        }
+
+        return createGameSession({
         clientId,
         profileId: profile.id,
         localSessionId: session.sessionId!,
@@ -194,8 +203,8 @@ export function LiveSessionView({
         startedAt: session.startedAt ?? new Date().toISOString(),
         endedAt: session.endedAt ?? new Date().toISOString(),
         snapshots: session.snapshots,
-      })
-        .then(async (result) => {
+        })
+          .then(async (result) => {
           setUploadState("stored");
           setLastUpload(result.receivedSnapshots + " snapshots almacenados");
           const latest = await getGameSessions(clientId, profile.id, 10);
@@ -204,15 +213,16 @@ export function LiveSessionView({
           if (stored) {
             setSelectedSession(await getGameSession(clientId, stored.id));
           }
-        })
-        .catch((caught) => {
+          })
+          .catch((caught) => {
           setUploadState("failed");
           setError(
             caught instanceof Error
               ? "No se pudo guardar la sesión: " + caught.message
               : "No se pudo guardar la sesión.",
           );
-        });
+          });
+      })();
     });
 
     return () => {
