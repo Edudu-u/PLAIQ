@@ -307,9 +307,9 @@ export function getGameSession(
 export interface CoachAiNarrative {
   headline: string;
   summary: string;
-  strengths: Array<{ title: string; evidence: string }>;
-  weaknesses: Array<{ title: string; evidence: string; impact: string }>;
-  actionPlan: Array<{ title: string; reason: string; measurable: string }>;
+  strengths: Array<{ title: string; metricKey: string; evidence: string }>;
+  weaknesses: Array<{ title: string; metricKey: string; evidence: string; impact: string }>;
+  actionPlan: Array<{ title: string; metricKey: string; reason: string; measurable: string }>;
   confidence: "low" | "medium" | "high";
   limitations: string[];
 }
