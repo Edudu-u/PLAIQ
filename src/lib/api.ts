@@ -330,6 +330,10 @@ export interface CoachAiAnalysis {
   sampleSize: number;
   narrative: CoachAiNarrative;
   responseId: string | null;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  reasoningTokens: number | null;
+  totalTokens: number | null;
   createdAt: string;
   cached: boolean;
 }
