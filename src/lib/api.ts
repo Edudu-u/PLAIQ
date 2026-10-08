@@ -54,6 +54,23 @@ export function getCoachingSummary(
   return request<CoachingSummary>("/v1/coaching/summary?" + params.toString());
 }
 
+export function setPrimaryRole(
+  clientId: string,
+  profileId: string,
+  primaryRole: import("../types/coaching").CoachingRole | null,
+): Promise<PlayerProfileDetail> {
+  return request<PlayerProfileDetail>(
+    "/v1/riot/profiles/" +
+      encodeURIComponent(profileId) +
+      "/preferences",
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clientId, primaryRole }),
+    },
+  );
+}
+
 export function lookupRiotProfile(
   input: LookupRiotProfileInput,
 ): Promise<PlayerProfileDetail> {
