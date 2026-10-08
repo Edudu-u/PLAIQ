@@ -5,6 +5,7 @@ import {
   getProfileDetail,
   getProfileMatches,
   getRiotProfiles,
+  setPrimaryRole,
   getRiotSearchHistory,
   lookupRiotProfile,
   MATCH_HISTORY_LIMIT,
@@ -20,6 +21,7 @@ import { BrandWordmark } from "./BrandWordmark";
 import { getClientId } from "./lib/client-id";
 import type {
   AppView,
+  CoachingRole,
   ChampionMasteryEntry,
   MatchDetail,
   MatchPlayerSummary,
@@ -410,13 +412,17 @@ function ProfileDetailPanel({
   matches,
   clientId,
   isRefreshing,
+  isSavingRole,
   onRefresh,
+  onRoleChange,
 }: {
   detail: PlayerProfileDetail;
   matches: MatchSummary[];
   clientId: string;
   isRefreshing: boolean;
+  isSavingRole: boolean;
   onRefresh: () => void;
+  onRoleChange: (role: CoachingRole | null) => void;
 }) {
   return (
     <section className="profile-detail">
@@ -435,14 +441,35 @@ function ProfileDetailPanel({
             {detail.searchCount} consultas
           </p>
         </div>
-        <button
-          className="ghost-button"
-          type="button"
-          disabled={isRefreshing}
-          onClick={onRefresh}
-        >
-          {isRefreshing ? "Actualizando…" : "Actualizar"}
-        </button>
+        <div className="profile-hero-actions">
+          <label className="profile-role-field">
+            <span className="eyebrow">Rol de coaching</span>
+            <select
+              value={detail.primaryRole ?? ""}
+              disabled={isSavingRole}
+              onChange={(event) =>
+                onRoleChange(
+                  (event.target.value || null) as CoachingRole | null,
+                )
+              }
+            >
+              <option value="">Automático</option>
+              <option value="TOP">Top</option>
+              <option value="JUNGLE">Jungla</option>
+              <option value="MIDDLE">Mid</option>
+              <option value="BOTTOM">ADC</option>
+              <option value="UTILITY">Support</option>
+            </select>
+          </label>
+          <button
+            className="ghost-button"
+            type="button"
+            disabled={isRefreshing}
+            onClick={onRefresh}
+          >
+            {isRefreshing ? "Actualizando…" : "Actualizar"}
+          </button>
+        </div>
       </header>
 
       <div className="section-heading compact">
