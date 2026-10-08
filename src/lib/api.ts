@@ -304,10 +304,19 @@ export function getGameSession(
   );
 }
 
+export type CoachMetricKey =
+  | "games"
+  | "win_rate"
+  | "average_kda"
+  | "average_deaths"
+  | "cs_per_minute"
+  | "vision_per_minute"
+  | "damage_per_minute";
+
 export interface CoachAiNarrative {
   headline: string;
   summary: string;
-  strengths: Array<{ title: string; metricKey: string; evidence: string }>;
+  strengths: Array<{ title: string; metricKey: CoachMetricKey; evidence: string }>;
   weaknesses: Array<{ title: string; metricKey: string; evidence: string; impact: string }>;
   actionPlan: Array<{ title: string; metricKey: string; reason: string; measurable: string }>;
   confidence: "low" | "medium" | "high";
