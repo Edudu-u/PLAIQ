@@ -191,3 +191,43 @@ export function getPatchArticle(
     { signal },
   );
 }
+
+export interface CreateGameSessionInput {
+  clientId: string;
+  profileId: string;
+  localSessionId: string;
+  queueId: number;
+  role: string;
+  championId: number;
+  championName: string;
+  startedAt: string;
+  endedAt: string;
+  snapshots: Array<{
+    capturedAtMs: number;
+    gameTimeSeconds: number;
+    creepScore: number;
+    kills: number;
+    deaths: number;
+    assists: number;
+    visionScore: number;
+  }>;
+}
+
+export interface CreateGameSessionResult {
+  sessionId: string;
+  localSessionId: string;
+  profileId: string;
+  status: "stored";
+  receivedSnapshots: number;
+  acceptedAt: string;
+}
+
+export function createGameSession(
+  input: CreateGameSessionInput,
+): Promise<CreateGameSessionResult> {
+  return request<CreateGameSessionResult>("/v1/game-sessions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
