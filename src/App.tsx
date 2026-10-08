@@ -12,6 +12,7 @@ import {
 } from "./lib/api";
 import { CoachingView } from "./CoachingView";
 import { LandingHome } from "./LandingHome";
+import { LiveSessionView } from "./LiveSessionView";
 import { PatchNotesView } from "./PatchNotesView";
 import { TierlistView } from "./TierlistView";
 import { BrandLogo } from "./BrandLogo";
@@ -32,11 +33,12 @@ import type {
 const NAV_ITEMS: Array<{
   id: AppView;
   label: string;
-  icon: "home" | "user" | "coaching" | "tierlist" | "patch";
+  icon: "home" | "user" | "coaching" | "tierlist" | "patch" | "live";
 }> = [
   { id: "inicio", label: "Inicio", icon: "home" },
   { id: "perfiles", label: "Perfiles", icon: "user" },
   { id: "coaching", label: "Coaching", icon: "coaching" },
+  { id: "en-vivo", label: "En vivo", icon: "live" },
   { id: "tierlist", label: "Tierlist", icon: "tierlist" },
   { id: "notas-parche", label: "Notas del Parche", icon: "patch" },
 ];
@@ -80,6 +82,12 @@ function NavIcon({
         <>
           <circle cx="12" cy="12" r="7.5" stroke={stroke} />
           <circle cx="12" cy="12" r="3" stroke={stroke} />
+          <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" stroke={stroke} />
+        </>
+      ) : name === "live" ? (
+        <>
+          <circle cx="12" cy="12" r="7.5" stroke={stroke} />
+          <circle cx="12" cy="12" r="2.5" stroke={stroke} />
           <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" stroke={stroke} />
         </>
       ) : name === "tierlist" ? (
