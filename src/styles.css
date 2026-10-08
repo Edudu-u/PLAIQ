@@ -3949,3 +3949,6 @@ h3 {
 .live-chart-empty-wrap{min-height:170px;display:grid;place-items:center;align-content:center;text-align:center;color:var(--muted,#8f9ab0)}
 .live-chart-empty-wrap p{margin:6px 0 0}
 @media (max-width:900px){.live-history-grid{grid-template-columns:1fr}.live-chart-grid{grid-template-columns:1fr}}
+
+.live-session-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 12px}.live-session-summary>div{padding:10px;border:1px solid var(--border,rgba(140,160,190,.18));border-radius:12px;background:rgba(255,255,255,.018)}.live-session-summary strong{display:block;margin-top:6px;font-size:20px}.live-session-summary .eyebrow{font-size:9px}
+@media (max-width:700px){.live-session-summary{grid-template-columns:1fr 1fr}}
