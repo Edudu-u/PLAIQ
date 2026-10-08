@@ -557,6 +557,34 @@ export function App() {
     return savedProfiles;
   }
 
+  async function handlePrimaryRoleChange(role: CoachingRole | null): Promise<void> {
+    if (!activeProfile || !profileDetail) {
+      return;
+    }
+
+    try {
+      const updated = await setPrimaryRole(
+        clientId,
+        profileDetail.id,
+        role,
+      );
+      setProfileDetail(updated);
+      setProfiles((current) =>
+        current.map((profile) =>
+          profile.id === updated.id
+            ? { ...profile, primaryRole: updated.primaryRole }
+            : profile,
+        ),
+      );
+    } catch (error) {
+      setLookupMessage(
+        error instanceof Error
+          ? `No se pudo guardar el rol de coaching: ${error.message}`
+          : "No se pudo guardar el rol de coaching.",
+      );
+    }
+  }
+
   async function loadProfileDetail(
     profileId: string,
     refresh = true,
@@ -856,8 +884,12 @@ export function App() {
                 matches={matches}
                 clientId={clientId}
                 isRefreshing={isRefreshingDetail}
+                isSavingRole={false}
                 onRefresh={() => {
                   void loadProfileDetail(profileDetail.id, true);
+                }}
+                onRoleChange={(role) => {
+                  void handlePrimaryRoleChange(role);
                 }}
               />
             )}
