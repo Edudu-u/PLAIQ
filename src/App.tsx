@@ -528,6 +528,7 @@ export function App() {
   const [lookupMessage, setLookupMessage] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isRefreshingDetail, setIsRefreshingDetail] = useState(false);
+  const [isSavingRole, setIsSavingRole] = useState(false);
 
   const activeProfile = useMemo(
     () =>
@@ -562,6 +563,7 @@ export function App() {
       return;
     }
 
+    setIsSavingRole(true);
     try {
       const updated = await setPrimaryRole(
         clientId,
@@ -582,6 +584,8 @@ export function App() {
           ? `No se pudo guardar el rol de coaching: ${error.message}`
           : "No se pudo guardar el rol de coaching.",
       );
+    } finally {
+      setIsSavingRole(false);
     }
   }
 
@@ -884,7 +888,7 @@ export function App() {
                 matches={matches}
                 clientId={clientId}
                 isRefreshing={isRefreshingDetail}
-                isSavingRole={false}
+                isSavingRole={isSavingRole}
                 onRefresh={() => {
                   void loadProfileDetail(profileDetail.id, true);
                 }}
