@@ -39,6 +39,15 @@ export interface CoachingMetric {
   direction: "higher" | "lower" | null;
 }
 
+export interface CoachingChampionPerformance {
+  championName: string;
+  games: number;
+  winRate: number;
+  averageDeaths: number;
+  csPerMinute: number;
+  damagePerMinute: number;
+}
+
 export interface CoachingInsight {
   severity: "positive" | "attention" | "critical";
   title: string;
@@ -56,6 +65,7 @@ export interface CoachingSummary {
   focus: string;
   coachMessage: string;
   metrics: CoachingMetric[];
+  champions: CoachingChampionPerformance[];
   insights: CoachingInsight[];
   goals: CoachingGoal[];
   sampleSize: number;
