@@ -8,10 +8,7 @@ import type {
   RiotSearchHistory,
   SyncMatchesResult,
 } from "../types/coaching";
-import type {
-  PatchArticle,
-  PatchIndex,
-} from "../types/patches";
+import type { PatchArticle, PatchIndex } from "../types/patches";
 import type {
   TierlistQuery,
   TierlistResponse,
@@ -20,14 +17,11 @@ import type {
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
-async function request<T>(
-  path: string,
-  options?: RequestInit,
-): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, options);
+async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(API_URL + path, options);
 
   if (!response.ok) {
-    let message = `API request failed with status ${response.status}`;
+    let message = "API request failed with status " + response.status;
 
     try {
       const payload = (await response.json()) as {
@@ -39,7 +33,7 @@ async function request<T>(
           : payload.message;
       }
     } catch {
-      // Keep the fallback status message when the API has no JSON body.
+      // Preserve the HTTP status fallback when the API has no JSON body.
     }
 
     throw new Error(message);
@@ -49,9 +43,15 @@ async function request<T>(
 }
 
 export function getCoachingSummary(
-  signal?: AbortSignal,
+  clientId: string,
+  profileId?: string | null,
+  limit = 20,
 ): Promise<CoachingSummary> {
-  return request<CoachingSummary>("/v1/coaching/summary", { signal });
+  const params = new URLSearchParams({ clientId });
+  if (profileId) params.set("profileId", profileId);
+  params.set("limit", String(limit));
+
+  return request<CoachingSummary>("/v1/coaching/summary?" + params.toString());
 }
 
 export function lookupRiotProfile(
@@ -59,16 +59,14 @@ export function lookupRiotProfile(
 ): Promise<PlayerProfileDetail> {
   return request<PlayerProfileDetail>("/v1/riot/profiles/lookup", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
 }
 
 export function getRiotProfiles(clientId: string): Promise<RiotProfile[]> {
   return request<RiotProfile[]>(
-    `/v1/riot/profiles?clientId=${encodeURIComponent(clientId)}`,
+    "/v1/riot/profiles?clientId=" + encodeURIComponent(clientId),
   );
 }
 
@@ -83,7 +81,10 @@ export function getProfileDetail(
   });
 
   return request<PlayerProfileDetail>(
-    `/v1/riot/profiles/${encodeURIComponent(profileId)}/detail?${params}`,
+    "/v1/riot/profiles/" +
+      encodeURIComponent(profileId) +
+      "/detail?" +
+      params.toString(),
   );
 }
 
@@ -91,11 +92,12 @@ export function getRiotSearchHistory(
   clientId: string,
 ): Promise<RiotSearchHistory[]> {
   return request<RiotSearchHistory[]>(
-    `/v1/riot/search-history?clientId=${encodeURIComponent(clientId)}&limit=20`,
+    "/v1/riot/search-history?clientId=" +
+      encodeURIComponent(clientId) +
+      "&limit=20",
   );
 }
 
-/** Riot Match-v5 max ids per request; used for sync + list. */
 export const MATCH_HISTORY_LIMIT = 100;
 
 export function syncProfileMatches(
@@ -104,12 +106,12 @@ export function syncProfileMatches(
   count = MATCH_HISTORY_LIMIT,
 ): Promise<SyncMatchesResult> {
   return request<SyncMatchesResult>(
-    `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches/sync`,
+    "/v1/riot/profiles/" +
+      encodeURIComponent(profileId) +
+      "/matches/sync",
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ clientId, count }),
     },
   );
@@ -121,7 +123,12 @@ export function getProfileMatches(
   limit = MATCH_HISTORY_LIMIT,
 ): Promise<MatchSummary[]> {
   return request<MatchSummary[]>(
-    `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches?clientId=${encodeURIComponent(clientId)}&limit=${limit}`,
+    "/v1/riot/profiles/" +
+      encodeURIComponent(profileId) +
+      "/matches?clientId=" +
+      encodeURIComponent(clientId) +
+      "&limit=" +
+      limit,
   );
 }
 
@@ -131,7 +138,12 @@ export function getMatchDetail(
   matchId: string,
 ): Promise<MatchDetail> {
   return request<MatchDetail>(
-    `/v1/riot/profiles/${encodeURIComponent(profileId)}/matches/${encodeURIComponent(matchId)}?clientId=${encodeURIComponent(clientId)}`,
+    "/v1/riot/profiles/" +
+      encodeURIComponent(profileId) +
+      "/matches/" +
+      encodeURIComponent(matchId) +
+      "?clientId=" +
+      encodeURIComponent(clientId),
   );
 }
 
@@ -143,7 +155,7 @@ export function getTierlist(query: TierlistQuery): Promise<TierlistResponse> {
     league: query.league,
     queueId: query.queueId,
   });
-  return request<TierlistResponse>(`/v1/tierlist?${params}`);
+  return request<TierlistResponse>("/v1/tierlist?" + params.toString());
 }
 
 export function getTierlistSyncStatus(
@@ -155,9 +167,7 @@ export function getTierlistSyncStatus(
 export function startTierlistSync(): Promise<TierlistSyncStatus> {
   return request<TierlistSyncStatus>("/v1/tierlist/sync", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       platforms: ["LA2", "LA1"],
       queueIds: [420],
@@ -177,7 +187,7 @@ export function getPatchArticle(
   signal?: AbortSignal,
 ): Promise<PatchArticle> {
   return request<PatchArticle>(
-    `/v1/patches/${encodeURIComponent(slug)}`,
+    "/v1/patches/" + encodeURIComponent(slug),
     { signal },
   );
 }
