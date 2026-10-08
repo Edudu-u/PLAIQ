@@ -247,6 +247,15 @@ export interface GameSessionSummary {
 }
 
 export interface GameSessionDetail extends GameSessionSummary {
+  analysis: {
+    csAt10: number | null;
+    deathsAt15: number | null;
+    visionAt15: number | null;
+    finalKda: number | null;
+    observedMinutes: number;
+    averageSampleIntervalSeconds: number | null;
+    quality: "good" | "partial" | "insufficient";
+  };
   snapshots: Array<{
     capturedAtMs: number;
     gameTimeSeconds: number;
