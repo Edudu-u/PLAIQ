@@ -14,6 +14,9 @@ Aplicación de escritorio de coaching personalizado para League of Legends.
 - Sincronización de partidas recientes (Match-v5) desde un perfil guardado.
 - Comunicación HTTP tipada con el backend.
 - Base segura de Electron con aislamiento de contexto.
+- Captura local de Live Client desde el proceso principal de Electron.
+- Historial de sesiones capturadas con curvas temporales y métricas postpartida.
+- Coach IA con salida estructurada y referencias métricas.
 
 ## Inicio local
 
@@ -48,4 +51,12 @@ PLAIQ no está respaldado por Riot Games y no refleja las opiniones de Riot Game
 
 La vista **Coaching** ya no utiliza objetivos demo: consume el perfil activo y muestra un diagnóstico calculado sobre sus últimas partidas Ranked Solo, incluyendo métricas, tendencias, focos y objetivos medibles.
 
-La interfaz separa visualmente los datos calculados de futuras recomendaciones generadas por IA para que cada conclusión tenga una fuente trazable.
+La interfaz separa visualmente los datos calculados de las recomendaciones generadas por IA para que cada conclusión tenga una fuente trazable.
+
+## En vivo
+
+**En vivo** conecta el cliente local de League con un collector aislado en Electron. Captura snapshots propios durante la partida, los persiste en API-PLAIQ y, al terminar, intenta enlazar la sesión con Match-v5 para recuperar resultado, cola y parche.
+
+## Coach IA
+
+El coach IA no recibe datos crudos para “adivinar” estadísticas. API-PLAIQ calcula primero las señales y luego entrega al modelo un contexto estructurado. La salida se valida con Structured Outputs + Zod, se registra con uso de tokens y se cachea por huella del contexto.
