@@ -257,8 +257,10 @@ export interface GameSessionSummary {
 export interface GameSessionDetail extends GameSessionSummary {
   analysis: {
     csAt10: number | null;
+    csPerMinuteAt10: number | null;
     deathsAt15: number | null;
     visionAt15: number | null;
+    visionPerMinuteAt15: number | null;
     finalKda: number | null;
     observedMinutes: number;
     averageSampleIntervalSeconds: number | null;
