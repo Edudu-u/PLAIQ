@@ -5,6 +5,7 @@ import {
   getGameSession,
   getGameSessions,
   syncProfileMatches,
+  type CoachAiAnalysis,
   type GameSessionDetail,
   type GameSessionSummary,
 } from "./lib/api";
@@ -98,7 +99,7 @@ export function LiveSessionView({
   const [sessions, setSessions] = useState<GameSessionSummary[]>([]);
   const [selectedSession, setSelectedSession] = useState<GameSessionDetail | null>(null);
   const [loadingSessions, setLoadingSessions] = useState(false);
-  const [sessionAi, setSessionAi] = useState<Record<string, import("./lib/api").CoachAiAnalysis | null>>({});
+  const [sessionAi, setSessionAi] = useState<Record<string, CoachAiAnalysis | null>>({});
   const [sessionAiLoading, setSessionAiLoading] = useState<string | null>(null);
   const [sessionAiError, setSessionAiError] = useState<string | null>(null);
 
