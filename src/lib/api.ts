@@ -231,3 +231,58 @@ export function createGameSession(
     body: JSON.stringify(input),
   });
 }
+
+export interface GameSessionSummary {
+  id: string;
+  localSessionId: string;
+  profileId: string;
+  queueId: number;
+  role: string;
+  championId: number;
+  championName: string;
+  startedAt: string;
+  endedAt: string;
+  sampleCount: number;
+  durationSeconds: number;
+}
+
+export interface GameSessionDetail extends GameSessionSummary {
+  snapshots: Array<{
+    capturedAtMs: number;
+    gameTimeSeconds: number;
+    creepScore: number;
+    kills: number;
+    deaths: number;
+    assists: number;
+    visionScore: number;
+  }>;
+}
+
+export function getGameSessions(
+  clientId: string,
+  profileId?: string | null,
+  limit = 20,
+): Promise<GameSessionSummary[]> {
+  const params = new URLSearchParams({
+    clientId,
+    limit: String(limit),
+  });
+  if (profileId) params.set("profileId", profileId);
+
+  return request<GameSessionSummary[]>(
+    "/v1/game-sessions?" + params.toString(),
+  );
+}
+
+export function getGameSession(
+  clientId: string,
+  sessionId: string,
+): Promise<GameSessionDetail> {
+  const params = new URLSearchParams({ clientId });
+  return request<GameSessionDetail>(
+    "/v1/game-sessions/" +
+      encodeURIComponent(sessionId) +
+      "?" +
+      params.toString(),
+  );
+}
