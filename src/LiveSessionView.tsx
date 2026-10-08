@@ -114,7 +114,6 @@ export function LiveSessionView({
 
     const removeStatus = window.plaiq!.live.onStatus((next) => {
       setStatus(next);
-      if (next.connected) setProbe((current) => current ?? next as LiveProbe);
     });
 
     const removeSnapshot = window.plaiq!.live.onSnapshot((snapshot) => {
