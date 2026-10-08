@@ -3952,3 +3952,13 @@ h3 {
 
 .live-session-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 12px}.live-session-summary>div{padding:10px;border:1px solid var(--border,rgba(140,160,190,.18));border-radius:12px;background:rgba(255,255,255,.018)}.live-session-summary strong{display:block;margin-top:6px;font-size:20px}.live-session-summary .eyebrow{font-size:9px}
 @media (max-width:700px){.live-session-summary{grid-template-columns:1fr 1fr}}
+
+.coach-ai-panel{padding:20px;border:1px solid rgba(122,157,255,.26);border-radius:18px;background:radial-gradient(circle at 88% 8%,rgba(122,157,255,.11),transparent 32%),linear-gradient(135deg,rgba(92,239,255,.035),rgba(255,255,255,.018));box-shadow:0 18px 60px rgba(0,0,0,.10)}
+.coach-ai-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.coach-ai-header h2{margin:5px 0 0;max-width:760px}.coach-ai-button{flex:0 0 auto}
+.coach-ai-empty{padding:18px 0 2px}.coach-ai-empty p{margin:0 0 6px;max-width:900px;color:var(--muted,#8f9ab0);line-height:1.55}.coach-ai-empty small{color:var(--muted,#8f9ab0)}
+.coach-ai-summary{margin:18px 0 0;max-width:940px;font-size:16px;line-height:1.65}
+.coach-ai-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}.coach-ai-list{display:grid;gap:8px;margin-top:9px}.coach-ai-list article{padding:12px 13px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid var(--border,rgba(140,160,190,.16))}.coach-ai-list strong{display:block}.coach-ai-list span,.coach-ai-list small{display:block;margin-top:5px;color:var(--muted,#8f9ab0);line-height:1.45}.coach-ai-list small{font-size:11px}
+.coach-ai-actions{margin-top:19px}.coach-ai-plan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:9px}.coach-ai-plan article{padding:13px;border-radius:13px;background:rgba(0,0,0,.09);border:1px solid rgba(92,239,255,.11)}.coach-ai-plan strong{display:block}.coach-ai-plan p{margin:7px 0;color:var(--muted,#8f9ab0);font-size:12px;line-height:1.45}.coach-ai-plan span{font-size:11px;line-height:1.4}
+.coach-ai-limitations{margin-top:12px;padding:12px 13px;border-radius:13px;border:1px dashed rgba(255,192,92,.22);background:rgba(255,192,92,.04)}.coach-ai-limitations p{margin:5px 0 0;color:var(--muted,#8f9ab0);font-size:12px;line-height:1.5}
+.coach-ai-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:13px;color:var(--muted,#8f9ab0);font-size:10px;text-transform:uppercase;letter-spacing:.07em}
+@media (max-width:800px){.coach-ai-header{flex-direction:column}.coach-ai-button{width:100%}.coach-ai-columns,.coach-ai-plan{grid-template-columns:1fr}}
