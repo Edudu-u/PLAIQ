@@ -3933,3 +3933,19 @@ h3 {
 .live-method{display:flex;gap:16px;align-items:flex-start;padding:15px 16px;border:1px dashed var(--border,rgba(140,160,190,.22));border-radius:15px}.live-method>div{flex:1}.live-method strong{display:block;margin-bottom:4px}.live-method p{margin:0;color:var(--muted,#8f9ab0);font-size:12px;line-height:1.5}
 @media (max-width:800px){.live-control-card{flex-direction:column;align-items:flex-start}.live-health-grid,.live-metrics-grid{grid-template-columns:1fr 1fr}}@media (max-width:560px){.live-health-grid,.live-metrics-grid{grid-template-columns:1fr}.live-waiting,.live-empty{align-items:flex-start;flex-direction:column}.live-method{flex-direction:column}}
 @media (prefers-reduced-motion:reduce){.live-pulse{animation:none}}
+
+.live-session-history{padding:20px;border:1px solid var(--border,rgba(140,160,190,.22));border-radius:18px;background:var(--card,rgba(255,255,255,.025))}
+.live-history-grid{display:grid;grid-template-columns:minmax(280px,.7fr) minmax(0,1.3fr);gap:14px}
+.live-session-list{display:grid;gap:8px;align-content:start}
+.live-session-row{display:flex;align-items:center;justify-content:space-between;gap:15px;width:100%;padding:12px 13px;border:1px solid transparent;border-radius:13px;background:rgba(255,255,255,.02);color:inherit;text-align:left;cursor:pointer}
+.live-session-row:hover{border-color:var(--border,rgba(140,160,190,.22));background:rgba(255,255,255,.04)}
+.live-session-row.active{border-color:rgba(92,239,255,.28);background:rgba(92,239,255,.07)}
+.live-session-row strong{display:block}.live-session-row small{display:block;margin-top:3px;color:var(--muted,#8f9ab0)}
+.live-session-detail{min-width:0;padding:14px;border-radius:15px;background:rgba(0,0,0,.08)}
+.live-chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.live-chart-card{padding:13px;border:1px solid var(--border,rgba(140,160,190,.18));border-radius:13px;background:rgba(255,255,255,.018)}
+.live-chart{margin-top:12px;color:var(--logo-a,#5cefff)}.live-chart svg{display:block;width:100%;height:96px}
+.live-chart-range{display:flex;justify-content:space-between;margin-top:5px;color:var(--muted,#8f9ab0);font-size:10px}.live-chart-empty{color:var(--muted,#8f9ab0);font-size:12px}
+.live-chart-empty-wrap{min-height:170px;display:grid;place-items:center;align-content:center;text-align:center;color:var(--muted,#8f9ab0)}
+.live-chart-empty-wrap p{margin:6px 0 0}
+@media (max-width:900px){.live-history-grid{grid-template-columns:1fr}.live-chart-grid{grid-template-columns:1fr}}
