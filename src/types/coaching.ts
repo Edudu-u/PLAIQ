@@ -75,6 +75,114 @@ export interface CoachingSummary {
   generatedAt: string;
 }
 
+export type SkillDimensionKey =
+  | "economy"
+  | "lane_control"
+  | "survivability"
+  | "teamfight"
+  | "objectives"
+  | "vision";
+
+export interface TimelineSeriesPoint {
+  minute: number;
+  timestampMs: number;
+  level: number;
+  xp: number;
+  currentGold: number;
+  totalGold: number;
+  creepScore: number;
+}
+
+export interface TimelineMilestone {
+  minute: 5 | 10 | 15;
+  timestampMs: number;
+  gameTimeSeconds: number;
+  level: number;
+  totalGold: number;
+  xp: number;
+  creepScore: number;
+  goldDiffVsLane: number | null;
+  xpDiffVsLane: number | null;
+  csDiffVsLane: number | null;
+}
+
+export interface MatchTimelineEventSummary {
+  minute: number;
+  timestampMs: number;
+  type: string;
+  participantId: number | null;
+  killerId: number | null;
+  victimId: number | null;
+  monsterType: string | null;
+  buildingType: string | null;
+  wardType: string | null;
+  involvedTrackedPlayer: boolean;
+}
+
+export interface MatchTimelineDetail {
+  synced: boolean;
+  metadata: {
+    dataVersion: string | null;
+    fetchedAt: string | null;
+    frameCount: number;
+    eventCount: number;
+  };
+  match: {
+    id: string;
+    riotMatchId: string;
+    queueId: number;
+    gameCreation: string;
+    gameDurationSeconds: number;
+    championName: string;
+    teamPosition: string | null;
+    win: boolean;
+  };
+  playerSeries: TimelineSeriesPoint[];
+  milestones: TimelineMilestone[];
+  events: MatchTimelineEventSummary[];
+  analysis: {
+    deathsBefore10: number;
+    deathsBefore15: number;
+    killsBefore15: number;
+    assistsBefore15: number;
+    wardsPlaced: number;
+    wardsKilled: number;
+    objectivesParticipated: number;
+    teamObjectives: number;
+    teamfightParticipation: number | null;
+    csPerMinute: number | null;
+    laneOpponent: string | null;
+    skillScores: Record<SkillDimensionKey, number | null>;
+  } | null;
+}
+
+export interface SkillDimension {
+  key: SkillDimensionKey;
+  label: string;
+  score: number | null;
+  sampleSize: number;
+  deltaVsPreviousBlock: number | null;
+  explanation: string;
+}
+
+export interface SkillModel {
+  profileId: string;
+  role: string;
+  requestedMatches: number;
+  sampleSize: number;
+  availableMatches: number;
+  coveragePercent: number;
+  dimensions: SkillDimension[];
+  recentMatches: Array<{
+    matchId: string;
+    championName: string;
+    gameCreation: string;
+    win: boolean;
+    score: number | null;
+  }>;
+  generatedAt: string;
+}
+
 export interface RiotProfile {
   id: string;
   riotId: string;
