@@ -168,7 +168,7 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
         .filter((match) => match.queueId === 420)
         .slice(0, 30);
 
-      for (let index = 0; index < matches.length && processed < 5; index += 1) {
+      for (let index = 0; index < matches.length && processed + failed < 5; index += 1) {
         const match = matches[index];
         setTimelineBatchProgress(
           `Revisando ${index + 1}/${matches.length} · timelines nuevos ${processed}/5`,
