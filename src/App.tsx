@@ -407,7 +407,12 @@ function ExpandableMatchCard({
     setTimelineError(null);
 
     try {
-      const payload = await syncMatchTimeline(clientId, profileId, match.id);
+      const payload = await syncMatchTimeline(
+        clientId,
+        profileId,
+        match.id,
+        timeline?.synced === true,
+      );
       setTimeline(payload);
     } catch (caught) {
       setTimelineError(
