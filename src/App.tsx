@@ -2,6 +2,8 @@ import { useEffect, useId, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   getMatchDetail,
+  getMatchTimeline,
+  syncMatchTimeline,
   getProfileDetail,
   getProfileMatches,
   getRiotProfiles,
@@ -24,6 +26,7 @@ import type {
   CoachingRole,
   ChampionMasteryEntry,
   MatchDetail,
+  MatchTimelineDetail,
   MatchPlayerSummary,
   MatchSummary,
   PlayerProfileDetail,
@@ -290,6 +293,61 @@ function PlayerLine({ player }: { player: MatchPlayerSummary }) {
   );
 }
 
+function TimelineSparkline({
+  values,
+  label,
+}: {
+  values: number[];
+  label: string;
+}) {
+  if (values.length < 2) {
+    return <div className="timeline-chart-empty">No hay suficientes puntos.</div>;
+  }
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = Math.max(max - min, 1);
+  const width = 520;
+  const height = 88;
+  const points = values
+    .map((value, index) => {
+      const x = (index / (values.length - 1)) * width;
+      const y = height - ((value - min) / span) * (height - 12) - 6;
+      return x.toFixed(1) + "," + y.toFixed(1);
+    })
+    .join(" ");
+
+  return (
+    <div className="timeline-chart" role="img" aria-label={label}>
+      <svg viewBox={"0 0 " + width + " " + height} preserveAspectRatio="none">
+        <polyline
+          points={points}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+      <div className="timeline-chart-scale">
+        <span>{min.toLocaleString("es-CL")}</span>
+        <span>{max.toLocaleString("es-CL")}</span>
+      </div>
+    </div>
+  );
+}
+
+function timelineEventLabel(type: string): string {
+  const labels: Record<string, string> = {
+    CHAMPION_KILL: "Asesinato",
+    ELITE_MONSTER_KILL: "Objetivo épico",
+    BUILDING_KILL: "Estructura destruida",
+    TURRET_PLATE_DESTROYED: "Placa de torre",
+    WARD_PLACED: "Ward colocado",
+    WARD_KILL: "Ward destruido",
+  };
+  return labels[type] ?? type;
+}
+
 function ExpandableMatchCard({
   match,
   profileId,
@@ -303,6 +361,10 @@ function ExpandableMatchCard({
   const [detail, setDetail] = useState<MatchDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [timeline, setTimeline] = useState<MatchTimelineDetail | null>(null);
+  const [timelineLoading, setTimelineLoading] = useState(false);
+  const [timelineSyncing, setTimelineSyncing] = useState(false);
+  const [timelineError, setTimelineError] = useState<string | null>(null);
 
   async function toggle() {
     const next = !open;
@@ -318,6 +380,17 @@ function ExpandableMatchCard({
     try {
       const payload = await getMatchDetail(clientId, profileId, match.id);
       setDetail(payload);
+      setTimelineLoading(true);
+      void getMatchTimeline(clientId, profileId, match.id)
+        .then(setTimeline)
+        .catch((caught) => {
+          setTimelineError(
+            caught instanceof Error
+              ? caught.message
+              : "No fue posible cargar el timeline guardado.",
+          );
+        })
+        .finally(() => setTimelineLoading(false));
     } catch (err) {
       setError(
         err instanceof Error
@@ -326,6 +399,24 @@ function ExpandableMatchCard({
       );
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleTimelineSync() {
+    setTimelineSyncing(true);
+    setTimelineError(null);
+
+    try {
+      const payload = await syncMatchTimeline(clientId, profileId, match.id);
+      setTimeline(payload);
+    } catch (caught) {
+      setTimelineError(
+        caught instanceof Error
+          ? caught.message
+          : "No fue posible sincronizar el timeline de Riot.",
+      );
+    } finally {
+      setTimelineSyncing(false);
     }
   }
 
@@ -395,10 +486,137 @@ function ExpandableMatchCard({
                   ))}
                 </div>
               </div>
-              <p className="match-detail-note">
-                Resumen rápido. Más adelante podrás abrir el análisis completo de
-                la partida.
-              </p>
+              <section className="match-timeline-panel">
+                <header className="timeline-panel-header">
+                  <div>
+                    <span className="eyebrow">Match-V5 Timeline</span>
+                    <h3>Progresión de la partida</h3>
+                  </div>
+                  {!timeline?.synced && (
+                    <button
+                      className="primary-button timeline-sync-button"
+                      type="button"
+                      disabled={timelineSyncing || timelineLoading}
+                      onClick={() => void handleTimelineSync()}
+                    >
+                      {timelineSyncing
+                        ? "Descargando…"
+                        : timelineLoading
+                          ? "Comprobando…"
+                          : "Sincronizar timeline"}
+                    </button>
+                  )}
+                  {timeline?.synced && (
+                    <button
+                      className="ghost-button timeline-sync-button"
+                      type="button"
+                      disabled={timelineSyncing}
+                      onClick={() => void handleTimelineSync()}
+                    >
+                      {timelineSyncing ? "Actualizando…" : "Actualizar"}
+                    </button>
+                  )}
+                </header>
+
+                {timelineError && (
+                  <p className="lookup-message">{timelineError}</p>
+                )}
+
+                {!timeline?.synced ? (
+                  <p className="timeline-empty">
+                    El timeline contiene datos por minuto y eventos de la partida.
+                    Se descarga solo cuando lo solicitas para respetar el rate
+                    limit de Riot.
+                  </p>
+                ) : (
+                  <>
+                    <div className="timeline-milestones">
+                      {[5, 10, 15].map((minute) => {
+                        const milestone = timeline.milestones.find(
+                          (item) => item.minute === minute,
+                        );
+                        return (
+                          <article key={minute}>
+                            <span className="eyebrow">Minuto {minute}</span>
+                            {milestone ? (
+                              <>
+                                <strong>{milestone.creepScore} CS</strong>
+                                <small>
+                                  {milestone.totalGold.toLocaleString("es-CL")} oro
+                                </small>
+                                <small>
+                                  Rival:{" "}
+                                  {milestone.goldDiffVsLane == null
+                                    ? "N/D"
+                                    : (milestone.goldDiffVsLane > 0 ? "+" : "") +
+                                      milestone.goldDiffVsLane.toLocaleString("es-CL") +
+                                      " oro"}
+                                </small>
+                              </>
+                            ) : (
+                              <span className="timeline-missing">Sin datos</span>
+                            )}
+                          </article>
+                        );
+                      })}
+                    </div>
+
+                    <div className="timeline-charts">
+                      <article>
+                        <span className="eyebrow">CS acumulado</span>
+                        <TimelineSparkline
+                          label="CS acumulado durante la partida"
+                          values={timeline.playerSeries.map((point) => point.creepScore)}
+                        />
+                      </article>
+                      <article>
+                        <span className="eyebrow">Oro total</span>
+                        <TimelineSparkline
+                          label="Oro total durante la partida"
+                          values={timeline.playerSeries.map((point) => point.totalGold)}
+                        />
+                      </article>
+                    </div>
+
+                    {timeline.analysis && (
+                      <div className="timeline-analysis-grid">
+                        <div><span>Muertes antes de 10</span><strong>{timeline.analysis.deathsBefore10}</strong></div>
+                        <div><span>Muertes antes de 15</span><strong>{timeline.analysis.deathsBefore15}</strong></div>
+                        <div><span>Wards colocados</span><strong>{timeline.analysis.wardsPlaced}</strong></div>
+                        <div><span>Wards destruidos</span><strong>{timeline.analysis.wardsKilled}</strong></div>
+                        <div><span>Participación kills equipo</span><strong>{timeline.analysis.teamfightParticipation == null ? "N/D" : timeline.analysis.teamfightParticipation + "%"}</strong></div>
+                        <div><span>Objetivos con participación</span><strong>{timeline.analysis.objectivesParticipated}/{timeline.analysis.teamObjectives}</strong></div>
+                      </div>
+                    )}
+
+                    <div className="timeline-events">
+                      <span className="eyebrow">Eventos destacados</span>
+                      {timeline.events.length === 0 ? (
+                        <p className="timeline-empty">No hay eventos relevantes para mostrar.</p>
+                      ) : (
+                        timeline.events.slice(-8).reverse().map((event, index) => (
+                          <div
+                            key={event.timestampMs + "-" + event.type + "-" + index}
+                            className={
+                              "timeline-event " +
+                              (event.involvedTrackedPlayer ? "involved" : "")
+                            }
+                          >
+                            <strong>{Math.floor(event.minute)}′</strong>
+                            <span>{timelineEventLabel(event.type)}</span>
+                            {event.involvedTrackedPlayer && <small>Tu participación</small>}
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    <small className="timeline-source">
+                      {timeline.metadata.frameCount} frames · {timeline.metadata.eventCount} eventos ·
+                      {" "}obtenido {timeline.metadata.fetchedAt ? new Date(timeline.metadata.fetchedAt).toLocaleString("es-CL") : "N/D"}
+                    </small>
+                  </>
+                )}
+              </section>
             </>
           )}
         </div>
