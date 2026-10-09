@@ -16,6 +16,8 @@ Aplicación de escritorio de coaching personalizado para League of Legends.
 - Base segura de Electron con aislamiento de contexto.
 - Captura local de Live Client desde el proceso principal de Electron.
 - Historial de sesiones capturadas con curvas temporales y métricas postpartida.
+- Explorador de timeline Match-V5 por partida con hitos de minuto 5/10/15 y eventos destacados.
+- Skill model agregado con cobertura por timeline disponible, tendencia entre bloques y seis dimensiones de entrenamiento.
 - Coach IA con salida estructurada y referencias métricas.
 
 ## Inicio local
@@ -56,6 +58,14 @@ La interfaz separa visualmente los datos calculados de las recomendaciones gener
 ## En vivo
 
 **En vivo** conecta el cliente local de League con un collector aislado en Electron. Captura snapshots propios durante la partida, los persiste en API-PLAIQ y, al terminar, intenta enlazar la sesión con Match-v5 para recuperar resultado, cola y parche.
+
+## Timeline y skill model
+
+En **Perfiles → Historial de partidas**, abre una partida y selecciona **Sincronizar timeline** para importar los frames/eventos de Match-V5. Los datos persistidos permiten visualizar CS/oro a lo largo de la partida, diferenciales contra el rival de línea y eventos relevantes.
+
+En **Coaching → Perfil de habilidades**, el botón **Sincronizar hasta 5 timelines** procesa un pequeño lote de ranked recientes. Las dimensiones (economía, control de línea, supervivencia temprana, combate, objetivos y visión) se calculan en la API; los datos insuficientes se muestran como N/D.
+
+Los scores (0–100) son heurísticas transparentes de entrenamiento, no representan MMR, ELO ni una predicción de rango.
 
 ## Coach IA
 
