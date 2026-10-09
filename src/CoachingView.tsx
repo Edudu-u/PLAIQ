@@ -3,6 +3,10 @@ import {
   generateAiCoaching,
   getCoachingSummary,
   getLatestAiCoaching,
+  getProfileMatches,
+  getMatchTimeline,
+  getSkillModel,
+  syncMatchTimeline,
   type CoachAiAnalysis,
 } from "./lib/api";
 import type {
@@ -11,6 +15,7 @@ import type {
   CoachingMetric,
   CoachingSummary,
   RiotProfile,
+  SkillModel,
 } from "./types/coaching";
 
 type CoachingViewProps = {
@@ -69,6 +74,11 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
   const [aiAnalysis, setAiAnalysis] = useState<CoachAiAnalysis | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [skillModel, setSkillModel] = useState<SkillModel | null>(null);
+  const [skillModelLoading, setSkillModelLoading] = useState(false);
+  const [timelineBatchLoading, setTimelineBatchLoading] = useState(false);
+  const [timelineBatchProgress, setTimelineBatchProgress] = useState("");
+  const [timelineBatchError, setTimelineBatchError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!profile) {
@@ -117,6 +127,87 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
     };
   }, [clientId, profile]);
 
+
+  useEffect(() => {
+    if (!profile) {
+      setSkillModel(null);
+      return;
+    }
+
+    let cancelled = false;
+    setSkillModelLoading(true);
+    void getSkillModel(clientId, profile.id, 20)
+      .then((payload) => {
+        if (!cancelled) setSkillModel(payload);
+      })
+      .catch(() => {
+        if (!cancelled) setSkillModel(null);
+      })
+      .finally(() => {
+        if (!cancelled) setSkillModelLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clientId, profile]);
+
+  async function handleSyncRecentTimelines() {
+    if (!profile) return;
+
+    setTimelineBatchLoading(true);
+    setTimelineBatchError(null);
+    setTimelineBatchProgress("Buscando partidas Ranked recientes…");
+
+    let processed = 0;
+    let skipped = 0;
+    let failed = 0;
+
+    try {
+      const matches = (await getProfileMatches(clientId, profile.id, 100))
+        .filter((match) => match.queueId === 420)
+        .slice(0, 30);
+
+      for (let index = 0; index < matches.length && processed < 5; index += 1) {
+        const match = matches[index];
+        setTimelineBatchProgress(
+          `Revisando ${index + 1}/${matches.length} · timelines nuevos ${processed}/5`,
+        );
+
+        try {
+          const current = await getMatchTimeline(clientId, profile.id, match.id);
+          if (current.synced) {
+            skipped += 1;
+            continue;
+          }
+
+          const synced = await syncMatchTimeline(clientId, profile.id, match.id);
+          if (synced.synced) {
+            processed += 1;
+          } else {
+            failed += 1;
+          }
+        } catch {
+          failed += 1;
+        }
+      }
+
+      const nextModel = await getSkillModel(clientId, profile.id, 20);
+      setSkillModel(nextModel);
+      setTimelineBatchProgress(
+        `Timelines nuevos: ${processed} · ya disponibles: ${skipped} · no disponibles/error: ${failed}`,
+      );
+    } catch (caught) {
+      setTimelineBatchError(
+        caught instanceof Error
+          ? caught.message
+          : "No se pudieron sincronizar los timelines.",
+      );
+    } finally {
+      setTimelineBatchLoading(false);
+      setSkillModelLoading(false);
+    }
+  }
 
   async function handleGenerateAi() {
     if (!profile) return;
@@ -272,6 +363,105 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
                   </article>
                 ))}
               </div>
+            )}
+          </section>
+
+          <section className="coach-skill-panel">
+            <header className="coach-skill-header">
+              <div>
+                <span className="eyebrow">Skill model · Match-V5 Timeline</span>
+                <h2>Perfil de habilidades</h2>
+                <p>
+                  Puntuaciones heurísticas de 0 a 100; no son MMR ni una
+                  predicción de rango. Solo se incluyen partidas con timeline disponible.
+                </p>
+              </div>
+              <button
+                className="primary-button coach-skill-sync"
+                type="button"
+                disabled={timelineBatchLoading || !profile}
+                onClick={() => void handleSyncRecentTimelines()}
+              >
+                {timelineBatchLoading ? "Procesando…" : "Sincronizar hasta 5 timelines"}
+              </button>
+            </header>
+
+            {timelineBatchError && (
+              <p className="lookup-message">{timelineBatchError}</p>
+            )}
+            {timelineBatchProgress && (
+              <p className="coach-skill-progress">{timelineBatchProgress}</p>
+            )}
+
+            {skillModelLoading && !skillModel ? (
+              <div className="empty-state">Calculando habilidades a partir de timelines guardados…</div>
+            ) : skillModel ? (
+              <>
+                <div className="coach-skill-coverage">
+                  <div>
+                    <span className="eyebrow">Cobertura de timeline</span>
+                    <strong>
+                      {skillModel.sampleSize}/{skillModel.requestedMatches}
+                    </strong>
+                  </div>
+                  <div className="coach-skill-coverage-track">
+                    <div style={{ width: skillModel.coveragePercent + "%" }} />
+                  </div>
+                  <small>{skillModel.coveragePercent}% de las últimas ranked del rol {skillModel.role}</small>
+                </div>
+
+                <div className="coach-skill-grid">
+                  {skillModel.dimensions.map((dimension) => (
+                    <article className="coach-skill-dimension" key={dimension.key}>
+                      <div className="coach-skill-dimension-head">
+                        <span>{dimension.label}</span>
+                        <strong>
+                          {dimension.score == null
+                            ? "N/D"
+                            : Math.round(dimension.score)}
+                        </strong>
+                      </div>
+                      <div className="coach-skill-track">
+                        <div
+                          className={dimension.score == null ? "unavailable" : ""}
+                          style={{
+                            width: dimension.score == null
+                              ? "0%"
+                              : Math.max(0, Math.min(100, dimension.score)) + "%",
+                          }}
+                        />
+                      </div>
+                      <p>{dimension.explanation}</p>
+                      <small>
+                        {dimension.sampleSize} partidas con dato
+                        {dimension.deltaVsPreviousBlock == null
+                          ? ""
+                          : " · " +
+                            (dimension.deltaVsPreviousBlock > 0 ? "+" : "") +
+                            dimension.deltaVsPreviousBlock +
+                            " vs bloque anterior"}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+
+                {skillModel.sampleSize === 0 && (
+                  <p className="coach-skill-empty">
+                    Todavía no hay timelines sincronizados para estas partidas.
+                    Usa el botón para importar hasta cinco por tanda; si Riot no
+                    tiene timeline disponible para una partida, no se inventará.
+                  </p>
+                )}
+                <small className="coach-skill-version">
+                  Actualizado {new Date(skillModel.generatedAt).toLocaleString("es-CL")}
+                  {" · "}calculado localmente por API-PLAIQ
+                </small>
+              </>
+            ) : (
+              <p className="coach-skill-empty">
+                No se pudo obtener el skill model. Comprueba que la API y la base
+                de datos estén disponibles.
+              </p>
             )}
           </section>
 
