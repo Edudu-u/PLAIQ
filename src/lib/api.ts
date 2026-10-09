@@ -7,6 +7,8 @@ import type {
   RiotProfile,
   RiotSearchHistory,
   SyncMatchesResult,
+  MatchTimelineDetail,
+  SkillModel,
 } from "../types/coaching";
 import type { PatchArticle, PatchIndex } from "../types/patches";
 import type {
@@ -161,6 +163,59 @@ export function getMatchDetail(
       encodeURIComponent(matchId) +
       "?clientId=" +
       encodeURIComponent(clientId),
+  );
+}
+
+export function getMatchTimeline(
+  clientId: string,
+  profileId: string,
+  matchId: string,
+): Promise<MatchTimelineDetail> {
+  const params = new URLSearchParams({ clientId });
+  return request<MatchTimelineDetail>(
+    "/v1/riot/profiles/" +
+      encodeURIComponent(profileId) +
+      "/matches/" +
+      encodeURIComponent(matchId) +
+      "/timeline?" +
+      params.toString(),
+  );
+}
+
+export function syncMatchTimeline(
+  clientId: string,
+  profileId: string,
+  matchId: string,
+  force = false,
+): Promise<MatchTimelineDetail> {
+  const params = new URLSearchParams({ clientId });
+  if (force) params.set("force", "true");
+
+  return request<MatchTimelineDetail>(
+    "/v1/riot/profiles/" +
+      encodeURIComponent(profileId) +
+      "/matches/" +
+      encodeURIComponent(matchId) +
+      "/timeline/sync?" +
+      params.toString(),
+    { method: "POST" },
+  );
+}
+
+export function getSkillModel(
+  clientId: string,
+  profileId: string,
+  limit = 20,
+): Promise<SkillModel> {
+  const params = new URLSearchParams({
+    clientId,
+    limit: String(limit),
+  });
+  return request<SkillModel>(
+    "/v1/riot/profiles/" +
+      encodeURIComponent(profileId) +
+      "/skill-model?" +
+      params.toString(),
   );
 }
 
