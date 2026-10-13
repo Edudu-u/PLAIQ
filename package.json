@@ -22,10 +22,10 @@
     "cross-env": "^7.0.3",
     "electron": "^37.2.3",
     "typescript": "^5.8.3",
-    "vite": "^7.0.4",
+    "vite": "^5.4.19",
     "wait-on": "^8.0.3"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=18"
   }
 }
