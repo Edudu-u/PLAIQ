@@ -46,7 +46,9 @@ function trendLabel(metric: CoachingMetric): string | null {
 
 function goalProgress(goal: CoachingGoal): number {
   if (goal.completed) return 100;
-  if (goal.metric === "average_deaths") {
+  const lowerIsBetter =
+    goal.metric === "average_deaths" || goal.metric === "deaths_before_15";
+  if (lowerIsBetter) {
     return Math.max(
       0,
       Math.min(99, Math.round((goal.target / Math.max(goal.current, 0.1)) * 100)),
@@ -216,13 +218,14 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
     setAiError(null);
 
     try {
-      const result = await generateAiCoaching(clientId, profile.id, 20);
+        const result = await generateAiCoaching(clientId, profile.id, 20);
       setAiAnalysis(result);
+      await load();
     } catch (caught) {
       setAiError(
         caught instanceof Error
           ? caught.message
-          : "No se pudo generar el coaching IA.",
+          : "No se pudo generar el plan de coaching.",
       );
     } finally {
       setAiLoading(false);
@@ -534,7 +537,13 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
                         {goal.current.toFixed(goal.unit.includes("min") ? 2 : 1)} /{" "}
                         {goal.target.toFixed(goal.unit.includes("min") ? 2 : 1)}{" "}
                         {goal.unit}
+                        {goal.gamesWindow
+                          ? " · próximas " + goal.gamesWindow + " ranked"
+                          : ""}
                       </small>
+                      {goal.successCriteria && (
+                        <small>{goal.successCriteria}</small>
+                      )}
                     </article>
                   ))
                 )}
@@ -545,7 +554,7 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
           <section className="coach-ai-panel">
             <div className="coach-ai-header">
               <div>
-                <span className="eyebrow">Coach IA</span>
+                <span className="eyebrow">Coach PLAYQ</span>
                 <h2>
                   {aiAnalysis
                     ? aiAnalysis.narrative.headline
@@ -556,28 +565,36 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
                 className="primary-button coach-ai-button"
                 type="button"
                 onClick={() => void handleGenerateAi()}
-                disabled={aiLoading || summary.sampleSize < 5}
+                disabled={aiLoading}
               >
                 {aiLoading
                   ? "Generando…"
                   : aiAnalysis
                     ? "Regenerar plan"
-                    : "Generar plan IA"}
+                    : "Generar plan"}
               </button>
             </div>
 
             {aiError && <p className="lookup-message">{aiError}</p>}
+            {summary.sampleSize > 0 && summary.sampleSize < 5 && (
+              <p className="coach-skill-progress">
+                Hay {summary.sampleSize} ranked sincronizadas. PLAYQ puede
+                diagnosticar, pero el plan es preliminar: sincroniza al menos 5
+                partidas Ranked Solo para más confianza.
+              </p>
+            )}
 
             {!aiAnalysis ? (
               <div className="coach-ai-empty">
                 <p>
-                  La IA no sustituye las métricas. Recibe el diagnóstico
-                  determinista y lo transforma en un plan de entrenamiento
-                  estructurado y verificable.
+                  PLAYQ genera el plan con su motor de skill y diagnóstico a
+                  partir de tus partidas (CS/min, muertes, visión, daño, winrate,
+                  rol, pool y parche). OpenAI es opcional y, si existe, solo
+                  puede pulir el texto: nunca bloquea este botón.
                 </p>
                 <small>
-                  Requiere al menos 5 partidas y OPENAI_API_KEY configurada en
-                  API-PLAIQ.
+                  Con menos de 5 ranked el plan sigue siendo preliminar. Sin
+                  partidas, te diremos que sincronices el historial.
                 </small>
               </div>
             ) : (
@@ -645,6 +662,12 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
                   <span>·</span>
                   <span>{aiAnalysis.sampleSize} partidas</span>
                   <span>·</span>
+                  <span>
+                    {aiAnalysis.engine === "playq-native+openai"
+                      ? "PLAYQ + pulido"
+                      : "Motor PLAYQ"}
+                  </span>
+                  <span>·</span>
                   <span>{aiAnalysis.model}</span>
                   <span>·</span>
                   <span>{new Date(aiAnalysis.createdAt).toLocaleString("es-CL")}</span>
@@ -656,11 +679,13 @@ export function CoachingView({ clientId, profile }: CoachingViewProps) {
           <section className="coach-methodology">
             <span className="eyebrow">Cómo decide PLAIQ</span>
             <div>
-              <strong>Datos primero. IA después.</strong>
+              <strong>Datos primero. Plan PLAYQ después.</strong>
               <p>
                 Esta versión calcula las métricas de forma determinista a partir
-                de Match-v5. Las referencias por rol son heurísticas transparentes;
-                no son MMR, ELO ni una clasificación alternativa.
+                de Match-v5 y arma un plan nativo con criterios para las
+                próximas partidas. OpenAI no es necesario. Las referencias por
+                rol son heurísticas transparentes; no son MMR, ELO ni una
+                clasificación alternativa.
               </p>
             </div>
             <span className="coach-version">

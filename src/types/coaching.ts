@@ -1,11 +1,14 @@
 export type CoachingRole = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY";
 export type GoalMetric =
+  | "games"
   | "cs_at_10"
   | "deaths_before_15"
   | "vision_score"
   | "average_deaths"
   | "cs_per_minute"
-  | "vision_per_minute";
+  | "vision_per_minute"
+  | "damage_per_minute"
+  | "win_rate";
 export type AppView =
   | "inicio"
   | "perfiles"
@@ -22,6 +25,8 @@ export interface CoachingGoal {
   target: number;
   unit: string;
   completed: boolean;
+  successCriteria?: string;
+  gamesWindow?: number;
 }
 
 export interface CoachingMetric {
@@ -69,6 +74,19 @@ export interface CoachingSummary {
   champions: CoachingChampionPerformance[];
   insights: CoachingInsight[];
   goals: CoachingGoal[];
+  skillSnapshot?: {
+    profileId: string;
+    sampleSize: number;
+    role: string;
+    csPerMinute: number;
+    averageDeaths: number;
+    visionPerMinute: number;
+    damagePerMinute: number;
+    winRate: number;
+    championPool: Array<{ championName: string; games: number; winRate: number }>;
+    patches: string[];
+    updatedAt: string;
+  } | null;
   sampleSize: number;
   source: "match_v5";
   analysisVersion: string;
