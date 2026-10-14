@@ -414,6 +414,7 @@ export interface CoachAiNarrative {
 export interface CoachAiAnalysis {
   id: string | null;
   model: string;
+  engine?: "playq-native" | "playq-native+openai";
   analysisVersion: string;
   sampleSize: number;
   narrative: CoachAiNarrative;

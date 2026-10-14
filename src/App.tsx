@@ -901,6 +901,10 @@ export function App() {
   }, [theme]);
 
   useEffect(() => {
+    void refreshRiotData();
+  }, []);
+
+  useEffect(() => {
     if (!activeProfile || (view !== "perfiles" && view !== "inicio")) {
       return;
     }
